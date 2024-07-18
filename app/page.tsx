@@ -1,113 +1,208 @@
-import Image from "next/image";
+"use client";
+import ContractInteraction from "@/components/ContractInteraction";
+import Navbar from "@/components/Navbar";
+import { fetchAbi } from "@/services/fetchAbi";
+import { ConnectKitButton } from "connectkit";
+import { log } from "console";
+import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
-export default function Home() {
+const Home = () => {
+  const account = useAccount();
+
+  console.log(account.address);
+  const [contractAddress, setContractAddress] = useState("");
+  const [abi, setAbi] = useState<any[]>([]);
+  const [readFunctions, setReadFunctions] = useState<any[]>([]);
+  const [results, setResults] = useState<{ [key: string]: any }>({});
+  const [signer, setSigner] = useState<ethers.Signer | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState("ABI");
+  const [inputs, setInputs] = useState<{ [key: string]: any[] }>({});
+
+  useEffect(() => {
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const fetchSigner = async () => {
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        setSigner(signer);
+      };
+      fetchSigner();
+    } else {
+      console.error("Please Install MetaMask!");
+    }
+  }, []);
+  const handleFetchAbi = async () => {
+    try {
+      const abi = await fetchAbi(contractAddress);
+      console.log(abi);
+      setAbi(abi);
+      const readFns = abi.filter(
+        (fn: any) => fn.type === "function" && fn.stateMutability === "view"
+      );
+      setReadFunctions(readFns);
+    } catch (error) {
+      console.error("Error fetching ABI:", error);
+    }
+  };
+  const handleReadFunctions = async (fn: any) => {
+    if (!account.isConnected) {
+      console.error("No wallet Connected");
+      return;
+    }
+    if (!signer) {
+      console.error("No signer available");
+      return;
+    }
+
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+    try {
+      const params = inputs[fn.name] || [];
+
+      console.log(`Calling function ${fn.name}`);
+      const result = await contract[fn.name](...params);
+      console.log(`Result from function ${fn.name}:`, result);
+      setResults((prevResults) => ({
+        ...prevResults,
+        [fn.name]: result,
+      }));
+    } catch (error: any) {
+      console.error(`Error reading function ${fn.name}:`, error);
+      console.error("Error message:", error.message);
+      console.error("Error code:", error.code);
+      if (error.data) {
+        console.error("Error data:", error.data);
+      }
+    }
+  };
+
+  const handleInputChange = (fnName: string, idx: number, value: string) => {
+    setInputs((prevInputs) => {
+      const newInputs = { ...prevInputs };
+      if (!newInputs[fnName]) {
+        newInputs[fnName] = [];
+      }
+      newInputs[fnName][idx] = value;
+      return newInputs;
+    });
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="">
+      <Navbar />
+      <section className="w-full px-32 py-8">
+        {/* <h1 className="text-center text-lg text-gray-700">
+          Interact w/ Contract Functions
+        </h1>
+        <div className="flex justify-center items-center gap-8 mt-10">
+          <input
+            type="text"
+            value={contractAddress}
+            onChange={(e) => setContractAddress(e.target.value)}
+            placeholder="Enter contract address"
+            className="text-md p-2 w-80 rounded-md border"
+          />
+          <button
+            onClick={handleFetchAbi}
+            className="bg-green-400 p-2 text-lg rounded-lg w-30"
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            Fetch ABI
+          </button>
         </div>
-      </div>
+        <div className="mt-8 border-2">
+          <div className="px-18 flex items-center justify-center gap-8 border-b-2  ">
+            <button
+              className={`px-4 py-2 ${
+                activeTab === "ABI" ? "bg-gray-200 rounded-md my-1" : ""
+              }`}
+              onClick={() => setActiveTab("ABI")}
+            >
+              ABI
+            </button>
+            <button
+              className={`px-4 py-2 ${
+                activeTab === "Read Contract"
+                  ? "bg-gray-200 rounded-md my-1"
+                  : ""
+              }`}
+              onClick={() => setActiveTab("Read Contract")}
+            >
+              Read Contract
+            </button>
+            <button
+              className={`px-4 py-2 ${
+                activeTab === "Write Contract"
+                  ? "bg-gray-200 rounded-md my-1"
+                  : ""
+              }`}
+              onClick={() => setActiveTab("Write Contract")}
+            >
+              Write Contract
+            </button>
+          </div>
+          <div className="my-8 mx-4">
+            {activeTab === "ABI" && (
+              <div>
+                <h2>ABI</h2>
+                <pre>{JSON.stringify(abi, null, 2)}</pre>
+              </div>
+            )}
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+ {activeTab === 'Read Contract' && (
+              <div className="results">
+                {readFunctions.map((fn, index) => (
+                  <div key={index} className="read-function">
+                    <h2>{fn.name}</h2>
+                    {fn.inputs && fn.inputs.length > 0 && (
+                      <div className="inputs mb-4">
+                        {fn.inputs.map((input: any, idx: number) => (
+                          <div key={idx} className="mb-2">
+                            <label>
+                              {input.name || `Input ${idx + 1}`}:
+                            </label>
+                            <input
+                              type="text"
+                              placeholder={input.type}
+                              className="ml-2 p-1 border rounded-md"
+                              onChange={(e) =>
+                                handleInputChange(fn.name, idx, e.target.value)
+                              }
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <button
+                      onClick={() => handleReadFunctions(fn)}
+                      className="bg-green-400 text-white px-4 py-2 rounded-md"
+                    >
+                      Call {fn.name}
+                    </button>
+                    {results[fn.name] && (
+                      <p>Result: {JSON.stringify(results[fn.name])}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+            {activeTab === "Write Contract" && (
+              <div>
+                <h2>Write Contract</h2>
+               
+              </div>
+            )}
+          </div>
+        </div> */}
+        <h1 className="text-center text-lg text-gray-700">
+          Interact w/ Contract Functions
+        </h1>
+        <ContractInteraction />
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      </section>
+    </div>
   );
-}
+};
+export default Home;
