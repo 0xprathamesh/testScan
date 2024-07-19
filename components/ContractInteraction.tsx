@@ -103,11 +103,13 @@ const ContractInteraction = () => {
       const params = inputs[fn.name] || [];
 
       const result = await contract[fn.name](...params);
-      console.log(JSON.stringify(results[fn.name], null, 2))
       setResults((prevResults) => ({
         ...prevResults,
         [fn.name]: result,
       }));
+      console.log(JSON.stringify(results[fn.name], null, 2))
+console.log("hello");
+
     } catch (error: any) {
       console.error(`Error writing function ${fn.name}:`, error);
     }

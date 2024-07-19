@@ -1,16 +1,22 @@
 import { getDefaultConfig } from "connectkit";
 import { createConfig, http } from "wagmi";
-import { xdc, xdcTestnet } from "wagmi/chains";
+import { xdcTestnet } from "./utils/CustomChain";
+// import { xdc, xdcTestnet } from "wagmi/chains";
 
 export const config = createConfig(
   getDefaultConfig({
     appName: "ConnectKit Next.js demo",
-    chains: [xdcTestnet, xdc],
+     chains: [xdcTestnet],
+
+    // transports: {
+    //   [xdcTestnet.id]: http(
+    //     `https://rpc.ankr.com/multichain/6944333ba8fa52fa3f28576862e5d2ea1b9568a72a3207c76956b6f335db4fc0`
+    //   ),
+    // },
     transports: {
-      [xdcTestnet.id]: http(
-        `https://rpc.ankr.com/multichain/6944333ba8fa52fa3f28576862e5d2ea1b9568a72a3207c76956b6f335db4fc0`
-      ),
-    },
+       [xdcTestnet.id] : http(xdcTestnet.rpcUrls.default.http),
+     },
+   
 
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
   })
