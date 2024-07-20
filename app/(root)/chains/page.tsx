@@ -1,4 +1,7 @@
 "use client";
+import ChainCard from "@/components/ChainCard";
+import Navbar from "@/components/Navbar";
+import SearchChains from "@/components/SearchChains";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
@@ -9,12 +12,20 @@ interface Chain {
   rpc: string[];
   faucets: string[];
   infoURL: string;
+  nativeCurrency?: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  blockExplorerUrls?: string[];
 }
 
 const Chains: React.FC = () => {
   const [chains, setChains] = useState<Chain[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchResults, setSearchResults] = useState<Chain[]>([]);
+  const [query, setQuery] = useState<string>("");
 
   useEffect(() => {
     const fetchChains = async () => {
@@ -25,7 +36,7 @@ const Chains: React.FC = () => {
         }
         const data = await response.json();
         setChains(data);
-      } catch (err:any) {
+      } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
@@ -34,6 +45,27 @@ const Chains: React.FC = () => {
 
     fetchChains();
   }, []);
+  useEffect(() => {
+    const fetchSearchResults = async () => {
+      if (query.trim() === "") {
+        setSearchResults([]);
+        return;
+      }
+
+      const response = await fetch(`/api/chains/search?query=${query}`);
+      const data = await response.json();
+      setSearchResults(data);
+    };
+
+    const debounceFetch = setTimeout(fetchSearchResults, 300);
+
+    return () => clearTimeout(debounceFetch);
+  }, [query]);
+
+  const handleSearchResults = (query: string) => {
+    setQuery(query);
+  };
+  const displayedChains = searchResults.length > 0 ? searchResults : chains;
 
   if (loading) {
     return <div>Loading...</div>;
@@ -44,27 +76,17 @@ const Chains: React.FC = () => {
   }
 
   return (
-    <div className="p-4 flex flex-col justify-center items-center">
-      <h1 className="text-2xl uppercase font-semibold mb-6 mt-0 text-slate-700 dark:text-slate-300">
-        Chains
-      </h1>
-      {/* <ul>
-        {chains.map((chain) => (
-          <li key={chain.chainId}>
-            <h2>{chain.name}</h2>
-            <p>Chain ID: {chain.chainId}</p>
-            <p>Chain: {chain.chain}</p>
-            <p>RPC URLs: {chain.rpc.join(', ')}</p>
-            <p>Faucets: {chain.faucets.join(', ')}</p>
-            <p>
-              Info URL: <a href={chain.infoURL}>{chain.infoURL}</a>
-            </p>
-          </li>
-        ))}
-      </ul> */}
+    <>
+      <Navbar />
+      <div className=" flex flex-col justify-center items-center px-32 py-8">
+        <h1 className="text-2xl uppercase font-semibold  text-slate-700 dark:text-slate-300">
+          Chains
+        </h1>
 
-      <ChainList chains={chains} />
-    </div>
+        <SearchChains handleSearch={handleSearchResults} />
+        <ChainList chains={displayedChains} />
+      </div>
+    </>
   );
 };
 
@@ -80,14 +102,4 @@ const ChainList = ({ chains }: { chains: Chain[] }) => {
   );
 };
 
-const ChainCard = ({ chain }: { chain: Chain }) => {
-  return (
-    <Link href={`/chain/${chain.chainId}`}>
-      <div className="cursor-pointer rounded-lg border bg-card text-card-foreground shadow-sm">
-        <div className="flex flex-col space-y-1.5 p-6">
-          <h1 className="font-medium text-md text-slate-700">{chain.chain}</h1>
-        </div>
-      </div>
-    </Link>
-  );
-};
+
