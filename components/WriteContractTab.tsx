@@ -1,5 +1,6 @@
 import { useState } from "react";
 import InputField from "./InputField";
+import Link from "next/link";
 
 const WriteContractTab = ({
   writeFunctions,
@@ -39,14 +40,11 @@ const WriteContractTab = ({
             Call {fn.name}
           </button>
           {results[fn.name] && (
-            <button
-              className="bg-green-400 px-3 py-2 rounded-md"
-              onClick={() => {
-                alert(`https://apothem.xdcscan.io/tx/${results[fn.name].hash}`);
-              }}
-            >
-              Hash
-            </button>
+            <Link href={`https://apothem.xdcscan.io/tx/${results[fn.name].hash}`}>
+              <button className="bg-green-400 px-3 py-2 rounded-md">
+                Hash
+              </button>
+            </Link>
           )}
         </div>
       ))}
