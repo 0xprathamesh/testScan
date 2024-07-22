@@ -67,3 +67,14 @@
     @apply bg-background text-foreground;
   }
 }
+.read-function {
+  border-top: 1px solid #ccc;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.results {
+  padding: 20px 0;
+}

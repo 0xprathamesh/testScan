@@ -77,8 +77,11 @@ const ContractInteraction = () => {
     const contract = new ethers.Contract(contractAddress, abi, signer);
     try {
       const params = inputs[fn.name] || [];
+      console.log(`Calling function ${fn.name} with params:`, params);
 
       const result = await contract[fn.name](...params);
+      console.log(`Result from ${fn.name}:`, result);
+
       setResults((prevResults) => ({
         ...prevResults,
         [fn.name]: result,
