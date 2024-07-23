@@ -18,8 +18,8 @@ const WriteContractTab = ({
   return (
     <div className="results">
       {writeFunctions.map((fn, index) => (
-        <div>
-          <div key={index} className="read-function mb-4">
+        <div key={index}>
+          <div  className="read-function mb-4">
             <h2>{fn.name}</h2>
             {fn.inputs && fn.inputs.length > 0 && (
               <div className="inputs">

@@ -17,8 +17,8 @@ const ReadContractTab = ({
   return (
     <div className="results">
       {readFunctions.map((fn, index) => (
-        <div>
-          <div key={index} className="read-function">
+        <div key={index}>
+          <div  className="read-function">
             <h2>{fn.name}</h2>
             {fn.inputs && fn.inputs.length > 0 && (
               <div className="inputs mb-4">
