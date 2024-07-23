@@ -6,12 +6,13 @@ import { ConnectKitButton } from "connectkit";
 import { log } from "console";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useActiveAccount } from "thirdweb/react";
+
 
 const Home = () => {
-  const account = useAccount();
+  const account = useActiveAccount();
 
-  console.log(account.address);
+  console.log(account?.address);
   const [contractAddress, setContractAddress] = useState("");
   const [abi, setAbi] = useState<any[]>([]);
   const [readFunctions, setReadFunctions] = useState<any[]>([]);
@@ -47,10 +48,10 @@ const Home = () => {
     }
   };
   const handleReadFunctions = async (fn: any) => {
-    if (!account.isConnected) {
-      console.error("No wallet Connected");
-      return;
-    }
+    // if (!account.isConnected) {
+    //   console.error("No wallet Connected");
+    //   return;
+    // }
     if (!signer) {
       console.error("No signer available");
       return;
