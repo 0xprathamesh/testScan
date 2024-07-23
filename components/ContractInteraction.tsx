@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { useAccount } from "wagmi";
+// import { useAccount } from "wagmi";
 import { fetchAbi } from "@/services/fetchAbi";
 import AbiTab from "./AbiTab";
 import ReadContractTab from "./ReadContractTab";
 import WriteContractTab from "./WriteContractTab";
+import { useActiveAccount,useActiveWalletConnectionStatus } from "thirdweb/react";
 
 const ContractInteraction = () => {
-  const account = useAccount();
-
+  const account = useActiveAccount();
+  const isConnected = useActiveWalletConnectionStatus();
+  console.log(isConnected);
+  
+  const address = account?.address;
   const [contractAddress, setContractAddress] = useState("");
   const [abi, setAbi] = useState<any[]>([]);
   const [readFunctions, setReadFunctions] = useState<any[]>([]);
@@ -65,9 +69,10 @@ const ContractInteraction = () => {
   };
 
   const handleReadFunctions = async (fn: any) => {
-    if (!account.isConnected) {
-      console.error("No wallet Connected");
+    if (isConnected !== "connected") {
+      console.error("No Wallet Connected");
       return;
+      
     }
     if (!signer) {
       console.error("No signer available");
@@ -92,9 +97,14 @@ const ContractInteraction = () => {
   };
 
   const handleWriteFunctions = async (fn: any) => {
-    if (!account.isConnected) {
-      console.error("No wallet Connected");
+    // if (!account.isConnected) {
+    //   console.error("No wallet Connected");
+    //   return;
+    // }
+    if (isConnected !== "connected") {
+      console.error("No Wallet Connected");
       return;
+      
     }
     if (!signer) {
       console.error("No signer available");

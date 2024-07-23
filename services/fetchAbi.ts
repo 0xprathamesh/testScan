@@ -1,6 +1,7 @@
 export const fetchAbi = async (contractAddress: string) => {
-  const apiKey = 'testkey';
-  const url = `https://abapi.blocksscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${apiKey}`;
+  const apiKey = 'DY16P34A91QIMKESXSCM3FQCC4CPCC69W2';
+  // const url = `https://abapi.blocksscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${apiKey}`;
+  const url = `https://api.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${apiKey}`
  
   const response = await fetch(url);
   const data = await response.json();
@@ -11,4 +12,4 @@ export const fetchAbi = async (contractAddress: string) => {
 
   return JSON.parse(data.result);
 };
-//
+
