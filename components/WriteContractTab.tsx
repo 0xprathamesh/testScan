@@ -18,29 +18,34 @@ const WriteContractTab = ({
   return (
     <div className="results">
       {writeFunctions.map((fn, index) => (
-        <div key={index} className="read-function mb-4">
-          <h2>{fn.name}</h2>
-          {fn.inputs && fn.inputs.length > 0 && (
-            <div className="inputs">
-              {fn.inputs.map((input: any, idx: number) => (
-                <InputField
-                  key={idx}
-                  input={input}
-                  idx={idx}
-                  fnName={fn.name}
-                  handleInputChange={handleInputChange}
-                />
-              ))}
-            </div>
-          )}
-          <button
-            onClick={() => handleWriteFunctions(fn)}
-            className="bg-green-400 px-4 py-2 rounded-md"
-          >
-            Call {fn.name}
-          </button>
+        <div>
+          <div key={index} className="read-function mb-4">
+            <h2>{fn.name}</h2>
+            {fn.inputs && fn.inputs.length > 0 && (
+              <div className="inputs">
+                {fn.inputs.map((input: any, idx: number) => (
+                  <InputField
+                    key={idx}
+                    input={input}
+                    idx={idx}
+                    fnName={fn.name}
+                    handleInputChange={handleInputChange}
+                  />
+                ))}
+              </div>
+            )}
+            <button
+              onClick={() => handleWriteFunctions(fn)}
+              className="bg-green-400 px-4 py-2 rounded-md"
+            >
+              Call {fn.name}
+            </button>
+          </div>
           {results[fn.name] && (
-            <Link href={`https://apothem.xdcscan.io/tx/${results[fn.name].hash}`}>
+            <Link
+              href={`https://apothem.xdcscan.io/tx/${results[fn.name].hash}`}
+              target="_blank"
+            >
               <button className="bg-green-400 px-3 py-2 rounded-md">
                 Hash
               </button>
