@@ -25,4 +25,31 @@ export const xdcApothemNetwork: Network = {
     faucets: [
       "https://faucet.apothem.network"
     ]
-  }
+}
+  
+ export const xdcNetwork = {
+  id: 50,
+  name: "XDC Network",
+  rpc:     "https://erpc.xinfin.network",
+  nativeCurrency: {
+    name: "XinFin",
+    symbol: "XDC",
+    decimals: 18,
+  },
+  blockExplorers: [
+    {
+      name: "xdcscan",
+      url: "https://xdcscan.io",
+      icon: "https://path-to-icon/blocksscan-icon.png", // Replace with the actual URL for the icon
+      standard: "EIP3091",
+    },
+    {
+      name: "blocksscan",
+      url: "https://xdc.blocksscan.io",
+      icon: "https://path-to-icon/blocksscan-icon.png", // Replace with the actual URL for the icon
+      standard: "EIP3091",
+    },
+  ],
+  testnet: false,
+  faucets: [],
+};
