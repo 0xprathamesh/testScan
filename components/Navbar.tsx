@@ -8,7 +8,7 @@ import {
 } from "thirdweb/react";
 import Link from "next/link";
 import React from "react";
-import { base, ethereum, polygon, sepolia, arbitrum } from "thirdweb/chains";
+
 
 
 const Navbar = () => {
@@ -25,7 +25,7 @@ const Navbar = () => {
     networkSwitcher.open({
       client,
       theme: "light",
-      sections: [{ chains: [xdcApothemNetwork,ethereum], label: "Supported Networks" }],
+      sections: [{ chains: [xdcApothemNetwork], label: "Supported Networks" }],
     });
   };
 
@@ -45,7 +45,7 @@ const Navbar = () => {
           theme={"light"}
           connectModal={{ size: "compact" }}
         />
-        {activeChain?.id !== 51 || 1 && isConnected === "connected" ? (
+        {activeChain?.id !== 51 && isConnected === "connected" ? (
           <button onClick={handleClick}>Change Network</button>
         ) : null}
       </div>

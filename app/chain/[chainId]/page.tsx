@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { ethers } from "ethers";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import useRpcStatus from "@/utils/useRpcStatus"; // Adjust the import path as needed
 
 interface Chain {
   name: string;
@@ -56,34 +57,37 @@ const ChainDetail: React.FC = () => {
     }
   }, [chainId]);
 
-// Add Chain to metamask
+  const rpcStatuses = useRpcStatus(chain?.rpc || []);
+
   const handleAddChain = async () => {
-  if (window.ethereum) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const chainIdHex = "0x" + chain!.chainId.toString(16);
-    const blockExplorerUrls = chain!.blockExplorerUrls?.length ? chain!.blockExplorerUrls : null;
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const chainIdHex = "0x" + chain!.chainId.toString(16);
+      const blockExplorerUrls = chain!.blockExplorerUrls?.length
+        ? chain!.blockExplorerUrls
+        : null;
 
-    try {
-      // First attempt to add the chain
-      await provider.send("wallet_addEthereumChain", [
-        {
-          chainId: chainIdHex,
-          chainName: chain!.name,
-          rpcUrls: chain!.rpc,
-          blockExplorerUrls: blockExplorerUrls,
-          nativeCurrency: chain!.nativeCurrency,
-        },
-      ]);
+      try {
+        await provider.send("wallet_addEthereumChain", [
+          {
+            chainId: chainIdHex,
+            chainName: chain!.name,
+            rpcUrls: chain!.rpc,
+            blockExplorerUrls: blockExplorerUrls,
+            nativeCurrency: chain!.nativeCurrency,
+          },
+        ]);
 
-      // Then attempt to switch to the newly added chain
-      await provider.send("wallet_switchEthereumChain", [{ chainId: chainIdHex }]);
-    } catch (error) {
-      console.error("Failed to add or switch the chain:", error);
+        await provider.send("wallet_switchEthereumChain", [
+          { chainId: chainIdHex },
+        ]);
+      } catch (error) {
+        console.error("Failed to add or switch the chain:", error);
+      }
+    } else {
+      console.error("Web3 connection failed");
     }
-  } else {
-    console.error("Web3 connection failed");
-  }
-};
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -106,20 +110,22 @@ const ChainDetail: React.FC = () => {
               <p className="text-xl font-semibold">{chain.name}</p>
               <div className="flex items-center justify-start gap-24 mt-2">
                 <p className="text-lg font-semibold">
-                  Chain ID <span className="text-md font-normal">{chain.chainId}</span>
+                  Chain ID{" "}
+                  <span className="text-md font-normal">{chain.chainId}</span>
                 </p>
                 <p className="text-lg font-semibold">
-                  Currency <span className="text-md font-normal">{chain.chain}</span>
+                  Currency{" "}
+                  <span className="text-md font-normal">{chain.chain}</span>
                 </p>
               </div>
               <p>
-              <span className="text-lg font-semibold">More Info :</span> {""} 
+                <span className="text-lg font-semibold">More Info :</span>{" "}
                 <a
                   href={chain.infoURL}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                   {chain.infoURL}
+                  {chain.infoURL}
                 </a>
               </p>
               <button
@@ -142,17 +148,20 @@ const ChainDetail: React.FC = () => {
                 </div>
                 <ul className="list-none space-y-2">
                   {chain.rpc.map((rpcUrl) => (
-                    <li key={rpcUrl}>
-                      <a
-                        href={rpcUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2"
+                    <>
+                      <li
+                        key={rpcUrl}
+                        className={`px-2 ${
+                          rpcStatuses[rpcUrl]
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
                       >
-                        {rpcUrl}
-                      </a>
+                        {rpcUrl} -{" "}
+                        {rpcStatuses[rpcUrl] ? "Working" : "Not Working"}
+                      </li>
                       <Separator className="my-2" />
-                    </li>
+                    </>
                   ))}
                 </ul>
               </div>
