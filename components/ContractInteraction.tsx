@@ -5,13 +5,16 @@ import { fetchAbi } from "@/services/fetchAbi";
 import AbiTab from "./AbiTab";
 import ReadContractTab from "./ReadContractTab";
 import WriteContractTab from "./WriteContractTab";
-import { useActiveAccount,useActiveWalletConnectionStatus } from "thirdweb/react";
+import {
+  useActiveAccount,
+  useActiveWalletConnectionStatus,
+} from "thirdweb/react";
 
 const ContractInteraction = () => {
   const account = useActiveAccount();
   const isConnected = useActiveWalletConnectionStatus();
   console.log(isConnected);
-  
+
   const address = account?.address;
   const [contractAddress, setContractAddress] = useState("");
   const [abi, setAbi] = useState<any[]>([]);
@@ -41,12 +44,12 @@ const ContractInteraction = () => {
     try {
       const abi = await fetchAbi(contractAddress);
       setAbi(abi);
-  
+
       const readFns = abi.filter(
         (fn: any) => fn.type === "function" && fn.stateMutability === "view"
       );
       setReadFunctions(readFns);
-  
+
       const writeFns = abi.filter(
         (fn: any) => fn.type === "function" && fn.stateMutability !== "view"
       );
@@ -55,7 +58,6 @@ const ContractInteraction = () => {
       console.error("Error fetching ABI:", error);
     }
   };
-  
 
   const handleInputChange = (fnName: string, idx: number, value: string) => {
     setInputs((prevInputs) => {
@@ -67,12 +69,13 @@ const ContractInteraction = () => {
       return newInputs;
     });
   };
+ 
 
   const handleReadFunctions = async (fn: any) => {
     if (isConnected !== "connected") {
       console.error("No Wallet Connected");
       return;
-      
+
     }
     if (!signer) {
       console.error("No signer available");
@@ -96,15 +99,42 @@ const ContractInteraction = () => {
     }
   };
 
+  //   const handleWriteFunctions = async (fn: any) => {
+  //     // if (!account.isConnected) {
+  //     //   console.error("No wallet Connected");
+  //     //   return;
+  //     // }
+  //     if (isConnected !== "connected") {
+  //       console.error("No Wallet Connected");
+  //       return;
+
+  //     }
+  //     if (!signer) {
+  //       console.error("No signer available");
+  //       return;
+  //     }
+
+  //     const contract = new ethers.Contract(contractAddress, abi, signer);
+  //     try {
+  //       const params = inputs[fn.name] || [];
+
+  //       const result = await contract[fn.name](...params);
+  //       setResults((prevResults) => ({
+  //         ...prevResults,
+  //         [fn.name]: result,
+  //       }));
+  //       console.log(JSON.stringify(results[fn.name], null, 2))
+  // console.log("hello");
+
+  //     } catch (error: any) {
+  //       console.error(`Error writing function ${fn.name}:`, error);
+  //     }
+  //   };
+
   const handleWriteFunctions = async (fn: any) => {
-    // if (!account.isConnected) {
-    //   console.error("No wallet Connected");
-    //   return;
-    // }
     if (isConnected !== "connected") {
       console.error("No Wallet Connected");
       return;
-      
     }
     if (!signer) {
       console.error("No signer available");
@@ -114,15 +144,16 @@ const ContractInteraction = () => {
     const contract = new ethers.Contract(contractAddress, abi, signer);
     try {
       const params = inputs[fn.name] || [];
-
+      const overrides = {
+        gasLimit: ethers.utils.hexlify(2000000), // Adjust the gas limit as needed
+      };
       const result = await contract[fn.name](...params);
       setResults((prevResults) => ({
         ...prevResults,
         [fn.name]: result,
       }));
-      console.log(JSON.stringify(results[fn.name], null, 2))
-console.log("hello");
-
+      console.log(JSON.stringify(results[fn.name], null, 2));
+      console.log("hello");
     } catch (error: any) {
       console.error(`Error writing function ${fn.name}:`, error);
     }
@@ -173,7 +204,6 @@ console.log("hello");
           >
             Write Contract
           </button>
-
         </div>
         <div className="my-8 mx-4">
           {activeTab === "ABI" && <AbiTab abi={abi} />}
@@ -195,7 +225,6 @@ console.log("hello");
               results={results}
             />
           )}
-
         </div>
       </div>
     </div>

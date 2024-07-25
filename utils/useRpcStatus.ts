@@ -27,4 +27,39 @@ const useRpcStatus = (rpcUrls: string[]) => {
   return rpcStatuses;
 };
 
-export default useRpcStatus;
+
+
+const useRpcLatency = (rpcUrls:string[]) => {
+  const [latencies, setLatencies] = useState<{ [key: string]: number | null }>({});
+
+  useEffect(() => {
+    const measureLatency = async (url: string) => {
+      const start = Date.now();
+      try {
+        await fetch(url, { method: 'HEAD' });
+        const latency = Date.now() - start;
+        return latency;
+      } catch (error) {
+        console.error(`Error measuring latency for ${url}:`, error);
+        return null;
+      }
+    };
+
+    const fetchLatencies = async () => {
+      const results: { [key: string]: number | null } = {};
+      for (const url of rpcUrls) {
+        const latency = await measureLatency(url);
+        results[url] = latency;
+      }
+      setLatencies(results);
+    };
+
+    fetchLatencies();
+  }, [rpcUrls]);
+
+  return latencies;
+};
+
+export { useRpcLatency, useRpcStatus };
+ 
+

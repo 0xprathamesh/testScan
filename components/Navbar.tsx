@@ -9,7 +9,7 @@ import {
 import Link from "next/link";
 import React from "react";
 
-
+import { ethereum, sepolia } from "thirdweb/chains";
 
 const Navbar = () => {
   const account = useActiveAccount();
