@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { ethers } from "ethers";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import useRpcStatus from "@/utils/useRpcStatus"; // Adjust the import path as needed
+import {useRpcStatus, useRpcLatency} from "@/utils/useRpcStatus"; // Adjust the import path as needed
 
 interface Chain {
   name: string;
@@ -58,6 +58,7 @@ const ChainDetail: React.FC = () => {
   }, [chainId]);
 
   const rpcStatuses = useRpcStatus(chain?.rpc || []);
+  const rpcLatencies = useRpcLatency(chain?.rpc || []);
 
   const handleAddChain = async () => {
     if (window.ethereum) {
@@ -158,7 +159,10 @@ const ChainDetail: React.FC = () => {
                         }`}
                       >
                         {rpcUrl} -{" "}
-                        {rpcStatuses[rpcUrl] ? "Working" : "Not Working"}
+                        {rpcStatuses[rpcUrl] ? "Working" : "Not Working"} -{" "}
+                        {rpcLatencies[rpcUrl] !== undefined
+                          ? `${rpcLatencies[rpcUrl]} ms`
+                          : "Latency not available"}
                       </li>
                       <Separator className="my-2" />
                     </>
