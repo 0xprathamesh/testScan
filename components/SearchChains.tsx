@@ -17,7 +17,7 @@ const SearchChains: React.FC<SearchChainsProps> = ({ handleSearch }) => {
   return (
     <div className="text-center my-8">
       <input
-        className="px-4 py-2 border rounded-lg w-96"
+        className="px-4 py-2 border rounded-lg w-96 bg-transparent"
         type="text"
         placeholder="Ex. Ethereum"
         value={query}
