@@ -40,7 +40,7 @@ const useRpcLatency = (rpcUrls:string[]) => {
         const latency = Date.now() - start;
         return latency;
       } catch (error) {
-        console.error(`Error measuring latency for ${url}:`, error);
+        // console.error(`Error measuring latency for ${url}:`, error);
         return null;
       }
     };

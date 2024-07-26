@@ -29,6 +29,7 @@ const ContractInteraction = () => {
   useEffect(() => {
     if (window.ethereum) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
+      
       const fetchSigner = async () => {
         await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
@@ -167,11 +168,11 @@ const ContractInteraction = () => {
           value={contractAddress}
           onChange={(e) => setContractAddress(e.target.value)}
           placeholder="Enter contract address"
-          className="text-md p-2 w-80 rounded-md border"
+          className="text-md p-2 w-80 rounded-md border bg-transparent"
         />
         <button
           onClick={handleFetchAbi}
-          className="bg-green-400 p-2 text-lg rounded-lg w-30"
+          className="bg-green-400 p-2 text-lg rounded-lg w-30 text-black"
         >
           Fetch ABI
         </button>
@@ -180,7 +181,7 @@ const ContractInteraction = () => {
         <div className="px-18 flex items-center justify-center gap-8 border-b-2">
           <button
             className={`px-4 py-2 ${
-              activeTab === "ABI" ? "bg-gray-200 rounded-md my-1" : ""
+              activeTab === "ABI" ? " text-green-400" : ""
             }`}
             onClick={() => setActiveTab("ABI")}
           >
@@ -188,7 +189,7 @@ const ContractInteraction = () => {
           </button>
           <button
             className={`px-4 py-2 ${
-              activeTab === "Read Contract" ? "bg-gray-200 rounded-md my-1" : ""
+              activeTab === "Read Contract" ? "text-green-400" : ""
             }`}
             onClick={() => setActiveTab("Read Contract")}
           >
@@ -197,7 +198,7 @@ const ContractInteraction = () => {
           <button
             className={`px-4 py-2 ${
               activeTab === "Write Contract"
-                ? "bg-gray-200 rounded-md my-1"
+                ? "text-green-400"
                 : ""
             }`}
             onClick={() => setActiveTab("Write Contract")}

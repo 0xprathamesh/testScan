@@ -1,34 +1,48 @@
 import { ConnectButton, useNetworkSwitcherModal } from "thirdweb/react";
 import { client, wallets } from "../utils/client";
 import { xdcApothemNetwork } from "@/utils/xdcApothemNetwork";
+
 import {
   useActiveAccount,
   useActiveWalletChain,
   useActiveWalletConnectionStatus,
 } from "thirdweb/react";
 import Link from "next/link";
-import React from "react";
-
-import { ethereum, sepolia } from "thirdweb/chains";
+import React, { useEffect, useState } from "react";
+import { dynamicNetworkConfig } from "@/utils/networkConfig";
 
 const Navbar = () => {
   const account = useActiveAccount();
   const activeChain = useActiveWalletChain();
   const isConnected = useActiveWalletConnectionStatus();
+  const [networkConfig, setNetworkConfig] = useState<any>(null);
 
   console.log(isConnected);
   console.log(activeChain?.id);
   console.log(account);
 
   const networkSwitcher = useNetworkSwitcherModal();
+  // const handleClick = () => {
+  //   networkSwitcher.open({
+  //     client,
+  //     theme: "light",
+  //     sections: [{ chains: [xdcApothemNetwork], label: "Supported Networks" }],
+  //   });
+  // };
   const handleClick = () => {
-    networkSwitcher.open({
-      client,
-      theme: "light",
-      sections: [{ chains: [xdcApothemNetwork], label: "Supported Networks" }],
-    });
+    if (networkConfig) {
+      networkSwitcher.open({
+        client,
+        theme: "light",
+        sections: [{ chains: [networkConfig], label: "Supported Networks" }],
+      });
+    }
   };
-
+  useEffect(() => {
+    if (dynamicNetworkConfig) {
+      setNetworkConfig(dynamicNetworkConfig);
+    }
+  }, []);
   return (
     <div className="w-full px-32 py-8 flex items-center justify-between">
       <p className="text-2xl font-medium text-green-500">
@@ -45,7 +59,8 @@ const Navbar = () => {
           theme={"light"}
           connectModal={{ size: "compact" }}
         />
-        {activeChain?.id !== 51 && isConnected === "connected" ? (
+        {activeChain?.id !== networkConfig?.id &&
+        isConnected === "connected" ? (
           <button onClick={handleClick}>Change Network</button>
         ) : null}
       </div>

@@ -23,6 +23,7 @@ async function fetchChains(): Promise<Chain[]> {
   });
   const chains: Chain[] = await response.json();
   return chains;
+  
 }
 
 export async function GET(request: Request) {

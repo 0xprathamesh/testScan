@@ -94,7 +94,7 @@ export default Chains;
 
 const ChainList = ({ chains }: { chains: Chain[] }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-8 ">
+    <div className="grid grid-cols-1 sm:grid-cols-3 2xl:grid-cols-4 gap-8 ">
       {chains.map((chain) => (
         <ChainCard key={chain.chainId} chain={chain} />
       ))}
