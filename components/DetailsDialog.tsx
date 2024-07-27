@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "./ui/separator";
-import { getRpcStatus, getRpcLatency } from "../utils/useRpcStatus"; // Import the utility functions
+import { useRpcStatus, useRpcLatency } from "../utils/useRpcStatus"; // Import the utility functions
 
 interface Chain {
   name: string;
@@ -38,8 +38,8 @@ const DetailsDialog: React.FC<DetailsDialogProps> = ({ chain }) => {
   useEffect(() => {
     if (showDetails) {
       const fetchRpcData = async () => {
-        const statuses = await getRpcStatus(chain.rpc);
-        const latencies = await getRpcLatency(chain.rpc);
+        const statuses = await useRpcStatus(chain.rpc);
+        const latencies = await useRpcLatency(chain.rpc);
 
         // Convert null values to undefined
         const updatedLatencies: { [key: string]: number | undefined } = {};
