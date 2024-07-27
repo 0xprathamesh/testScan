@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+// utils/rpcUtils.ts
+import { useState, useEffect } from "react";
 
-const useRpcStatus = (rpcUrls: string[]) => {
+export const useRpcStatus = (rpcUrls: string[]) => {
   const [rpcStatuses, setRpcStatuses] = useState<{ [url: string]: boolean }>({});
 
   useEffect(() => {
@@ -8,11 +9,7 @@ const useRpcStatus = (rpcUrls: string[]) => {
       const statuses: { [url: string]: boolean } = {};
       for (const url of rpcUrls) {
         try {
-          const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ jsonrpc: '2.0', method: 'web3_clientVersion', params: [], id: 1 }),
-          });
+          const response = await fetch(url);
           statuses[url] = response.ok;
         } catch (error) {
           statuses[url] = false;
@@ -27,39 +24,27 @@ const useRpcStatus = (rpcUrls: string[]) => {
   return rpcStatuses;
 };
 
-
-
-const useRpcLatency = (rpcUrls:string[]) => {
-  const [latencies, setLatencies] = useState<{ [key: string]: number | null }>({});
+export const useRpcLatency = (rpcUrls: string[]) => {
+  const [rpcLatencies, setRpcLatencies] = useState<{ [url: string]: number | null }>({});
 
   useEffect(() => {
-    const measureLatency = async (url: string) => {
-      const start = Date.now();
-      try {
-        await fetch(url, { method: 'HEAD' });
-        const latency = Date.now() - start;
-        return latency;
-      } catch (error) {
-        // console.error(`Error measuring latency for ${url}:`, error);
-        return null;
-      }
-    };
-
-    const fetchLatencies = async () => {
-      const results: { [key: string]: number | null } = {};
+    const checkRpcLatency = async () => {
+      const latencies: { [url: string]: number | null } = {};
       for (const url of rpcUrls) {
-        const latency = await measureLatency(url);
-        results[url] = latency;
+        const start = Date.now();
+        try {
+          await fetch(url);
+          const latency = Date.now() - start;
+          latencies[url] = latency;
+        } catch (error) {
+          latencies[url] = null;
+        }
       }
-      setLatencies(results);
+      setRpcLatencies(latencies);
     };
 
-    fetchLatencies();
+    checkRpcLatency();
   }, [rpcUrls]);
 
-  return latencies;
+  return rpcLatencies;
 };
-
-export { useRpcLatency, useRpcStatus };
- 
-
