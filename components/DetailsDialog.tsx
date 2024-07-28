@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+// Detaisl Dialog box with rpc data
 import {
   DropdownMenu,
   DropdownMenuContent,
