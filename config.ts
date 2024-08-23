@@ -18,6 +18,7 @@ export const config = createConfig(
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
   })
 );
+const hey = "Prathamesh Here" // trial purpose variable only
 
 declare module "wagmi" {
   interface Register {
