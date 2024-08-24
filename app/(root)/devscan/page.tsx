@@ -2,7 +2,8 @@ import Navbar from '@/components/Navbar'
 import Image from 'next/image'
 import React from 'react'
 import waves from "@/public/waves-light.svg";
-
+import BlockSearch from '@/components/BlockSearch';
+import TransactionSearch from '@/components/TransactionSearch';
 const Devscan = () => {
   return (
     <div>
@@ -16,7 +17,10 @@ const Devscan = () => {
           className='absolute inset-0' 
         />
         <p className='text-white text-center text-4xl pt-10'>DevScan Explorer</p>
+
       </div>
+      <BlockSearch />
+      <TransactionSearch />
     </div>
   )
 }
