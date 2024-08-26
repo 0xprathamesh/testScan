@@ -2,13 +2,14 @@ import Navbar from '@/components/Navbar'
 import Image from 'next/image'
 import React from 'react'
 import waves from "@/public/waves-light.svg";
-import BlockSearch from '@/components/BlockSearch';
-import TransactionSearch from '@/components/TransactionSearch';
+import LatestBlocks from '@/components/LatestBlocks';
+
 const Devscan = () => {
   return (
     <div>
       <Navbar />
       <div className='h-60 w-full bg-[#727ff2] relative'>
+     
         <Image 
           src={waves} 
           alt='Waves' 
@@ -16,11 +17,11 @@ const Devscan = () => {
           objectFit="cover" 
           className='absolute inset-0' 
         />
-        <p className='text-white text-center text-4xl pt-10'>DevScan Explorer</p>
-
+        <p className='text-white text-center text-2xl pt-10'>Devscan Explorer</p>
+        
       </div>
-      <BlockSearch />
-      <TransactionSearch />
+      <LatestBlocks />
+
     </div>
   )
 }
