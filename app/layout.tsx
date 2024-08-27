@@ -14,15 +14,15 @@ export default function RootLayout(props: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <ThemeProvider
+        {/* <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
-        >
+        > */}
           {" "}
           <ThirdwebProvider>{props.children}</ThirdwebProvider>
-        </ThemeProvider>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   );

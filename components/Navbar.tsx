@@ -1,3 +1,4 @@
+"use client"
 import { ConnectButton, useNetworkSwitcherModal } from "thirdweb/react";
 import { client, wallets } from "../utils/client";
 import { xdcApothemNetwork } from "@/utils/xdcApothemNetwork";
