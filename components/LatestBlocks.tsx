@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { HiOutlineCube } from "react-icons/hi";
-import provider from "@/ethers";
-import Copyable from "./elements/Copyable";
+import { useRouter } from "next/navigation";
+import provider from "@/ethers"; // Adjust the import path as needed
+import Copyable from "./elements/Copyable"; // Adjust the import path as needed
 
-const LatestBlocks = () => {
+const LatestBlocks: React.FC = () => {
   const [latestBlocks, setLatestBlocks] = useState<any[]>([]);
   const [latestTransactions, setLatestTransactions] = useState<any[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchLatestBlocks = async () => {
@@ -39,8 +41,12 @@ const LatestBlocks = () => {
     fetchLatestBlocks();
   }, []);
 
-  const parseAddress = (address: any) => {
+  const parseAddress = (address: string) => {
     return address.slice(0, 6) + "..." + address.slice(-4);
+  };
+
+  const handleTransactionClick = (hash: string) => {
+    router.push(`/tx/${hash}`);
   };
 
   return (
@@ -86,7 +92,7 @@ const LatestBlocks = () => {
           <div className="w-full p-4 border rounded-lg bg-white overflow-y-auto">
             <h3 className="text-lg font-medium mb-4">Latest Transactions</h3>
             <div className="my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between">
-              <span>Tx Hash</span>
+              <span className="text-center">Tx Hash</span>
               <span className="text-center">Block Number</span>
               <span className="text-center">From</span>
               <span className="text-center">To</span>
@@ -96,6 +102,7 @@ const LatestBlocks = () => {
                 <li
                   key={tx.hash}
                   className="bg-gray-50 hover:bg-gray-100 rounded-lg my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer"
+                  onClick={() => handleTransactionClick(tx.hash)}
                 >
                   <div className="flex items-center">
                     <div className="bg-green-100 p-3 rounded-lg">
@@ -123,9 +130,3 @@ const LatestBlocks = () => {
 };
 
 export default LatestBlocks;
-
-
-// {/* Right-side content can go here */}
-// <div className="w-full p-4 border rounded-lg bg-white overflow-y-auto">
-//   {/* Additional content or components */}
-// </div>
