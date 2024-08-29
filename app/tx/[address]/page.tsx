@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
@@ -11,6 +11,7 @@ interface PageProps {
 
 const TransactionPage: React.FC<PageProps> = ({ params }) => {
   const [transactionData, setTransactionData] = useState<ethers.providers.TransactionResponse | null>(null);
+  const [transactionType, setTransactionType] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,11 +37,26 @@ const TransactionPage: React.FC<PageProps> = ({ params }) => {
       }
 
       setTransactionData(transaction);
+      setTransactionType(determineTransactionType(transaction));
       setError(null);
     } catch (err) {
       console.error(err);
       setError('An error occurred while fetching transaction data');
     }
+  };
+
+  const determineTransactionType = (transaction: ethers.providers.TransactionResponse): string => {
+    if (transaction.to && transaction.data) {
+      if (transaction.data.startsWith('0xa9059cbb')) {
+        return 'ERC-20 Token Transfer';
+      }
+    }
+
+    if (!transaction.to) {
+      return 'Contract Creation';
+    }
+
+    return 'Regular Transaction';
   };
 
   return (
@@ -55,10 +71,10 @@ const TransactionPage: React.FC<PageProps> = ({ params }) => {
             <strong>Transaction Hash:</strong> {params.address}
           </p>
           <p>
-            <strong>Confirmations:</strong> {transactionData.confirmations}
+            <strong>Type:</strong> {transactionType}
           </p>
           <p>
-            <strong>Gas Limit:</strong> {transactionData.s}
+            <strong>Confirmations:</strong> {transactionData.confirmations}
           </p>
           <p>
             <strong>Block Number:</strong> {transactionData.blockNumber}
@@ -74,6 +90,9 @@ const TransactionPage: React.FC<PageProps> = ({ params }) => {
           </p>
           <p>
             <strong>Gas Limit:</strong> {transactionData.gasLimit.toString()}
+          </p>
+          <p>
+            <strong>Input Data:</strong> {transactionData.data}
           </p>
         </div>
       )}

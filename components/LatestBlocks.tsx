@@ -48,6 +48,9 @@ const LatestBlocks: React.FC = () => {
   const handleTransactionClick = (hash: string) => {
     router.push(`/tx/${hash}`);
   };
+  const handleBlockClick = (blocknumber: number) => {
+    router.push(`/block/${blocknumber}`)
+  }
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -67,6 +70,7 @@ const LatestBlocks: React.FC = () => {
                 <li
                   key={block.number}
                   className="bg-gray-50 hover:bg-gray-100 rounded-lg my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer"
+                  onClick={() => handleBlockClick(block.number)}
                 >
                   <div className="flex items-center">
                     <div className="bg-blue-100 p-3 rounded-lg">
