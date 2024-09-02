@@ -1,16 +1,31 @@
+"use client"
 import type { Metadata } from "next";
 import { type ReactNode } from "react";
 import "./globals.css";
+import SetRPCModal from "@/components/SetRPCModal";
+import { useEffect, useState } from "react";
 import { Providers } from "./providers";
 import Navbar from "@/components/Navbar";
 import { ThirdwebProvider } from "thirdweb/react";
 import { ThemeProvider } from "@/components/theme-provider";
-export const metadata: Metadata = {
+ const metadata: Metadata = {
   title: "ConnectKit Next.js Example",
   description: "By Family",
-};
+ };
+
 
 export default function RootLayout(props: { children: ReactNode }) {
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
+  useEffect(() => {
+    const storedRpcUrl = localStorage.getItem('rpcUrl');
+    if (!storedRpcUrl) {
+      setIsFirstVisit(true);
+    }
+  }, []);
+
+  const handleModalClose = () => {
+    setIsFirstVisit(false);
+  };
   return (
     <html lang="en">
       <body>
@@ -20,8 +35,11 @@ export default function RootLayout(props: { children: ReactNode }) {
           enableSystem
           disableTransitionOnChange
         > */}
-          {" "}
-          <ThirdwebProvider>{props.children}</ThirdwebProvider>
+        {" "}
+        
+        <ThirdwebProvider>
+        {isFirstVisit && <SetRPCModal onClose={handleModalClose} />}
+          {props.children}</ThirdwebProvider>
         {/* </ThemeProvider> */}
       </body>
     </html>
