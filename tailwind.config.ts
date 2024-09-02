@@ -18,7 +18,12 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        inter: ["Inter", "sans-serif"],
+        chivo: ["Chivo", "sans-serif"],
+      },
       colors: {
+        blue : "#7d8eff",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
