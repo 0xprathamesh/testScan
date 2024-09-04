@@ -80,5 +80,10 @@
 .results {
   padding: 20px 0;
 }
+.leading {
+  letter-spacing: 0.13em;
+}
 
-
+.transform {
+  transform: translateY(2px);
+}
