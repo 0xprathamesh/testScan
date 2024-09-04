@@ -2,33 +2,43 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { HiOutlineCube } from "react-icons/hi";
-import { useRouter } from "next/navigation";
-import provider from "@/ethers"; // Adjust the import path as needed
-import Copyable from "./elements/Copyable"; // Adjust the import path as needed
+import { useRouter } from "next/navigation"; // Adjust the import path as needed
+import { IoReceiptOutline } from "react-icons/io5";
+import Copyable from "./elements/Copyable";
 
 const LatestBlocks: React.FC = () => {
   const [latestBlocks, setLatestBlocks] = useState<any[]>([]);
   const [latestTransactions, setLatestTransactions] = useState<any[]>([]);
+  const [provider, setProvider] =
+    useState<ethers.providers.JsonRpcProvider | null>(null);
   const router = useRouter();
 
   useEffect(() => {
+    const rpcUrl = localStorage.getItem("rpcUrl") || "";
+    const rpcProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    setProvider(rpcProvider);
+  }, []);
+
+  useEffect(() => {
+    if (!provider) return;
+
     const fetchLatestBlocks = async () => {
       try {
         const latestBlockNumber = await provider.getBlockNumber();
         const blockPromises = [];
         const transactionPromises = [];
 
-        // Fetch the latest 5 blocks
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 7; i++) {
           blockPromises.push(provider.getBlock(latestBlockNumber - i));
         }
 
         const blocks = await Promise.all(blockPromises);
         setLatestBlocks(blocks);
 
-        // Fetch transactions from the latest block
-        for (let i = 0; i < Math.min(5, blocks[0].transactions.length); i++) {
-          transactionPromises.push(provider.getTransaction(blocks[0].transactions[i]));
+        for (let i = 0; i < Math.min(7, blocks[0].transactions.length); i++) {
+          transactionPromises.push(
+            provider.getTransaction(blocks[0].transactions[i])
+          );
         }
 
         const transactions = await Promise.all(transactionPromises);
@@ -39,7 +49,7 @@ const LatestBlocks: React.FC = () => {
     };
 
     fetchLatestBlocks();
-  }, []);
+  }, [provider]);
 
   const parseAddress = (address: string) => {
     return address.slice(0, 6) + "..." + address.slice(-4);
@@ -49,39 +59,51 @@ const LatestBlocks: React.FC = () => {
     router.push(`/tx/${hash}`);
   };
 
+  const handleBlockClick = (blocknumber: number) => {
+    router.push(`/block/${blocknumber}`);
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="p-4">
         <div className="grid grid-cols-2 gap-4">
           {/* Left side: Latest Blocks */}
-          <div className="w-full p-4 border rounded-lg bg-white overflow-y-auto">
-            <h3 className="text-lg font-medium mb-4">Latest Blocks</h3>
-            <div className="my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between">
-              <span>Block Number</span>
-              <span className="sm:text-left text-right">Timestamp</span>
-              <span className="hidden md:grid">Transactions</span>
-              <span className="hidden sm:grid">Miner</span>
-            </div>
+          <div className="w-full p- border rounded-lg bg-white overflow-y-auto">
+            <h3 className="text-md font-inter leading-5 font-medium mb-4 border-b pb-3 p-4">
+              Latest Blocks
+            </h3>
+
             <ul>
               {latestBlocks.map((block) => (
                 <li
                   key={block.number}
-                  className="bg-gray-50 hover:bg-gray-100 rounded-lg my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer"
+                  className="my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer"
                 >
                   <div className="flex items-center">
-                    <div className="bg-blue-100 p-3 rounded-lg">
-                      <HiOutlineCube className="text-blue-800" />
+                    <div className="bg-gray-200 p-2 rounded-lg">
+                      <HiOutlineCube className=" h-5 w-5 " />
                     </div>
-                    <p className="pl-4">#{block.number}</p>
+                    <div className="pl-4 text-sm font-light text-blue">
+                      <p onClick={() => handleBlockClick(block.number)}>
+                        #{block.number}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-gray-600 sm:text-left text-right">
-                    {new Date(block.timestamp * 1000).toLocaleString()}
+                  <p className=" text-blue font-chivo text-sm" onClick={() => router.push(`/tx/${block.hash}`)}>
+                    <span className="font-normal font-inter text-gray-600">
+                      Hash
+                    </span>{" "}
+                    {parseAddress(block.hash)}
                   </p>
-                  <p className="hidden md:flex text-center mx-auto">
-                    {block.transactions.length}
+                  <p className="  sm:text-center text-right text-sm font-light text-blue">
+                    {block.transactions.length} txns
                   </p>
                   <div className="sm:flex hidden justify-between items-center">
-                    <Copyable text={parseAddress(block.miner)} copyText={block.miner} />
+                    <Copyable
+                      text={parseAddress(block.miner)}
+                      copyText={block.miner}
+                      className="bg-transparent border border-blue text-sm"
+                    />
                   </div>
                 </li>
               ))}
@@ -89,35 +111,45 @@ const LatestBlocks: React.FC = () => {
           </div>
 
           {/* Right side: Latest Transactions */}
-          <div className="w-full p-4 border rounded-lg bg-white overflow-y-auto">
-            <h3 className="text-lg font-medium mb-4">Latest Transactions</h3>
-            <div className="my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between">
-              <span className="text-center">Tx Hash</span>
-              <span className="text-center">Block Number</span>
-              <span className="text-center">From</span>
-              <span className="text-center">To</span>
-            </div>
-            <ul className="mx-auto">
+          <div className="w-full p- border rounded-lg bg-white overflow-y-auto">
+            <h3 className="text-md font-inter leading-5 font-medium mb-4 border-b pb-3 p-4">
+              Latest Transactions
+            </h3>
+
+            <ul>
               {latestTransactions.map((tx) => (
                 <li
                   key={tx.hash}
-                  className="bg-gray-50 hover:bg-gray-100 rounded-lg my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer"
+                  className="my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer"
                   onClick={() => handleTransactionClick(tx.hash)}
                 >
                   <div className="flex items-center">
-                    <div className="bg-green-100 p-3 rounded-lg">
-                      <HiOutlineCube className="text-green-800" />
+                    <div className="bg-gray-200 p-2 rounded-lg">
+                      <IoReceiptOutline className=" h-5 w-5" />
                     </div>
-                    <p className="pl-4">{parseAddress(tx.hash)}</p>
+                    <div className="pl-4 text-sm font-light text-blue">
+                      <p>{parseAddress(tx.hash)}</p>
+                    </div>
                   </div>
-                  <p className="text-gray-600 sm:text-left mx-auto">
+                  <p className=" text-blue font-chivo text-sm">
+                    <span className="font-normal font-inter text-gray-600">
+                      Block
+                    </span>{" "}
                     {tx.blockNumber}
                   </p>
                   <p className="hidden md:flex text-center mx-auto">
-                    {parseAddress(tx.from)}
+                    <Copyable
+                      text={parseAddress(tx.from)}
+                      copyText={tx.from}
+                      className="bg-transparent border border-blue text-sm"
+                    />
                   </p>
                   <div className="sm:flex hidden justify-between items-center">
-                    <p>{parseAddress(tx.to)}</p>
+                    <Copyable
+                      text={parseAddress(tx.to)}
+                      copyText={tx.to}
+                      className="bg-transparent border border-blue text-sm"
+                    />
                   </div>
                 </li>
               ))}
@@ -130,3 +162,4 @@ const LatestBlocks: React.FC = () => {
 };
 
 export default LatestBlocks;
+

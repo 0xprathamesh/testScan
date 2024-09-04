@@ -1,4 +1,5 @@
 "use client";
+// app/chains/page.tsx
 import ChainCard from "@/components/ChainCard";
 import Navbar from "@/components/Navbar";
 import SearchChains from "@/components/SearchChains";
