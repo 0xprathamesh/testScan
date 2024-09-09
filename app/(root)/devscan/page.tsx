@@ -6,6 +6,7 @@ import waves from "@/public/waves-light.svg";
 
 import LatestBlocks from "@/components/LatestBlocks";
 import Navbar from "@/components/Devnav";
+import XDCPriceDashboard from "@/components/Analytics";
 const Main = () => {
   return (
     <div>
@@ -23,7 +24,7 @@ const Main = () => {
           <SearchComponent />
         </div>
       </div>
-
+<XDCPriceDashboard />
       <LatestBlocks />
     </div>
   );
