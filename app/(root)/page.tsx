@@ -10,6 +10,7 @@ const Home = () => {
         <h1 className="text-center text-lg text-gray-700">
           Interact w/ Contract Functions
         </h1>
+        
         <ContractInteraction />
       </section>
     </div>
