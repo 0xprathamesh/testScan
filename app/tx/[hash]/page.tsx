@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
+import Navbar from "@/components/Devnav";
+import Link from "next/link";
 
 interface PageProps {
   params: {
@@ -119,74 +121,94 @@ const DetailedTransactionPage: React.FC<PageProps> = ({ params }) => {
   if (!txData) return <div className="text-center">Loading...</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="bg-white mx-24 px-8 py-4 my-8 border rounded-lg divide-y">
-        <div className="pb-3 text-[#3498DA] font-bold text-3xl mb-6">
-          Transaction Details
+    <>
+      <Navbar />
+      <section className="mt-16">
+        <div className="px-10 py-4 mt-8 text-md font-chivo text-gray-900 w-full bg-[#f9f8fa] border-b">
+          Blockchain &gt; Transaction &gt;
+          <span className="text-gray-500 text-md ml-1">
+            #{txData.hash.slice(0, 10)}...
+          </span>
         </div>
-        <div className="flex">
-          <div className="w-1/2 divide-y">
+        <div className="px-10 py-4  w-full border-b text-gray-500">
+          <nav className="flex items-center justify-start gap-8">
+            <Link href={`/transaction/${params.hash}`} passHref>
+              <p className="font-medium hover:text-blue cursor-pointer text-sm">
+                Overview
+              </p>
+            </Link>
+            <Link href={`/transaction/${params.hash}/details`} passHref>
+              <p className="font-medium hover:text-blue cursor-pointer text-sm">
+                Details
+              </p>
+            </Link>
+          </nav>
+        </div>
+
+        <div className="bg-white px-8 py-4 rounded-lg divide-y">
+          <div className="grid grid-cols-2 gap-4">
             <TitleComponent title="Transaction Hash" />
-            <TitleComponent title="Status" />
-            <TitleComponent title="Block" />
-            <TitleComponent title="Timestamp" />
-            <TitleComponent title="Transaction Action" />
-            <TitleComponent title="From" />
-            <TitleComponent title="To" />
-            <TitleComponent title="Value" />
-            <TitleComponent title="Transaction Fee" />
-            <TitleComponent title="Gas Price" />
-            <TitleComponent title="Gas Limit & Usage" />
-          </div>
-          <div className="divide-y w-full">
             <p className="py-6 font-mono break-all">{txData.hash}</p>
-            <p
-              className={`py-6 ${
-                txData.status ? "text-green-500" : "text-red-500"
-              }`}
-            >
+
+            <TitleComponent title="Status" />
+            <p className={`py-6 ${txData.status ? "text-green-500" : "text-red-500"}`}>
               {txData.status ? "Success" : "Failed"}
             </p>
+
+            <TitleComponent title="Block" />
             <p className="py-6 text-blue-400">
               {txData.blockNumber}{" "}
               <span className="text-gray-400 bg-gray-200 px-2 py-1 rounded-md">
                 {txData.confirmations} Block Confirmations
               </span>
             </p>
+
+            <TitleComponent title="Timestamp" />
             <p className="py-6">
               {new Date(txData.timestamp * 1000).toUTCString()}
             </p>
-            <p className="pb-2 pt-1 text-sm">{txData.action}</p>
+
+            <TitleComponent title="From" />
             <p className="py-6 font-mono break-all text-blue-400">
               {txData.from}
             </p>
+
+            <TitleComponent title="To" />
             <p className="py-6 font-mono break-all text-blue-400">
               {txData.to}
             </p>
-            <p className="py-6">{ethers.utils.formatEther(txData.value)} ETH</p>
+
+            <TitleComponent title="Value" />
+            <p className="py-6">
+              {ethers.utils.formatEther(txData.value)} ETH
+            </p>
+
+            <TitleComponent title="Transaction Fee" />
             <p className="py-6">
               {ethers.utils.formatEther(
                 txData.gasUsed.mul(txData.effectiveGasPrice)
               )}{" "}
               ETH
             </p>
+
+            <TitleComponent title="Gas Price" />
             <p className="py-6">
               {ethers.utils.formatUnits(txData.effectiveGasPrice, "gwei")} Gwei
             </p>
+
+            <TitleComponent title="Gas Limit & Usage" />
             <p className="py-6">
               {txData.gasLimit.toString()} | {txData.gasUsed.toString()} (
               {txData.gasUsed.mul(100).div(txData.gasLimit).toString()}%)
             </p>
           </div>
         </div>
-      </div>
 
-      {txData.tokenTransfers.length > 0 && (
-        <div className="bg-white border rounded-lg overflow-hidden w-[85%] mx-auto mb-6">
-          <div className="px-8 py-4 bg-gray-100 border-b border-gray-200">
-            <h2 className="text-xl font-semibold">ERC-20 Tokens Transferred</h2>
-          </div>
-          <div className="px-8 py-4">
+        {txData.tokenTransfers.length > 0 && (
+          <div className="bg-white px-8 py-4 rounded-lg mt-8">
+            <div className="text-md font-chivo text-gray-900 mb-2">
+              ERC-20 Tokens Transferred
+            </div>
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -208,15 +230,15 @@ const DetailedTransactionPage: React.FC<PageProps> = ({ params }) => {
                 {txData.tokenTransfers.map((transfer, index) => (
                   <tr key={index}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {transfer.from}
+                      {parseAddress(transfer.from)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {parseAddress(transfer.to)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {transfer.amount}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {ethers.utils.formatEther(transfer.amount)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {parseAddress(transfer.token)}
                     </td>
                   </tr>
@@ -224,32 +246,35 @@ const DetailedTransactionPage: React.FC<PageProps> = ({ params }) => {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="bg-white border rounded-lg overflow-hidden w-[85%] mx-auto">
-        <div className="px-8 py-4 bg-gray-100 border-b border-gray-200">
-          <h2 className="text-xl font-semibold">Raw Transaction Data</h2>
+        <div className="bg-white px-8 py-4 rounded-lg mt-8">
+          <div className="flex items-center justify-between">
+            <div className="text-md font-chivo text-gray-900">
+              Raw Transaction Data
+            </div>
+            <AiOutlineQuestionCircle
+              className="cursor-pointer text-gray-500"
+              onClick={() => setShowRawData(!showRawData)}
+            />
+          </div>
+          {showRawData && (
+            <pre className="mt-4 bg-gray-100 p-4 rounded-lg text-xs overflow-auto">
+              {JSON.stringify(txData, null, 2)}
+            </pre>
+          )}
         </div>
-        <div className="px-8 py-4">
-          <button
-            className="text-blue-500 underline"
-            onClick={() => setShowRawData(!showRawData)}
-          >
-            {showRawData ? "Hide Raw Data" : "Show Raw Data"}
-          </button>
-          {showRawData && <p className="font-mono break-all">{txData.data}</p>}
-        </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 };
 
-const TitleComponent: React.FC<{ title: string }> = ({ title }) => (
-  <div className="flex items-center">
-    <AiOutlineQuestionCircle />
-    <p className="ml-2 py-6">{title}</p>
-  </div>
-);
+interface TitleComponentProps {
+  title: string;
+}
+
+const TitleComponent: React.FC<TitleComponentProps> = ({ title }) => {
+  return <h4 className="py-6 font-semibold text-gray-900">{title}</h4>;
+};
 
 export default DetailedTransactionPage;

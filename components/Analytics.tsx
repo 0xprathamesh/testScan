@@ -95,6 +95,7 @@
 
 // export default XDCPriceDashboard;import { useState, useEffect } from 'react';
 import { GlobeAltIcon, CubeIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { useEffect, useState } from 'react';
 
 const XDCPriceDashboard = () => {
   const [coin, setCoin] = useState(null);
