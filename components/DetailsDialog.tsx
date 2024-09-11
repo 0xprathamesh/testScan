@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// Detaisl Dialog box with rpc data
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +9,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "./ui/separator";
-import { useRpcStatus, useRpcLatency } from "../utils/useRpcStatus"; // Import the utility functions
+import { useRpcLatency, useRpcStatus } from "@/utils/useRpcStatus";
+
 
 interface Chain {
   name: string;
@@ -33,28 +33,8 @@ interface DetailsDialogProps {
 
 const DetailsDialog: React.FC<DetailsDialogProps> = ({ chain }) => {
   const [showDetails, setShowDetails] = useState(false);
-  const [rpcStatuses, setRpcStatuses] = useState<{ [key: string]: boolean }>({});
-  const [rpcLatencies, setRpcLatencies] = useState<{ [key: string]: number | undefined }>({});
-
-  useEffect(() => {
-    if (showDetails) {
-      const fetchRpcData = async () => {
-        const statuses = await useRpcStatus(chain.rpc);
-        const latencies = await useRpcLatency(chain.rpc);
-
-        // Convert null values to undefined
-        const updatedLatencies: { [key: string]: number | undefined } = {};
-        for (const key in latencies) {
-          updatedLatencies[key] = latencies[key] ?? undefined;
-        }
-
-        setRpcStatuses(statuses);
-        setRpcLatencies(updatedLatencies);
-      };
-
-      fetchRpcData();
-    }
-  }, [showDetails, chain.rpc]);
+  const rpcStatuses = useRpcStatus(chain.rpc); 
+  const rpcLatencies = useRpcLatency(chain.rpc); 
 
   return (
     <DropdownMenu onOpenChange={(isOpen) => setShowDetails(isOpen)}>
