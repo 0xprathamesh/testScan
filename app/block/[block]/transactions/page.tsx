@@ -6,8 +6,8 @@ import { ethers } from "ethers";
 import Link from "next/link";
 import Navbar from "@/components/Devnav";
 import { HiOutlineDuplicate } from "react-icons/hi";
-
 import { FaLongArrowAltRight } from "react-icons/fa";
+import Loading from "@/components/elements/Loading";
 
 interface PageProps {
   params: {
@@ -65,7 +65,7 @@ const TransactionsPage: React.FC<PageProps> = ({ params }) => {
   };
 
   if (error) return <div className="text-red-500">{error}</div>;
-  if (!blockData) return <div>Loading...</div>;
+  if (!blockData) return <div className="h-40 m-auto text-blue"><Loading /></div>;
 
   return (
     <>

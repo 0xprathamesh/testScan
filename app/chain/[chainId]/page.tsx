@@ -7,6 +7,7 @@ import { ethers } from "ethers";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {useRpcStatus, useRpcLatency} from "@/utils/useRpcStatus"; // Adjust the import path as needed
+import Loading from "@/components/elements/Loading";
 
 interface Chain {
   name: string;
@@ -91,7 +92,7 @@ const ChainDetail: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="h-40 m-auto text-blue"><Loading /></div>;
   }
 
   if (error) {

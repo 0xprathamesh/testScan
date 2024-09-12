@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
 import Navbar from "@/components/Devnav";
 import Link from "next/link";
+import Loading from "@/components/elements/Loading";
 
 interface PageProps {
   params: {
@@ -118,7 +119,7 @@ const DetailedTransactionPage: React.FC<PageProps> = ({ params }) => {
   };
 
   if (error) return <div className="text-red-500">{error}</div>;
-  if (!txData) return <div className="text-center">Loading...</div>;
+  if (!txData) return <div className="h-40 m-auto text-blue"><Loading /></div>;
 
   return (
     <>

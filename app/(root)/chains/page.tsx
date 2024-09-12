@@ -3,6 +3,8 @@
 import ChainCard from "@/components/ChainCard";
 import Navbar from "@/components/Navbar";
 import SearchChains from "@/components/SearchChains";
+import Loading from "@/components/elements/Loading";
+import Spinner from "@/components/elements/Spinner";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
@@ -69,7 +71,7 @@ const Chains: React.FC = () => {
   const displayedChains = searchResults.length > 0 ? searchResults : chains;
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="h-40 m-auto text-blue"><Loading /></div>;
   }
 
   if (error) {

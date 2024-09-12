@@ -6,6 +6,7 @@ import { ethers } from "ethers";
 import Link from "next/link";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
 import Navbar from "@/components/Devnav";
+import Loading from "@/components/elements/Loading";
 
 interface PageProps {
   params: {
@@ -69,7 +70,7 @@ const BlockPage: React.FC<PageProps> = ({ params }) => {
   };
 
   if (error) return <div className="text-red-500">{error}</div>;
-  if (!blockData) return <div>Loading...</div>;
+  if (!blockData) return <div className="h-40 m-auto text-blue"><Loading /></div>;
 
   return (
     <>
