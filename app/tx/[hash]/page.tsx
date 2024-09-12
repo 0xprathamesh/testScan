@@ -55,11 +55,13 @@ const DetailedTransactionPage: React.FC<PageProps> = ({ params }) => {
 
   const fetchTransactionData = async (hash: string) => {
     try {
-      const rpcUrl: string | null = localStorage.getItem("rpcUrl");
+      const rpcUrl = localStorage.getItem("rpcUrl") || "https://erpc.xinfin.network/";
       const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
       const tx = await provider.getTransaction(hash);
       const receipt = await provider.getTransactionReceipt(hash);
-      const block = await provider.getBlock(tx.blockNumber);
+      const block = tx.blockNumber !== undefined 
+      ? await provider.getBlock(tx.blockNumber) 
+      : null;
 
       if (tx && receipt && block) {
         const tokenTransfers = parseTokenTransfers(receipt.logs);
