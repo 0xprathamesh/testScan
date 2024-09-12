@@ -41,33 +41,33 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ params }) => {
         setBalance(ethers.utils.formatEther(balance).toString());
 
         // Fetch the transaction history
-        const history = await provider.getHistory(address);
-        const externalTransfers = history.filter(
-          (tx) => tx.to && tx.to.toLowerCase() === address.toLowerCase()
-        );
+        // const history = await provider.getHistory(address);
+        // const externalTransfers = history.filter(
+        //   (tx) => tx.to && tx.to.toLowerCase() === address.toLowerCase()
+        // );
 
         // Fetch metadata for each transaction
-        const transfersWithMetadata = await Promise.all(
-          externalTransfers.map(async (tx) => {
-            const block = await provider.getBlock(tx.blockNumber);
-            const gasPrice = await provider.getGasPrice();
-            const txnFee = ethers.utils.formatEther(tx.gasLimit.mul(gasPrice));
-            return {
-              hash: tx.hash,
-              blockNum: tx.blockNumber.toString(),
-              metadata: {
-                blockTimestamp: new Date(block.timestamp * 1000).toISOString(),
-              },
-              from: tx.from,
-              to: tx.to!,
-              value: ethers.utils.formatEther(tx.value),
-              txnFee,
-              asset: "ETH",
-            };
-          })
-        );
+        // const transfersWithMetadata = await Promise.all(
+        //   externalTransfers.map(async (tx) => {
+        //     const block = await provider.getBlock(tx.blockNumber);
+        //     const gasPrice = await provider.getGasPrice();
+        //     const txnFee = ethers.utils.formatEther(tx.gasLimit.mul(gasPrice));
+        //     return {
+        //       hash: tx.hash,
+        //       blockNum: tx.blockNumber.toString(),
+        //       metadata: {
+        //         blockTimestamp: new Date(block.timestamp * 1000).toISOString(),
+        //       },
+        //       from: tx.from,
+        //       to: tx.to!,
+        //       value: ethers.utils.formatEther(tx.value),
+        //       txnFee,
+        //       asset: "ETH",
+        //     };
+        //   })
+        // );
 
-        setExternalTxs(transfersWithMetadata);
+        // setExternalTxs(transfersWithMetadata);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
