@@ -153,7 +153,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ params }) => {
               </th>
             </tr>
           </thead>
-          <tbody>
+          {/* <tbody>
             {externalTxs.map((tx, index) => (
               <tr key={index} className="border-b">
                 <td className="px-4 py-2 text-sm text-blue-600">
@@ -171,7 +171,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ params }) => {
                 </td>
               </tr>
             ))}
-          </tbody>
+          </tbody> */}
         </table>
       </div>
     </div>
