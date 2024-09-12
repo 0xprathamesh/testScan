@@ -21,12 +21,18 @@ ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip,
 
 const XDC_RPC_URL = 'https://rpc.xinfin.network';
 
+interface BlockchainData {
+  totalBlocks: number;
+  medianGasPrice: string;
+  connectedNodes: number;
+  isSyncing: boolean;
+}
 const XDCPriceDashboard = () => {
-  const [coinData, setCoinData] = useState(null);
-  const [blockchainData, setBlockchainData] = useState(null);
+  const [coinData, setCoinData] = useState<any>(null);
+  const [blockchainData, setBlockchainData] = useState<BlockchainData | null>(null); // Update here
   const [loading, setLoading] = useState(true);
 
-  const fetchRPCData = async (method, params = []) => {
+  const fetchRPCData = async (method: string, params: (string | boolean)[]) => {
     const response = await fetch(XDC_RPC_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -60,9 +66,9 @@ const XDCPriceDashboard = () => {
         syncing
       ] = await Promise.all([
         fetchRPCData('eth_getBlockByNumber', ['latest', false]),
-        fetchRPCData('eth_gasPrice'),
-        fetchRPCData('net_peerCount'),
-        fetchRPCData('eth_syncing')
+        fetchRPCData('eth_gasPrice', []),
+        fetchRPCData('net_peerCount', []),
+        fetchRPCData('eth_syncing', [])
       ]);
 
       const blockNumber = parseInt(latestBlock.number, 16);
@@ -91,7 +97,7 @@ const XDCPriceDashboard = () => {
   }, []);
 
   if (loading) {
-    return <div className="h-40 m-auto text-blue"><Loading /></div>
+    return <div className="h-40 m-auto text-blue"><Loading /></div>;
   }
 
   if (!coinData || !blockchainData) {
@@ -130,7 +136,7 @@ const XDCPriceDashboard = () => {
       },
       y: {
         ticks: {
-          callback: (value) => `$${value.toFixed(2)}`, // Format y-axis labels
+          callback: (value: any) => `$${value.toFixed(2)}`, // Format y-axis labels
         },
       },
     },

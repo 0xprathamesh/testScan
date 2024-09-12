@@ -1,6 +1,4 @@
-// pages/block/[blocknumber]/transactions.tsx
-
-"use client";
+"use client"
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import Link from "next/link";
@@ -14,14 +12,15 @@ interface PageProps {
     block: string;
   };
 }
-type Props = {
-  text?: string;
-  copyText?: string;
-};
+
+interface BlockData {
+  number: number;
+  timestamp: number;
+  transactions: ethers.providers.TransactionResponse[];
+}
 
 const TransactionsPage: React.FC<PageProps> = ({ params }) => {
-  const [blockData, setBlockData] =
-    useState<ethers.providers.BlockWithTransactions | null>(null);
+  const [blockData, setBlockData] = useState<BlockData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,7 +38,7 @@ const TransactionsPage: React.FC<PageProps> = ({ params }) => {
 
   const fetchBlockData = async (blockNumber: number) => {
     try {
-      const rpcUrl: string | null = localStorage.getItem("rpcUrl");
+      const rpcUrl = localStorage.getItem("rpcUrl");
       if (!rpcUrl) {
         setError("No RPC URL found in local storage");
         return;
@@ -61,7 +60,7 @@ const TransactionsPage: React.FC<PageProps> = ({ params }) => {
   };
 
   const parseAddress = (address: string) => {
-    return address.slice(0, 6) + "..." + address.slice(-4);
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   if (error) return <div className="text-red-500">{error}</div>;
@@ -94,8 +93,6 @@ const TransactionsPage: React.FC<PageProps> = ({ params }) => {
 
         <div className="bg-white px-8 py-4 rounded-lg">
           <div className="overflow-x-auto">
-            {" "}
-            {/* Added this div to make the table scrollable */}
             <table className="min-w-full table-auto">
               <thead>
                 <tr className="bg-gray-100 ">
@@ -129,15 +126,16 @@ const TransactionsPage: React.FC<PageProps> = ({ params }) => {
               </thead>
               <tbody>
                 {blockData.transactions.map((tx) => {
-                  const method =
-                    tx.data === "0x" ? "Transfer" : "Contract Call";
+                  const method = tx.data === "0x" ? "Transfer" : "Contract Call";
                   const valueInEther = ethers.utils.formatEther(tx.value);
-                  const gasFeeInEther = ethers.utils.formatEther(
-                    tx.gasPrice.mul(tx.gasLimit)
-                  );
+                  const gasFeeInEther = tx.gasPrice && tx.gasLimit ? (
+                    ethers.utils.formatEther(
+                      tx.gasPrice.mul(tx.gasLimit)
+                    )
+                  ) : "Gas fee not available";
                   const age = new Date(Date.now() - blockData.timestamp * 1000)
                     .toISOString()
-                    .substr(11, 8); // Displays time in HH:MM:SS format
+                    .substr(11, 8);
 
                   return (
                     <tr key={tx.hash} className="border-b ">
@@ -150,9 +148,7 @@ const TransactionsPage: React.FC<PageProps> = ({ params }) => {
                       </td>
                       <td className="px-4 py-2">
                         <p className="inline-flex items-center text-center border px-2 text-sm py-1 rounded-full">
-                          {/* Green dot */}
                           <span className="inline-block rounded-full bg-green-500 h-2 w-2 mr-2"></span>
-                          {/* Method text */}
                           <span className="text-center font-chivo">{method}</span>
                         </p>
                       </td>
@@ -173,8 +169,9 @@ const TransactionsPage: React.FC<PageProps> = ({ params }) => {
                         </p>
                       </td>
                       <td className=" py-2 ">
-                        <p className="  text-blue font-chivo text-sm font-light leading hover:bg-orange-200 p-1 px-2 rounded-md  hover:border border-dashed border-orange-500"> {tx.to ? parseAddress(tx.to) : "Contract Creation"}</p>
-                       
+                        <p className="  text-blue font-chivo text-sm font-light leading hover:bg-orange-200 p-1 px-2 rounded-md  hover:border border-dashed border-orange-500">
+                          {tx.to ? parseAddress(tx.to) : "Contract Creation"}
+                        </p>
                       </td>
                       <td className="px-4 py-2 text-sm ">
                         {parseFloat(valueInEther).toFixed(1)} ETH
@@ -195,13 +192,18 @@ const TransactionsPage: React.FC<PageProps> = ({ params }) => {
 
 export default TransactionsPage;
 
-const Copy = (props: Props) => {
-  const { text, copyText = "" } = props;
+interface CopyProps {
+  text?: string;
+  copyText?: string;
+}
+
+const Copy: React.FC<CopyProps> = ({ copyText = "" }) => {
   const copyToClipboard = () => {
-    window.navigator.clipboard.writeText(copyText);
+    navigator.clipboard.writeText(copyText);
   };
+
   return (
-    <span onClick={copyToClipboard} className="h-2 w-2">
+    <span onClick={copyToClipboard} className="h-2 w-2 cursor-pointer">
       <HiOutlineDuplicate />
     </span>
   );
