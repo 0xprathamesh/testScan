@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import Navbar from "@/components/Devnav";
 import Copyable from "@/components/elements/Copyable";
+import Spinner from "@/components/elements/Spinner";
+import Loading from "@/components/elements/Loading";
 
 interface AddressDetailsProps {
   params: {
@@ -75,7 +77,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ params }) => {
   }, [address]);
 
   return loading ? (
-    <h1 className="text-center">Loading...</h1>
+    <div className="h-40 m-auto text-blue"><Loading /></div>
   ) : (
     <div>
       <Navbar />
