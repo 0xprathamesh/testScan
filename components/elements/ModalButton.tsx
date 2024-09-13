@@ -15,7 +15,7 @@ const ParentComponent: React.FC = () => {
         onClick={openModal}
         className="bg-blue text-white px-2 py-1 rounded font-inter text-sm"
       >
-        Update RPC URL
+        Update RPC & API
       </button>
 
       {isModalOpen && <SetRPCModal onClose={closeModal} />}

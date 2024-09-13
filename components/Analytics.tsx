@@ -15,11 +15,8 @@ import {
 } from 'chart.js';
 import Loading from './elements/Loading';
 
-
 // Registering required chart components
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
-
-const XDC_RPC_URL = 'https://rpc.xinfin.network';
 
 interface BlockchainData {
   totalBlocks: number;
@@ -27,13 +24,25 @@ interface BlockchainData {
   connectedNodes: number;
   isSyncing: boolean;
 }
+
 const XDCPriceDashboard = () => {
   const [coinData, setCoinData] = useState<any>(null);
-  const [blockchainData, setBlockchainData] = useState<BlockchainData | null>(null); // Update here
+  const [blockchainData, setBlockchainData] = useState<BlockchainData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [rpcUrl, setRpcUrl] = useState<string | null>(null);
+  const [coinGeckoApiUrl, setCoinGeckoApiUrl] = useState<string | null>(null);
+
+  // Fetch URLs from localStorage
+  useEffect(() => {
+    const savedRpcUrl = localStorage.getItem('rpcUrl') || 'https://erpc.xinfin.network'; // fallback to default if not set
+    const savedCoinGeckoApiUrl = localStorage.getItem('coinGeckoApiUrl') || 'https://api.coingecko.com/api/v3/coins/xdce-crowd-sale';
+    setRpcUrl(savedRpcUrl);
+    setCoinGeckoApiUrl(savedCoinGeckoApiUrl);
+  }, []);
 
   const fetchRPCData = async (method: string, params: (string | boolean)[]) => {
-    const response = await fetch(XDC_RPC_URL, {
+    if (!rpcUrl) return null;
+    const response = await fetch(rpcUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -51,11 +60,15 @@ const XDCPriceDashboard = () => {
   };
 
   const fetchData = async () => {
+    if (!rpcUrl || !coinGeckoApiUrl) {
+      console.error('RPC URL or CoinGecko API URL not available.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Fetch coin data from CoinGecko
-      const coinResponse = await fetch(
-        'https://api.coingecko.com/api/v3/coins/xdce-crowd-sale?sparkline=true'
-      );
+      // Fetch coin data from CoinGecko API
+      const coinResponse = await fetch(coinGeckoApiUrl);
       const coinData = await coinResponse.json();
 
       // Fetch blockchain data from XDC RPC
@@ -94,7 +107,7 @@ const XDCPriceDashboard = () => {
     fetchData();
     const intervalId = setInterval(fetchData, 60000); // Update every 60 seconds
     return () => clearInterval(intervalId);
-  }, []);
+  }, [rpcUrl, coinGeckoApiUrl]); // Refetch if URLs change
 
   if (loading) {
     return <div className="h-40 m-auto text-blue"><Loading /></div>;
@@ -111,21 +124,23 @@ const XDCPriceDashboard = () => {
   const xdcLogo = coinData.image.thumb;
   const { totalBlocks, medianGasPrice, connectedNodes, isSyncing } = blockchainData;
 
-  // Chart.js line chart data
-  const chartData = {
-    labels: Array(coinData.market_data.sparkline_7d.price.length).fill('').map((_, i) => i + 1), // Create labels for each price point (e.g., 1, 2, 3,...)
-    datasets: [
-      {
-        label: 'XDC Price (USD)',
-        data: coinData.market_data.sparkline_7d.price,
-        borderColor: 'rgba(53, 162, 235, 1)',
-        backgroundColor: 'rgba(53, 162, 235, 0.5)',
-        fill: true,
-        pointRadius: 0, // Remove dots on the line
-        tension: 0.1, // Smooth the line curve
-      },
-    ],
-  };
+// Safely access sparkline_7d price data
+const sparklineData = coinData.market_data?.sparkline_7d?.price || [];
+
+const chartData = {
+  labels: Array(sparklineData.length).fill('').map((_, i) => i + 1),
+  datasets: [
+    {
+      label: 'XDC Price (USD)',
+      data: sparklineData,
+      borderColor: 'rgba(53, 162, 235, 1)',
+      backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      fill: true,
+      pointRadius: 0, // Remove dots on the line
+      tension: 0.1, // Smooth the line curve
+    },
+  ],
+};
 
   const chartOptions = {
     responsive: true,
@@ -141,6 +156,7 @@ const XDCPriceDashboard = () => {
       },
     },
   };
+
 
   return (
     <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg text-sm font-chivo">
