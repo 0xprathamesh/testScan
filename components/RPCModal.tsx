@@ -1,4 +1,4 @@
-// components/RPCModal.tsx
+
 import React, { useState } from 'react';
 
 const RPCModal: React.FC<{ onSetRPC: (rpc: string) => void }> = ({ onSetRPC }) => {

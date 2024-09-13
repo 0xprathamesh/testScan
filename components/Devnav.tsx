@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import ParentComponent from "./elements/ModalButton";
 
 const Navbar = () => {
   return (
@@ -58,7 +59,9 @@ const Navbar = () => {
                 </div>
               </div>
             </div> */}
+            
           </div>
+          <ParentComponent />
         </div>
       </nav>
     </div>

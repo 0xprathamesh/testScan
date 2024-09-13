@@ -14,7 +14,7 @@ const LatestBlocks: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const rpcUrl = localStorage.getItem("rpcUrl") || "";
+    const rpcUrl = localStorage.getItem("rpcUrl") || "https://eth.llamarpc.com";
     const rpcProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
     setProvider(rpcProvider);
   }, []);
