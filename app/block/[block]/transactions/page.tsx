@@ -140,7 +140,7 @@ const TransactionsPage: React.FC<PageProps> = ({ params }) => {
                   return (
                     <tr key={tx.hash} className="border-b ">
                       <td className="px-4 py-2">
-                        <Link href={`/transaction/${tx.hash}`}>
+                        <Link href={`/tx/${tx.hash}`}>
                           <p className="text-blue font-chivo text-sm font-light leading ">
                             {parseAddress(tx.hash)}
                           </p>

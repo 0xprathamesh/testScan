@@ -117,9 +117,11 @@ const BlockPage: React.FC<PageProps> = ({ params }) => {
                 {new Date(blockData.timestamp * 1000).toLocaleString()}
               </p>
               <div className="py-3 text-center">
-                <p className="bg-gray-100 w-32">
-                  {blockData.transactions.length} transactions
-                </p>
+                <Link href={`/block/${params.block}/transactions`} passHref>
+                  <p className="bg-gray-100 w-32 hover:text-blue">
+                    {blockData.transactions.length} transactions
+                  </p>
+                </Link>
               </div>
               <p className="py-3">
                 {blockData.gasUsed.toString()} (

@@ -70,7 +70,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body>
         <ThirdwebProvider>
-          {isFirstVisit && <SetRPCModal onClose={handleModalClose} />}
+          {/* {isFirstVisit && <SetRPCModal onClose={handleModalClose} />} */}
           {showVerifyModal && (
               <VerifySignatureModal
               onClose={handleModalClose}

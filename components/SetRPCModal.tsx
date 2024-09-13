@@ -21,13 +21,13 @@ const SetRPCModal: React.FC<SetRPCModalProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-        <h2 className="text-lg font-bold mb-4">Enter RPC URL</h2>
+        <h2 className="text-lg font-inter mb-4 ">Enter RPC URL</h2>
         <input
           type="text"
           value={rpcUrl}
           onChange={(e) => setRpcUrl(e.target.value)}
           placeholder="https://your-rpc-url.com"
-          className="w-full p-2 border border-gray-300 rounded"
+          className="w-full p-2 border border-gray-300 rounded placeholder:font-chivo placeholder:text-sm placeholder:leading-3"
         />
         <div className="mt-4 flex justify-end">
           <button

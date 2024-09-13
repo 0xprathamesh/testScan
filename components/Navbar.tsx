@@ -2,6 +2,7 @@
 import { ConnectButton, useNetworkSwitcherModal } from "thirdweb/react";
 import { client, wallets } from "../utils/client";
 import { xdcApothemNetwork } from "@/utils/xdcApothemNetwork";
+import ParentComponent from "./elements/ModalButton";
 
 import {
   useActiveAccount,
@@ -53,7 +54,7 @@ const Navbar = () => {
         <Link className="text-lg font-medium text-gray-700" href="/chains">
           Chains
         </Link>
-
+        <ParentComponent />
         <ConnectButton
           client={client}
           wallets={wallets}
