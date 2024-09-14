@@ -3,7 +3,6 @@ import { ConnectButton, useNetworkSwitcherModal } from "thirdweb/react";
 import { client, wallets } from "../utils/client";
 import { xdcApothemNetwork } from "@/utils/xdcApothemNetwork";
 import ParentComponent from "./elements/ModalButton";
-
 import {
   useActiveAccount,
   useActiveWalletChain,

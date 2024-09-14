@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { GlobeAltIcon, CubeIcon, UserGroupIcon } from '@heroicons/react/24/outline';
-import Image from 'next/image';
-import { Line } from 'react-chartjs-2';
+import { useState, useEffect } from "react";
+import {
+  GlobeAltIcon,
+  CubeIcon,
+  UserGroupIcon,
+} from "@heroicons/react/24/outline";
+import Image from "next/image";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   LineElement,
@@ -11,12 +15,19 @@ import {
   LinearScale,
   PointElement,
   Tooltip,
-  Legend
-} from 'chart.js';
-import Loading from './elements/Loading';
+  Legend,
+} from "chart.js";
+import Loading from "./elements/Loading";
 
 // Registering required chart components
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
+ChartJS.register(
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend
+);
 
 interface BlockchainData {
   totalBlocks: number;
@@ -27,15 +38,20 @@ interface BlockchainData {
 
 const XDCPriceDashboard = () => {
   const [coinData, setCoinData] = useState<any>(null);
-  const [blockchainData, setBlockchainData] = useState<BlockchainData | null>(null);
+  const [blockchainData, setBlockchainData] = useState<BlockchainData | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [rpcUrl, setRpcUrl] = useState<string | null>(null);
   const [coinGeckoApiUrl, setCoinGeckoApiUrl] = useState<string | null>(null);
 
   // Fetch URLs from localStorage
   useEffect(() => {
-    const savedRpcUrl = localStorage.getItem('rpcUrl') || 'https://erpc.xinfin.network'; // fallback to default if not set
-    const savedCoinGeckoApiUrl = localStorage.getItem('coinGeckoApiUrl') || 'https://api.coingecko.com/api/v3/coins/xdce-crowd-sale';
+    const savedRpcUrl =
+      localStorage.getItem("rpcUrl") || "https://erpc.xinfin.network"; // fallback to default if not set
+    const savedCoinGeckoApiUrl =
+      localStorage.getItem("coinGeckoApiUrl") ||
+      "https://api.coingecko.com/api/v3/coins/xdce-crowd-sale?sparkline=true";
     setRpcUrl(savedRpcUrl);
     setCoinGeckoApiUrl(savedCoinGeckoApiUrl);
   }, []);
@@ -43,10 +59,10 @@ const XDCPriceDashboard = () => {
   const fetchRPCData = async (method: string, params: (string | boolean)[]) => {
     if (!rpcUrl) return null;
     const response = await fetch(rpcUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        jsonrpc: '2.0',
+        jsonrpc: "2.0",
         id: 1,
         method,
         params,
@@ -61,7 +77,7 @@ const XDCPriceDashboard = () => {
 
   const fetchData = async () => {
     if (!rpcUrl || !coinGeckoApiUrl) {
-      console.error('RPC URL or CoinGecko API URL not available.');
+      console.error("RPC URL or CoinGecko API URL not available.");
       setLoading(false);
       return;
     }
@@ -72,16 +88,11 @@ const XDCPriceDashboard = () => {
       const coinData = await coinResponse.json();
 
       // Fetch blockchain data from XDC RPC
-      const [
-        latestBlock,
-        gasPrice,
-        nodeCount,
-        syncing
-      ] = await Promise.all([
-        fetchRPCData('eth_getBlockByNumber', ['latest', false]),
-        fetchRPCData('eth_gasPrice', []),
-        fetchRPCData('net_peerCount', []),
-        fetchRPCData('eth_syncing', [])
+      const [latestBlock, gasPrice, nodeCount, syncing] = await Promise.all([
+        fetchRPCData("eth_getBlockByNumber", ["latest", false]),
+        fetchRPCData("eth_gasPrice", []),
+        fetchRPCData("net_peerCount", []),
+        fetchRPCData("eth_syncing", []),
       ]);
 
       const blockNumber = parseInt(latestBlock.number, 16);
@@ -98,7 +109,7 @@ const XDCPriceDashboard = () => {
       setCoinData(coinData);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
       setLoading(false);
     }
   };
@@ -110,7 +121,11 @@ const XDCPriceDashboard = () => {
   }, [rpcUrl, coinGeckoApiUrl]); // Refetch if URLs change
 
   if (loading) {
-    return <div className="h-40 m-auto text-blue"><Loading /></div>;
+    return (
+      <div className="h-40 m-auto text-blue">
+        <Loading />
+      </div>
+    );
   }
 
   if (!coinData || !blockchainData) {
@@ -120,27 +135,31 @@ const XDCPriceDashboard = () => {
   const xdcPrice = coinData.market_data.current_price.usd;
   const xdcMarketCap = coinData.market_data.market_cap.usd;
   const xdcBTCPrice = coinData.market_data.current_price.btc;
-  const xdcPriceChange = coinData.market_data.price_change_percentage_24h.toFixed(2);
+  const xdcPriceChange =
+    coinData.market_data.price_change_percentage_24h.toFixed(2);
   const xdcLogo = coinData.image.thumb;
-  const { totalBlocks, medianGasPrice, connectedNodes, isSyncing } = blockchainData;
+  const { totalBlocks, medianGasPrice, connectedNodes, isSyncing } =
+    blockchainData;
 
-// Safely access sparkline_7d price data
-const sparklineData = coinData.market_data?.sparkline_7d?.price || [];
+  // Safely access sparkline_7d price data
+  const sparklineData = coinData.market_data?.sparkline_7d?.price || [];
 
-const chartData = {
-  labels: Array(sparklineData.length).fill('').map((_, i) => i + 1),
-  datasets: [
-    {
-      label: 'XDC Price (USD)',
-      data: sparklineData,
-      borderColor: 'rgba(53, 162, 235, 1)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-      fill: true,
-      pointRadius: 0, // Remove dots on the line
-      tension: 0.1, // Smooth the line curve
-    },
-  ],
-};
+  const chartData = {
+    labels: Array(sparklineData.length)
+      .fill("")
+      .map((_, i) => i + 1),
+    datasets: [
+      {
+        label: "XDC Price (USD)",
+        data: sparklineData,
+        borderColor: "rgba(53, 162, 235, 1)",
+        backgroundColor: "rgba(53, 162, 235, 0.5)",
+        fill: true,
+        pointRadius: 0, // Remove dots on the line
+        tension: 0.1, // Smooth the line curve
+      },
+    ],
+  };
 
   const chartOptions = {
     responsive: true,
@@ -157,23 +176,23 @@ const chartData = {
     },
   };
 
-
   return (
     <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg text-sm font-chivo">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 grid-rows-2">
-        
         {/* XDC Price */}
         <div className="bg-gray-800 p-4 rounded-lg">
           <div className="flex items-center">
             <div className="bg-blue-600 rounded-full p-2 mr-3">
-              <Image src={xdcLogo} height={25} width={25} alt='' />
+              <Image src={xdcLogo} height={25} width={25} alt="" />
             </div>
             <div>
               <h3 className="text-sm text-gray-400">XDC PRICE</h3>
               <p className="text-xl">${xdcPrice.toFixed(5)}</p>
               <p className="text-sm text-gray-400">
-                @ {xdcBTCPrice.toFixed(8)} BTC{' '}
-                <span className={`text-${xdcPriceChange > 0 ? 'green' : 'red'}-500`}>
+                @ {xdcBTCPrice.toFixed(8)} BTC{" "}
+                <span
+                  className={`text-${xdcPriceChange > 0 ? "green" : "red"}-500`}
+                >
                   ({xdcPriceChange}%)
                 </span>
               </p>
@@ -186,7 +205,9 @@ const chartData = {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-400">MARKET CAP</h3>
-              <p className="text-xl font-bold">${xdcMarketCap.toLocaleString()}</p>
+              <p className="text-xl font-bold">
+                ${xdcMarketCap.toLocaleString()}
+              </p>
             </div>
             <div className="text-right">
               <h3 className="text-sm font-medium text-gray-400">GAS PRICE</h3>
@@ -199,8 +220,12 @@ const chartData = {
         <div className="bg-gray-800 p-4 rounded-lg row-span-2">
           <div className="flex justify-between items-center mb-2">
             <div className="space-x-2">
-              <button className="bg-blue-500 text-white px-3 py-1 rounded">XDC Price</button>
-              <button className="text-gray-400 px-3 py-1 rounded">Block Growth</button>
+              <button className="bg-blue-500 text-white px-3 py-1 rounded">
+                XDC Price
+              </button>
+              <button className="text-gray-400 px-3 py-1 rounded">
+                Block Growth
+              </button>
             </div>
           </div>
           <div className="h-40">
@@ -217,8 +242,12 @@ const chartData = {
           <div className="flex items-center">
             <CubeIcon className="h-8 w-8 text-blue-500 mr-3" />
             <div>
-              <h3 className="text-sm font-medium text-gray-400">TOTAL BLOCKS</h3>
-              <p className="text-xl font-bold">{totalBlocks.toLocaleString()}</p>
+              <h3 className="text-sm font-medium text-gray-400">
+                TOTAL BLOCKS
+              </h3>
+              <p className="text-xl font-bold">
+                {totalBlocks.toLocaleString()}
+              </p>
             </div>
           </div>
         </div>
@@ -227,13 +256,19 @@ const chartData = {
         <div className="bg-gray-800 p-4 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-400">CONNECTED NODES</h3>
-              <p className="text-xl font-bold">{connectedNodes.toLocaleString()}</p>
+              <h3 className="text-sm font-medium text-gray-400">
+                CONNECTED NODES
+              </h3>
+              <p className="text-xl font-bold">
+                {connectedNodes.toLocaleString()}
+              </p>
             </div>
             <div className="text-right">
-              <h3 className="text-sm font-medium text-gray-400">NETWORK STATUS</h3>
+              <h3 className="text-sm font-medium text-gray-400">
+                NETWORK STATUS
+              </h3>
               <p className="text-lg font-bold">
-                {isSyncing ? 'Syncing' : 'Synced'}
+                {isSyncing ? "Syncing" : "Synced"}
               </p>
             </div>
           </div>
@@ -282,10 +317,10 @@ export default XDCPriceDashboard;
 //   const xdcMarketCap = coin.market_data.market_cap.usd;
 //   const xdcBTCPrice = coin.market_data.current_price.btc;
 //   const xdcPriceChange = coin.market_data.price_change_percentage_24h.toFixed(2);
-//   const totalBlocks = 50902893; 
-//   const totalAccounts = 1714026; 
-//   const totalTransactions = '322.44M'; 
-//   const medianGasPrice = '0.26 Gwei'; 
+//   const totalBlocks = 50902893;
+//   const totalAccounts = 1714026;
+//   const totalTransactions = '322.44M';
+//   const medianGasPrice = '0.26 Gwei';
 //   return (
 //     <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg text-sm font-chivo">
 //       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

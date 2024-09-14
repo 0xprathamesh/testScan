@@ -21,6 +21,7 @@ const config = {
       fontFamily: {
         inter: ["Inter", "sans-serif"],
         chivo: ["Chivo", "sans-serif"],
+        mplus:["M+PLUS+2","sans-serif"]
       },
       colors: {
         blue : "#7d8eff",
