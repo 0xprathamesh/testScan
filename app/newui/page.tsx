@@ -1,11 +1,11 @@
 "use client";
 import Copyable from "@/components/elements/Copyable";
-import Layout from "@/components/manta/Layout";
+import Layout from "@/components/newui/Layout";
 import React, { useState, useEffect, useRef } from "react";
 import { FaSearch, FaEthereum } from "react-icons/fa";
 import { GoSearch } from "react-icons/go";
 import { HiOutlineArrowSmDown, HiOutlineArrowSmUp } from "react-icons/hi";
-import { getCoinData } from "@/components/manta/utils/coingeko";
+import { getCoinData } from "@/components/newui/utils/coingeko";
 import Image from "next/image";
 
 const MantaDashboard: React.FC = () => {
