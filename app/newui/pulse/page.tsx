@@ -1,14 +1,14 @@
 "use client";
-import Layout from "@/components/manta/Layout";
+import Layout from "@/components/newui/Layout";
 import React, { useState, useEffect } from "react";
-import { getBlockchainData } from "@/components/manta/utils/xdcrpc"; // Import the utility function
+import { getBlockchainData } from "@/components/newui/utils/xdcrpc"; // Import the utility function
 import Spinner from "@/components/elements/Spinner";
 import Loading from "@/components/elements/Loading";
 import { IoReceiptOutline,IoCubeOutline } from "react-icons/io5";
 import { MdArrowForwardIos } from "react-icons/md";
 import { GrCubes } from "react-icons/gr";
 import { FaEthereum } from "react-icons/fa";
-import NetworkPulse from "@/components/manta/NetworkPulse";
+import NetworkPulse from "@/components/newui/NetworkPulse";
 
 const DashboardPage = () => {
   const [blockchainData, setBlockchainData] = useState<any>(null); // State to store the blockchain data
