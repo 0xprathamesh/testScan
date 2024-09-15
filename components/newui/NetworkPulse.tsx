@@ -97,21 +97,46 @@ const BlockBox: React.FC<Block & { isFirst: boolean }> = ({
 }) => (
   <div
     className={`p-6 rounded-3xl flex-shrink-0  ${
-      isFirst ? "bg-black text-white w-[280px]" : "items-center w-32 h-24  bg-white text-black shadow border border-[#cad7e1]"
+      isFirst
+        ? "bg-black text-white w-[280px]"
+        : "items-center w-36 h-32  bg-white text-black shadow border border-[#cad7e1]"
     }`}
   >
-    <div className="flex items-center space-x-2 mb-2">
-      <div className="w-8 h-8 bg-blue-500"></div>
-      <p className="text-sm font-semibold">{number}</p>
-    </div>
     {isFirst ? (
       <>
+        <p className="text-sm font-semibold mb-2 flex items-center">
+          <IoCubeOutline className="w-12 h-12 mr-4" />
+          {number} <Copyable text="" copyText={number.toString()} />
+          <div className="ml-10">
+            <Spinner></Spinner>
+          </div>
+        </p>
+        <p className="text-xs">Transactions Bundled: {transactions.length}</p>
+        <hr className="my-2 text-gray-300" />
+        <p className="text-xs mt-2">{formatTimeAgo(timestamp)}</p>
+      </>
+    ) : (
+        <>
+          <IoCubeOutline className="text-[#a9bcca] text-3xl mb-2" />
+          <p className="text-sm font-semibold mb-1 font-inter flex items-center">
+          {number} <Copyable text="" copyText={number.toString()} />
+          </p>
+          <p className="text-xs">{formatTimeAgo(timestamp)}</p>
+        </>
+    )}
+    {/* <div className="flex items-center space-x-2 mb-2">
+      <div className="w-8 h-8 bg-blue-500"></div>
+      <p className="text-sm font-semibold">{number}</p>
+    </div> */}
+    {/* {isFirst ? (
+      <>
+        
         <p className="text-xs mb-2">{formatTimeAgo(timestamp)}</p>
         <p className="text-xs">Transactions: {transactions.length}</p>
       </>
     ) : (
       <p className="text-xs">{formatTimeAgo(timestamp)}</p>
-    )}
+    )} */}
   </div>
 );
 
@@ -153,7 +178,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 10000); 
+    const interval = setInterval(fetchData, 10000);
 
     return () => clearInterval(interval);
   }, [rpcUrl]);
@@ -181,7 +206,6 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
         Track real-time changes on the blockchain
       </p>
 
-    
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Transactions</h2>
@@ -200,7 +224,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
           </div>
         </div>
       </div>
-<hr className="fill-[#cad7e1] mb-8"/>
+      <hr className="fill-[#cad7e1] mb-8" />
 
       <div>
         <div className="flex justify-between items-center mb-4">
@@ -217,8 +241,8 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
             <button onClick={() => scroll(blockSliderRef, 200)}>→</button>
           </div>
         </div>
-        <div className="overflow-x-auto w-full" ref={blockSliderRef}>
-          <div className="flex space-x-4 transition-all duration-300 ease-in-out">
+        <div className="overflow-x-auto w-full py-4" ref={blockSliderRef}>
+          <div className="flex items-center space-x-4 transition-all duration-300 ease-in-out">
             {blocks.map((block, index) => (
               <BlockBox key={block.number} {...block} isFirst={index === 0} />
             ))}
