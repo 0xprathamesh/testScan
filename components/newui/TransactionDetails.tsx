@@ -1,30 +1,29 @@
-"use client";
+"use client"
 import React, { useState } from "react";
 import { ArrowLeft, ArrowUpRight, Copy, HelpCircle } from "lucide-react";
 
 interface TxData {
-    hash: string;
-    status: boolean;
-    blockNumber: number;
-    timestamp: number;
-    confirmations: number;
-    from: string;
-    to: string;
-    value: any; // Using 'any' for BigNumber type
-    gasLimit: any;
-    gasUsed: any;
-    effectiveGasPrice: any;
-    data: string;
-    action: string;
-    tokenTransfers: any[]; // Using 'any[]' for simplicity
-  }
-  
-  interface TransactionDetailsProps {
-    txData: TxData | null;
-  }
-  
-  
-const TransactionDetails:React.FC<TransactionDetailsProps> = ({ txData })  => {
+  hash: string;
+  status: boolean;
+  blockNumber: number;
+  timestamp: number;
+  confirmations: number;
+  from: string;
+  to: string;
+  value: any; // Using 'any' for BigNumber type
+  gasLimit: any;
+  gasUsed: any;
+  effectiveGasPrice: any;
+  data: string;
+  action: string;
+  tokenTransfers: any[]; // Using 'any[]' for simplicity
+}
+
+interface TransactionDetailsProps {
+  txData: TxData | null;
+}
+
+const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
   const [activeTab, setActiveTab] = useState("Overview");
   const tabs = [
     "Overview",
@@ -42,7 +41,7 @@ const TransactionDetails:React.FC<TransactionDetailsProps> = ({ txData })  => {
           <ArrowLeft className="h-6 w-6" />
         </button>
         <div>
-          <div className="text-sm text-blue-500">Home • Oxfa...9fd1</div>
+          <div className="text-sm text-blue-500">Home • {txData?.hash.slice(0, 6)}...{txData?.hash.slice(-4)}</div>
           <h1 className="text-2xl font-bold">Transaction details</h1>
         </div>
         <button className="ml-auto bg-indigo-100 text-indigo-700 p-2 rounded">
@@ -92,49 +91,11 @@ const TransactionDetails:React.FC<TransactionDetailsProps> = ({ txData })  => {
             ))}
           </div>
           <div className="mt-4">
-            {activeTab === "Overview" && (
-              <div>
-                <div className="mb-4 mt-4 bg-white">
-                  <h3 className="font-semibold mb-2">Send</h3>
-                  <div className="flex items-center">
-                    <img
-                      src="/api/placeholder/24/24"
-                      alt="Token icon"
-                      className="mr-2 rounded-full"
-                    />
-                    <span className="font-bold">23.631817 MANTA</span>
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <h3 className="font-semibold mb-2">From</h3>
-                  <div className="flex items-center">
-                    <span className="bg-red-100 text-red-800 p-1 rounded mr-2">
-                      0x48...a4EE
-                    </span>
-                    <Copy className="h-4 w-4" />
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <h3 className="font-semibold mb-2">On Application</h3>
-                  <div className="flex items-center">
-                    <span className="bg-green-100 text-green-800 p-1 rounded mr-2">
-                      Manta
-                    </span>
-                    <Copy className="h-4 w-4" />
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">
-                    Amount paid for the transaction
-                  </h3>
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold">$0</span>
-                    <span className="text-gray-500">0 ETH</span>
-                  </div>
-                </div>
-              </div>
-            )}
-            {/* Add content for other tabs as needed */}
+            {activeTab === "Overview" && <OverviewTab txData={txData} />}
+            {activeTab === "Internal Transactions" && <InternalTransactionsTab txData={txData} />}
+            {activeTab === "Logs" && <LogsTab txData={txData} />}
+            {activeTab === "State" && <StateTab txData={txData} />}
+            {activeTab === "Raw Trace" && <RawTraceTab txData={txData} />}
           </div>
         </div>
       </div>
@@ -142,7 +103,99 @@ const TransactionDetails:React.FC<TransactionDetailsProps> = ({ txData })  => {
   );
 };
 
+const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
+  if (!txData) return null;
+  return (
+    <div>
+      <div className="mb-4 mt-4 bg-white p-4 rounded-lg">
+        <h3 className="font-semibold mb-2">Transaction Value</h3>
+        <div className="flex items-center">
+          <img
+            src="/api/placeholder/24/24"
+            alt="Token icon"
+            className="mr-2 rounded-full"
+          />
+          <span className="font-bold">{txData.value.toString()} ETH</span>
+        </div>
+      </div>
+      <div className="mb-4 bg-white p-4 rounded-lg">
+        <h3 className="font-semibold mb-2">From</h3>
+        <div className="flex items-center">
+          <span className="bg-red-100 text-red-800 p-1 rounded mr-2">
+            {txData.from}
+          </span>
+          <Copy className="h-4 w-4 cursor-pointer" onClick={() => navigator.clipboard.writeText(txData.from)} />
+        </div>
+      </div>
+      <div className="mb-4 bg-white p-4 rounded-lg">
+        <h3 className="font-semibold mb-2">To</h3>
+        <div className="flex items-center">
+          <span className="bg-green-100 text-green-800 p-1 rounded mr-2">
+            {txData.to || 'Contract Creation'}
+          </span>
+          {txData.to && <Copy className="h-4 w-4 cursor-pointer" onClick={() => navigator.clipboard.writeText(txData.to)} />}
+        </div>
+      </div>
+      <div className="bg-white p-4 rounded-lg">
+        <h3 className="font-semibold mb-2">
+          Transaction Fee
+        </h3>
+        <div className="flex justify-between items-center">
+          <span className="text-2xl font-bold">{(Number(txData.gasUsed) * Number(txData.effectiveGasPrice)).toString()} Wei</span>
+          <span className="text-gray-500">{txData.gasUsed.toString()} Gas Used</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const InternalTransactionsTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
+  if (!txData) return null;
+  return (
+    <div className="bg-white p-4 rounded-lg">
+      <h3 className="font-semibold mb-2">Internal Transactions</h3>
+      <p>No internal transactions for this transaction.</p>
+    </div>
+  );
+};
+
+const LogsTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
+  if (!txData) return null;
+  return (
+    <div className="bg-white p-4 rounded-lg">
+      <h3 className="font-semibold mb-2">Transaction Logs</h3>
+      <pre className="bg-gray-100 p-2 rounded overflow-x-auto">
+        {JSON.stringify(txData, null, 2)}
+      </pre>
+    </div>
+  );
+};
+
+const StateTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
+  if (!txData) return null;
+  return (
+    <div className="bg-white p-4 rounded-lg">
+      <h3 className="font-semibold mb-2">State Changes</h3>
+      <p>State change information is not available.</p>
+    </div>
+  );
+};
+
+const RawTraceTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
+  if (!txData) return null;
+  return (
+    <div className="bg-white p-4 rounded-lg">
+      <h3 className="font-semibold mb-2">Raw Transaction Trace</h3>
+      <pre className="bg-gray-100 p-2 rounded overflow-x-auto">
+        {JSON.stringify(txData, null, 2)}
+      </pre>
+    </div>
+  );
+};
+
 export default TransactionDetails;
+
+// TransactionDetailsCard component remains unchanged
 
 const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({ txData }) => {
     if (!txData) return <div className="w-[45%]">Loading...</div>;

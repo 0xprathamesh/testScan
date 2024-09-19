@@ -64,12 +64,13 @@ const Block: React.FC<PageProps> = ({ params }) => {
   }
 
   if (!blockData) {
-    return <Layout><Loading /></Layout>;
+    return <Layout><div className='text-blue bg-white'><Loading/></div></Layout>;
   }
 
   return (
     <Layout>
-      <div className="bg-[#f5f6f8] p-6 font-sans">
+    
+      <div className=" p-6 font-sans">
         <div className="flex items-center mb-6">
           <Link href="/" className="mr-4">
             <ArrowLeft className="h-6 w-6" />
@@ -111,7 +112,9 @@ const Block: React.FC<PageProps> = ({ params }) => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+       
+
     </Layout>
   );
 };
