@@ -6,6 +6,8 @@ import Loading from "../elements/Loading";
 import Copyable from "../elements/Copyable";
 import Spinner from "./Spinner";
 import { IoReceiptOutline, IoCubeOutline } from "react-icons/io5";
+import Link from "next/link";
+
 interface Transaction {
   hash: string;
   from: string;
@@ -209,7 +211,9 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Transactions</h2>
-          <div>
+          <div className="flex items-center">
+<Link href={`/newui/blocks`} className="mr-4">
+            <p className="text-sm text-blue font-inter">View all</p></Link>
             <button onClick={() => scroll(txSliderRef, -200)} className="mr-2">
               ←
             </button>
@@ -231,7 +235,9 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
           <h2 className="text-lg font-semibold">
             Processing blocks of transactions
           </h2>
-          <div>
+          <div className="flex items-center">
+<Link href={`/newui/txns`} className="mr-4">
+            <p className="text-sm text-blue font-inter">View all</p></Link>
             <button
               onClick={() => scroll(blockSliderRef, -200)}
               className="mr-2"

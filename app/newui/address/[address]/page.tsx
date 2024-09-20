@@ -7,6 +7,10 @@ import Link from "next/link";
 import Image from "next/image";
 import Avatar from "../../../../public/assets/user.svg";
 import Loading from "@/components/elements/Loading";
+import Wallet from "@/components/newui/Wallet";
+import InternalTx from "@/components/InternalTx";
+import Activity from "@/components/Activity";
+import TokenTransfers from "@/components/TokenTransfers";
 
 interface PageProps {
   params: {
@@ -104,12 +108,31 @@ const Address: React.FC<PageProps> = ({ params }) => {
   const parseAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
+
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "wallet":
+        return <Wallet assets={assets} />;
+      case "activity":
+        return <Activity />;
+      case "token":
+        return <TokenTransfers />;
+      case "internalTransactions":
+        return <InternalTx />;
+    
+      default:
+        return <Wallet assets={assets} />;
+    }
+  }
   return (
     <Layout>
       {/* Header */}
       <div className=" mb-4">
         <div className="flex items-center">
+          <Link href="/newui">
           <ArrowLeft className="w-4 h-4 mr-2" />
+          </Link>
           <span className="text-md font-semibold ">User Details •</span>
         </div>
         <div className="flex items-center ml-[22px] mt-1">
@@ -119,7 +142,7 @@ const Address: React.FC<PageProps> = ({ params }) => {
           <p className="text-sm font-light ml-2 ">
             {parseAddress(params.address)}
           </p>
-          <Copỳ
+          <Copy
             className="w-4 h-4 ml-2 cursor-pointer text-[#8a98ad]"
             onClick={() => navigator.clipboard.writeText(params.address)}
           />
@@ -127,7 +150,6 @@ const Address: React.FC<PageProps> = ({ params }) => {
       </div>
       <div className="grid grid-cols-3 gap-4">
         <div className="col-span-2 bg-black text-white rounded-3xl p-10 flex ">
-      
           <div className="flex-1 items-center ">
             <Image
               src={Avatar}
@@ -137,7 +159,9 @@ const Address: React.FC<PageProps> = ({ params }) => {
               height={80}
             />
             <div className="mt-6">
-              <h2 className="text-xl font-bold font-inter">{userDetails.name}</h2>
+              <h2 className="text-xl font-bold font-inter">
+                {userDetails.name}
+              </h2>
               <p className="text-sm font-light font-inter flex items-center text-[#8a98ad]">
                 {parseAddress(userDetails.address)}
                 <Copy
@@ -148,12 +172,14 @@ const Address: React.FC<PageProps> = ({ params }) => {
                 />
               </p>
               <p className="mt-8 text-sm">
-                <span className="text-[#8a98ad] font-inter text-sm">Net Worth</span> ${userDetails.netWorth.toFixed(2)}
+                <span className="text-[#8a98ad] font-inter text-sm">
+                  Net Worth
+                </span>{" "}
+                ${userDetails.netWorth.toFixed(2)}
               </p>
             </div>
           </div>
 
-        
           <div className="grid gap-4 w-[40%]">
             <div className="bg-[#382927] pt-4 pl-4 rounded-3xl ">
               <p className="text-sm">Tokens</p>
@@ -166,7 +192,6 @@ const Address: React.FC<PageProps> = ({ params }) => {
           </div>
         </div>
 
-  
         {userDetails.netWorth < 100 && (
           <div className="bg-white rounded-lg p-4 flex items-center">
             <img
@@ -184,10 +209,7 @@ const Address: React.FC<PageProps> = ({ params }) => {
         )}
       </div>
 
-
-
-  
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex">
             {[
@@ -214,8 +236,35 @@ const Address: React.FC<PageProps> = ({ params }) => {
             ))}
           </nav>
         </div>
+      </div> */}
+      <div className="mt-4">
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex">
+            {[
+              "wallet",
+              "activity",
+              "token",
+              "internalTransactions",
+              "insights",
+            ].map((tab) => (
+              <a
+                key={tab}
+                href="#"
+                className={`border-b-2 py-2 px-4 text-sm font-medium ${
+                  activeTab === tab
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                } ${tab === "insights" ? "text-gray-400" : ""}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab.charAt(0).toUpperCase() +
+                  tab.slice(1).replace(/([A-Z])/g, " $1")}
+                {tab === "insights" && " (Coming Soon)"}
+              </a>
+            ))}
+          </nav>
+        </div>
       </div>
-
 
       <div className="mt-4 relative">
         <input
@@ -225,9 +274,9 @@ const Address: React.FC<PageProps> = ({ params }) => {
         />
         <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
       </div>
+      <div className="mt-4">{renderTabContent()}</div>
 
-      
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <div className="flex space-x-2 mb-4">
           <span className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
             All ({assets.length})
@@ -265,10 +314,9 @@ const Address: React.FC<PageProps> = ({ params }) => {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
     </Layout>
   );
 };
 
 export default Address;
-
