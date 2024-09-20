@@ -5,6 +5,7 @@ import Layout from "@/components/newui/Layout";
 import { ArrowLeft, ArrowUpRight, Copy, HelpCircle } from "lucide-react";
 import Loading from '@/components/elements/Loading';
 import Link from 'next/link';
+import TransactionTable from '@/components/TransactionTable';
 
 interface PageProps {
   params: {
@@ -81,36 +82,13 @@ const Block: React.FC<PageProps> = ({ params }) => {
           </div>
         </div>
 
-        <div className="flex space-x-6">
+        <div className="flex justify-between items-center">
           <BlockDetailsCard blockData={blockData} />
 
-          <div className="w-1/2">
-            <h2 className="text-xl font-bold mb-4">Transactions</h2>
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <table className="min-w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {transactions.map((tx) => (
-                    <tr key={tx.hash}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-500">
-                        <Link href={`/tx/${tx.hash}`}>{tx.hash.slice(0, 10)}...{tx.hash.slice(-4)}</Link>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tx.from.slice(0, 10)}...{tx.from.slice(-4)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tx.to ? `${tx.to.slice(0, 10)}...${tx.to.slice(-4)}` : 'Contract Creation'}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ethers.utils.formatEther(tx.value)} ETH</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div className='w-[50%]'>
+          <TransactionTable transactions={transactions} itemsPerPage={9} />
           </div>
+       
         </div>
         </div>
        
@@ -126,7 +104,7 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
   };
 
   return (
-    <div className="bg-black rounded-3xl text-white w-[45%] h-[600px]">
+    <div className="bg-black rounded-3xl text-white w-[40%] h-[600px]">
       <div className="rounded-t-3xl bg-blue-500 py-2 px-4">
         <div className="rounded-full h-20 w-20 border-8 border-[#baf7d0] items-center">
           <ArrowUpRight className="h-16 w-16 font-bold text-[#baf7d0]" />

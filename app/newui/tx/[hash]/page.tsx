@@ -82,7 +82,7 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
 
   return (
     <Layout>
-      <div className="bg-[#f5f6f8]">
+      <div className="">
         {error ? (
           <div className="text-red-500">{error}</div>
         ) : (
