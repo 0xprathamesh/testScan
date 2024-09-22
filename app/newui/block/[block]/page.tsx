@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowUpRight, Copy, HelpCircle } from "lucide-react";
 import Loading from '@/components/elements/Loading';
 import Link from 'next/link';
 import TransactionTable from '@/components/TransactionTable';
+import { IoCubeOutline } from 'react-icons/io5';
 
 interface PageProps {
   params: {
@@ -65,7 +66,7 @@ const Block: React.FC<PageProps> = ({ params }) => {
   }
 
   if (!blockData) {
-    return <Layout><div className='text-blue bg-white'><Loading/></div></Layout>;
+    return <Layout><div className='text-blue '><Loading/></div></Layout>;
   }
 
   return (
@@ -77,15 +78,16 @@ const Block: React.FC<PageProps> = ({ params }) => {
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <div>
-            <div className="text-sm text-blue-500">Home • Block {blockData.number}</div>
-            <h1 className="text-2xl font-bold">Block details</h1>
+            <div className="text-sm ">Block Details</div>
+            <h1 className="text-xs text-blue font-bold">Home</h1>
           </div>
         </div>
 
-        <div className="flex justify-between items-center">
+        <div className="flex  items-center">
+
           <BlockDetailsCard blockData={blockData} />
 
-          <div className='w-[50%]'>
+          <div className='w-[70%] ml-4'>
           <TransactionTable transactions={transactions} itemsPerPage={9} />
           </div>
        
@@ -105,9 +107,9 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
 
   return (
     <div className="bg-black rounded-3xl text-white w-[40%] h-[600px]">
-      <div className="rounded-t-3xl bg-blue-500 py-2 px-4">
+      <div className="rounded-t-3xl bg-blue-500 py-2 px-4 mt-4">
         <div className="rounded-full h-20 w-20 border-8 border-[#baf7d0] items-center">
-          <ArrowUpRight className="h-16 w-16 font-bold text-[#baf7d0]" />
+          <IoCubeOutline className="h-16 w-16 font-bold text-[#baf7d0]" />
         </div>
       </div>
       <div className="p-6">
@@ -127,30 +129,30 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <span className="mr-2">Block Hash</span>
+              <span className="mr-2 text-sm font-inter">Block Hash</span>
               <HelpCircle className="h-4 w-4" />
             </div>
-            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md">
+            <div className="bg-white bg-opacity-20 px-3 py-1  rounded-md text-sm border-gray-400 border leading">
               {blockData.hash.slice(0, 10)}...{blockData.hash.slice(-4)}
             </div>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <span className="mr-2">Parent Hash</span>
+              <span className="mr-2 text-sm font-inter">Parent Hash</span>
               <HelpCircle className="h-4 w-4" />
             </div>
-            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md">
+            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
               {blockData.parentHash.slice(0, 10)}...{blockData.parentHash.slice(-4)}
             </div>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <span className="mr-2">Gas Used</span>
+              <span className="mr-2 text-sm font-inter">Gas Used</span>
               <HelpCircle className="h-4 w-4" />
             </div>
-            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md">
+            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border ">
               {blockData.gasUsed.toString()}
             </div>
           </div>
@@ -158,11 +160,11 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
 
         <div className="mt-6">
           <span className="text-sm mb-2">Tags</span>
-          <div className="flex flex-wrap gap-2">
-            <span className="bg-black bg-opacity-20 px-3 py-1 rounded-full text-sm">
+          <div className="flex flex-wrap gap-2 mt-2">
+            <span className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
               Transactions: {blockData.transactions.length}
             </span>
-            <span className="bg-black bg-opacity-20 px-3 py-1 rounded-full text-sm">
+            <span className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
               Gas Limit: {blockData.gasLimit.toString()}
             </span>
           </div>

@@ -86,6 +86,9 @@ body ::-webkit-scrollbar {
 .leading {
   letter-spacing: 0.13em;
 }
+.leading-2 {
+  letter-spacing: 0.1em;
+}
 
 .transform {
   transform: translateY(2px);
