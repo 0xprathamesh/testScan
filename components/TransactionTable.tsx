@@ -23,16 +23,13 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Calculate total pages
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
 
-  // Get current transactions to display based on page
   const currentTransactions = transactions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Handle page navigation
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -108,26 +105,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         </table>
       </div>
 
-      {/* Pagination Controls
-      <div className="mt-4 flex justify-between items-center">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-300 rounded-lg disabled:bg-gray-100"
-        >
-          Previous
-        </button>
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-gray-300 rounded-lg disabled:bg-gray-100"
-        >
-          Next
-        </button>
-      </div> */}
+   
       <div className="mt-4 flex justify-around items-center">
         <PaginationComponent
           currentPage={currentPage}

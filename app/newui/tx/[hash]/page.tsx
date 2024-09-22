@@ -49,7 +49,7 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
   const fetchTransactionData = async (hash: string) => {
     try {
       const rpcUrl =
-        "https://mainnet.infura.io/v3/0075eaf8836d41cda4346faf5dd87efe";
+        "https://erpc.xinfin.network/";
       const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
       const tx = await provider.getTransaction(hash);

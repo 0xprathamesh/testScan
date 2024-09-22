@@ -43,7 +43,7 @@ const Block: React.FC<PageProps> = ({ params }) => {
 
   const fetchBlockData = async (blockNumber: number) => {
     try {
-      const rpcUrl = "https://mainnet.infura.io/v3/0075eaf8836d41cda4346faf5dd87efe";
+      const rpcUrl = "https://erpc.xinfin.network/";
       const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
       const block = await provider.getBlock(blockNumber);

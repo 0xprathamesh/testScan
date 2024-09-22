@@ -12,7 +12,7 @@ const BlocksPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const rpcUrl = localStorage.getItem("rpcUrl") || "https://eth.llamarpc.com";
+    const rpcUrl = localStorage.getItem("rpcUrl") || "https://erpc.xinfin.network/";
     const rpcProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
     setProvider(rpcProvider);
   }, []);

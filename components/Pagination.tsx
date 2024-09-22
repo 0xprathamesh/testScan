@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PaginationComponent = ({ currentPage, totalPages, handlePreviousPage, handleNextPage }) => {
+const PaginationComponent = ({ currentPage, totalPages, handlePreviousPage, handleNextPage } : any) => {
   const pageNumbers = [];
   for (let i = 1; i <= totalPages; i++) {
     pageNumbers.push(i);

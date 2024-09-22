@@ -47,7 +47,7 @@ const Address: React.FC<PageProps> = ({ params }) => {
     const fetchUserData = async () => {
       try {
         const rpcUrl =
-          "https://mainnet.infura.io/v3/0075eaf8836d41cda4346faf5dd87efe";
+          "https://erpc.xinfin.network/"; // https://mainnet.infura.io/v3/0075eaf8836d41cda4346faf5dd87efe
         const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
         const balance = await provider.getBalance(params.address);

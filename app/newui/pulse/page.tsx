@@ -19,7 +19,7 @@ const DashboardPage = () => {
     const fetchData = async () => {
       try {
         const data = await getBlockchainData(
-          "https://mainnet.infura.io/v3/0075eaf8836d41cda4346faf5dd87efe"
+          "https://erpc.xinfin.network/"
         ); // Replace with your RPC URL
         setBlockchainData(data);
         setLoading(false);
@@ -153,7 +153,7 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
-         <NetworkPulse rpcUrl={"https://mainnet.infura.io/v3/0075eaf8836d41cda4346faf5dd87efe"}/>
+         <NetworkPulse rpcUrl={"https://erpc.xinfin.network/"}/>
       </div>
     </Layout>
   );
