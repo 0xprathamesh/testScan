@@ -1,19 +1,23 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { IoReceiptOutline,IoCubeOutline } from "react-icons/io5";
+import { IoReceiptOutline, IoCubeOutline } from "react-icons/io5";
 import { FiSearch, FiCopy, FiArrowRight } from "react-icons/fi";
 import Layout from "@/components/newui/Layout";
 import Loading from "@/components/elements/Loading";
 import Link from "next/link";
 import { Copy } from "lucide-react";
+
 const TransactionTable = () => {
-  // Fixing the transactions state type
   const [transactions, setTransactions] = useState<
+    ethers.providers.TransactionResponse[]
+  >([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<
     ethers.providers.TransactionResponse[]
   >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState(""); 
 
   useEffect(() => {
     fetchTransactions();
@@ -22,13 +26,14 @@ const TransactionTable = () => {
   const fetchTransactions = async () => {
     try {
       const rpcUrl =
-        "https://mainnet.infura.io/v3/0075eaf8836d41cda4346faf5dd87efe";
+        "https://erpc.xinfin.network/";
       const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
       const latestBlockNumber = await provider.getBlockNumber();
       const block = await provider.getBlockWithTransactions(latestBlockNumber);
 
-      // TypeScript will now know this is of type TransactionResponse[]
-      setTransactions(block.transactions.slice(0, 10)); // Limiting to 10 transactions for this example
+      setTransactions(block.transactions);
+      const searchtxns = block.transactions;
+      setFilteredTransactions(block.transactions); 
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -44,6 +49,25 @@ const TransactionTable = () => {
     if (tx.data === "0x") return "Transfer";
     if (tx.to === null) return "Contract Creation";
     return "Contract Call";
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    if (query === "") {
+      setFilteredTransactions(transactions);
+    } else {
+      const filtered = transactions.filter((tx) => {
+        return (
+          tx.hash.toLowerCase().includes(query) ||
+          (tx.from && tx.from.toLowerCase().includes(query)) ||
+          (tx.to && tx.to.toLowerCase().includes(query)) ||
+          (tx.blockNumber && tx.blockNumber.toString().includes(query))
+        );
+      });
+      setFilteredTransactions(filtered);
+    }
   };
 
   if (loading)
@@ -69,6 +93,8 @@ const TransactionTable = () => {
           <input
             type="text"
             placeholder="Search ID / Address / Transactions"
+            value={searchQuery}
+            onChange={handleSearch} // Handle search input
             className="w-full p-2 pl-10 rounded border"
           />
           <FiSearch className="absolute left-3 top-3 text-gray-400" />
@@ -90,7 +116,6 @@ const TransactionTable = () => {
                   From
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   To
                 </th>
@@ -103,7 +128,7 @@ const TransactionTable = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {transactions.map((tx) => {
+              {filteredTransactions.map((tx) => {
                 const method = getMethodName(tx);
                 const valueInEther = ethers.utils.formatEther(tx.value || "0");
                 const gasFeeInEther =
@@ -131,24 +156,30 @@ const TransactionTable = () => {
                       </p>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <div className="bg-black px-1 text-center rounded-md text-white flex items-center">
+                      <div className="bg-black px-1 text-center rounded-md text-white flex items-center justify-around ">
                         <IoCubeOutline />
                         {tx.blockNumber}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-blue text-sm font-light">
+                      <div className="text-blue text-sm font-light leading font-chivo flex items-center">
                         {truncateAddress(tx.from)}
-                        <FiCopy className="inline cursor-pointer ml-2" />
+                        <Copy
+                          className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+                          onClick={() => navigator.clipboard.writeText(tx.from)}
+                        />
                       </div>
                     </td>
                     <td className="px-6 py-4 text-green-500">
                       <FiArrowRight className="h-4 w-4" />
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-blue text-sm font-light">
+                      <div className="text-blue text-sm font-light font-chivo leading flex items-center">
                         {tx.to ? truncateAddress(tx.to) : "Contract Creation"}
-                        <FiCopy className="inline cursor-pointer ml-2" />
+                        <Copy
+                          className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+                          onClick={() => navigator.clipboard.writeText(tx.to)}
+                        />
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm">

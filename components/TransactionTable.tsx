@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import Link from "next/link";
 import { Copy } from "lucide-react";
 import { FaLongArrowAltRight } from "react-icons/fa";
+import PaginationComponent from "./Pagination";
 
 interface Transaction {
   hash: string;
@@ -18,20 +19,17 @@ interface TransactionTableProps {
 
 const TransactionTable: React.FC<TransactionTableProps> = ({
   transactions,
-  itemsPerPage = 10,
+  itemsPerPage = 11,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Calculate total pages
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
 
-  // Get current transactions to display based on page
   const currentTransactions = transactions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Handle page navigation
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -43,10 +41,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       setCurrentPage(currentPage - 1);
     }
   };
+  const parseAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
   return (
     <div className="">
-      <h2 className="text-xl font-bold mb-4">Transactions</h2>
       <div className="bg-white rounded-3xl shadow overflow-hidden">
         <table className="min-w-full">
           <thead className="bg-gray-50">
@@ -80,7 +80,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                     />
                   </Link>
                 </td>
-                <td className="px-3 py-4 text-[#8A98AD] font-chivo text-sm font-light leading flex items-center">
+                <td className="px-3 py-4 text-[#8A98AD] font-chivo text-sm font-light leading-2 flex items-center">
                   {tx.from.slice(0, 10)}...{tx.from.slice(-4)}{" "}
                   <Copy
                     className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
@@ -90,7 +90,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                     <FaLongArrowAltRight className="h-3 w-3" />
                   </p>
                 </td>
-                <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-3 py-4 whitespace-nowrap text-gray-500 leading-2 font-chivo text-sm font-light">
                   {tx.to
                     ? `${tx.to.slice(0, 10)}...${tx.to.slice(-4)}`
                     : "Contract Creation"}
@@ -105,25 +105,14 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         </table>
       </div>
 
-      {/* Pagination Controls */}
-      <div className="mt-4 flex justify-between items-center">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-300 rounded-lg disabled:bg-gray-100"
-        >
-          Previous
-        </button>
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-gray-300 rounded-lg disabled:bg-gray-100"
-        >
-          Next
-        </button>
+   
+      <div className="mt-4 flex justify-around items-center">
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePreviousPage={handlePreviousPage}
+          handleNextPage={handleNextPage}
+        />
       </div>
     </div>
   );

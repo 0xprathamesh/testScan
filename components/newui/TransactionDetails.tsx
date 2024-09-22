@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowUpRight, Copy, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Loading from "../elements/Loading";
+import { ethers } from "ethers";
 
 
 interface TxData {
@@ -112,126 +113,196 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
   );
 };
 
+// const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
+//   if (!txData) return null;
+//   return (
+//     // <div>
+//     //   <div className="mb-4 mt-4 bg-white p-4 rounded-lg">
+//     //     <h3 className="font-semibold mb-2">Transaction Value</h3>
+//     //     <div className="flex items-center">
+//     //       <img
+//     //         src="/api/placeholder/24/24"
+//     //         alt="Token icon"
+//     //         className="mr-2 rounded-full"
+//     //       />
+//     //       <span className="font-bold">{txData.value.toString()} ETH</span>
+//     //     </div>
+//     //   </div>
+//     //   <div className="mb-4 bg-white p-4 rounded-lg">
+//     //     <h3 className="font-semibold mb-2">From</h3>
+//     //     <div className="flex items-center">
+//     //       <span className="bg-red-100 text-red-800 p-1 rounded mr-2">
+//     //         {txData.from}
+//     //       </span>
+//     //       <Copy
+//     //         className="h-4 w-4 cursor-pointer"
+//     //         onClick={() => navigator.clipboard.writeText(txData.from)}
+//     //       />
+//     //     </div>
+//     //   </div>
+//     //   <div className="mb-4 bg-white p-4 rounded-lg">
+//     //     <h3 className="font-semibold mb-2">To</h3>
+//     //     <div className="flex items-center">
+//     //       <span className="bg-green-100 text-green-800 p-1 rounded mr-2">
+//     //         {txData.to || "Contract Creation"}
+//     //       </span>
+//     //       {txData.to && (
+//     //         <Copy
+//     //           className="h-4 w-4 cursor-pointer"
+//     //           onClick={() => navigator.clipboard.writeText(txData.to)}
+//     //         />
+//     //       )}
+//     //     </div>
+//     //   </div>
+//     //   <div className="bg-white p-4 rounded-lg">
+//     //     <h3 className="font-semibold mb-2">Transaction Fee</h3>
+//     //     <div className="flex justify-between items-center">
+//     //       <span className="text-2xl font-bold">
+//     //         {(
+//     //           Number(txData.gasUsed) * Number(txData.effectiveGasPrice)
+//     //         ).toString()}{" "}
+//     //         Wei
+//     //       </span>
+//     //       <span className="text-gray-500">
+//     //         {txData.gasUsed.toString()} Gas Used
+//     //       </span>
+//     //     </div>
+//     //   </div>
+//     // </div>
+//     <div className="space-y-4">
+//     <div className="bg-white p-4 rounded-lg shadow">
+//       <h3 className="text-lg font-semibold mb-2">Send</h3>
+//       <div className="flex items-center bg-gray-100 p-3 rounded">
+//         <img
+//           src="/api/placeholder/32/32"
+//           alt="Token icon"
+//           className="mr-3 rounded-full"
+//         />
+//         <span className="font-bold text-lg">23.631817 MANTA</span>
+//       </div>
+//     </div>
+
+//     <div className="bg-white p-4 rounded-lg shadow">
+//       <div className="flex justify-between items-center mb-2">
+//         <h3 className="text-lg">From</h3>
+//         <div className="flex items-center">
+//           <span className="text-gray-600 mr-2">0x48...a4EE</span>
+//           <img src="/api/placeholder/24/24" alt="From icon" className="rounded-full" />
+//           <Copy className="h-4 w-4 ml-2 cursor-pointer text-gray-400" onClick={() => {}} />
+//         </div>
+//       </div>
+//       <div className="flex justify-center my-2">
+//         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+//           <path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+//         </svg>
+//       </div>
+//       <div className="flex justify-between items-center">
+//         <h3 className="text-lg">On Application</h3>
+//         <div className="flex items-center">
+//           <span className="text-gray-600 mr-2">Manta</span>
+//           <img src="/api/placeholder/24/24" alt="Application icon" className="rounded-full" />
+//           <Copy className="h-4 w-4 ml-2 cursor-pointer text-gray-400" onClick={() => {}} />
+//         </div>
+//       </div>
+//     </div>
+
+//     <div className="bg-white p-4 rounded-lg shadow">
+//       <div className="flex justify-between items-center mb-2">
+//         <h3 className="text-lg font-semibold">Amount paid for the transaction</h3>
+//         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+//           <path d="M19 9l-7 7-7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+//         </svg>
+//       </div>
+//       <div className="text-2xl font-bold mb-4">$0 <span className="text-gray-500 text-lg font-normal">0 ETH</span></div>
+      
+//       <div className="flex justify-between items-center mb-2">
+//         <span className="text-gray-600">Amount paid to application</span>
+//         <div>
+//           <span className="font-semibold">$0</span>
+//           <span className="text-gray-500 ml-2">0 ETH</span>
+//         </div>
+//       </div>
+      
+//       <div className="flex justify-between items-center">
+//         <span className="text-gray-600">Transaction fee</span>
+//         <div>
+//           <span className="font-semibold">$0</span>
+//           <span className="text-gray-500 ml-2">0 ETH</span>
+//         </div>
+//       </div>
+//       <a href="#" className="text-blue-500 text-sm">How is it calculated?</a>
+//     </div>
+//   </div>
+//   );
+// };
 const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
   if (!txData) return null;
+
+  const formatValue = (value: any) => {
+    // Format value to Ether or any other currency if necessary
+    return value.toString();
+  };
+
+  const formatGasFee = (gasUsed: any, gasPrice: any) => {
+    // Calculate the total gas fee
+    const fee = Number(gasUsed) * Number(gasPrice);
+    return fee.toString();
+  };
+
+  const shortenAddress = (address: string) =>
+    `${address.slice(0, 6)}...${address.slice(-4)}`;
+
   return (
-    // <div>
-    //   <div className="mb-4 mt-4 bg-white p-4 rounded-lg">
-    //     <h3 className="font-semibold mb-2">Transaction Value</h3>
-    //     <div className="flex items-center">
-    //       <img
-    //         src="/api/placeholder/24/24"
-    //         alt="Token icon"
-    //         className="mr-2 rounded-full"
-    //       />
-    //       <span className="font-bold">{txData.value.toString()} ETH</span>
-    //     </div>
-    //   </div>
-    //   <div className="mb-4 bg-white p-4 rounded-lg">
-    //     <h3 className="font-semibold mb-2">From</h3>
-    //     <div className="flex items-center">
-    //       <span className="bg-red-100 text-red-800 p-1 rounded mr-2">
-    //         {txData.from}
-    //       </span>
-    //       <Copy
-    //         className="h-4 w-4 cursor-pointer"
-    //         onClick={() => navigator.clipboard.writeText(txData.from)}
-    //       />
-    //     </div>
-    //   </div>
-    //   <div className="mb-4 bg-white p-4 rounded-lg">
-    //     <h3 className="font-semibold mb-2">To</h3>
-    //     <div className="flex items-center">
-    //       <span className="bg-green-100 text-green-800 p-1 rounded mr-2">
-    //         {txData.to || "Contract Creation"}
-    //       </span>
-    //       {txData.to && (
-    //         <Copy
-    //           className="h-4 w-4 cursor-pointer"
-    //           onClick={() => navigator.clipboard.writeText(txData.to)}
-    //         />
-    //       )}
-    //     </div>
-    //   </div>
-    //   <div className="bg-white p-4 rounded-lg">
-    //     <h3 className="font-semibold mb-2">Transaction Fee</h3>
-    //     <div className="flex justify-between items-center">
-    //       <span className="text-2xl font-bold">
-    //         {(
-    //           Number(txData.gasUsed) * Number(txData.effectiveGasPrice)
-    //         ).toString()}{" "}
-    //         Wei
-    //       </span>
-    //       <span className="text-gray-500">
-    //         {txData.gasUsed.toString()} Gas Used
-    //       </span>
-    //     </div>
-    //   </div>
-    // </div>
     <div className="space-y-4">
-    <div className="bg-white p-4 rounded-lg shadow">
-      <h3 className="text-lg font-semibold mb-2">Send</h3>
-      <div className="flex items-center bg-gray-100 p-3 rounded">
-        <img
-          src="/api/placeholder/32/32"
-          alt="Token icon"
-          className="mr-3 rounded-full"
-        />
-        <span className="font-bold text-lg">23.631817 MANTA</span>
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-2">Transaction Value</h3>
+        <div className="flex items-center bg-gray-100 p-3 rounded">
+          <span className="font-bold text-lg">{ethers.utils.formatEther(txData.value)} ETH</span>
+        </div>
       </div>
-    </div>
 
-    <div className="bg-white p-4 rounded-lg shadow">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg">From</h3>
-        <div className="flex items-center">
-          <span className="text-gray-600 mr-2">0x48...a4EE</span>
-          <img src="/api/placeholder/24/24" alt="From icon" className="rounded-full" />
-          <Copy className="h-4 w-4 ml-2 cursor-pointer text-gray-400" onClick={() => {}} />
+      <div className="bg-white p-4 rounded-lg shadow">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg">From</h3>
+          <div className="flex items-center">
+            <span className="text-gray-600 mr-2">{shortenAddress(txData.from)}</span>
+            <Copy
+              className="h-4 w-4 ml-2 cursor-pointer text-gray-400"
+              onClick={() => navigator.clipboard.writeText(txData.from)}
+            />
+          </div>
         </div>
       </div>
-      <div className="flex justify-center my-2">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </div>
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg">On Application</h3>
-        <div className="flex items-center">
-          <span className="text-gray-600 mr-2">Manta</span>
-          <img src="/api/placeholder/24/24" alt="Application icon" className="rounded-full" />
-          <Copy className="h-4 w-4 ml-2 cursor-pointer text-gray-400" onClick={() => {}} />
-        </div>
-      </div>
-    </div>
 
-    <div className="bg-white p-4 rounded-lg shadow">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold">Amount paid for the transaction</h3>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M19 9l-7 7-7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </div>
-      <div className="text-2xl font-bold mb-4">$0 <span className="text-gray-500 text-lg font-normal">0 ETH</span></div>
-      
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-gray-600">Amount paid to application</span>
-        <div>
-          <span className="font-semibold">$0</span>
-          <span className="text-gray-500 ml-2">0 ETH</span>
+      <div className="bg-white p-4 rounded-lg shadow">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg">To</h3>
+          <div className="flex items-center">
+            <span className="text-gray-600 mr-2">
+              {txData.to ? shortenAddress(txData.to) : "Contract Creation"}
+            </span>
+            {txData.to && (
+              <Copy
+                className="h-4 w-4 ml-2 cursor-pointer text-gray-400"
+                onClick={() => navigator.clipboard.writeText(txData.to)}
+              />
+            )}
+          </div>
         </div>
       </div>
-      
-      <div className="flex justify-between items-center">
-        <span className="text-gray-600">Transaction fee</span>
-        <div>
-          <span className="font-semibold">$0</span>
-          <span className="text-gray-500 ml-2">0 ETH</span>
+
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-2">Transaction Fee</h3>
+        <div className="flex justify-between items-center">
+          <span className="text-2xl font-bold">
+            {formatGasFee(txData.gasUsed, txData.effectiveGasPrice)} Wei
+          </span>
+          <span className="text-gray-500">
+            {txData.gasUsed.toString()} Gas Used
+          </span>
         </div>
       </div>
-      <a href="#" className="text-blue-500 text-sm">How is it calculated?</a>
     </div>
-  </div>
   );
 };
 
@@ -283,117 +354,7 @@ const RawTraceTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
 
 export default TransactionDetails;
 
-// TransactionDetailsCard component remains unchanged
 
-// const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
-//   txData,
-// }) => {
-//   if (!txData) return <div className="w-[45%] text-center text-blue"><Loading /></div>;
-
-//   const formatDate = (timestamp: number) => {
-//     const date = new Date(timestamp * 1000);
-//     return date.toLocaleDateString() + " " + date.toLocaleTimeString();
-//   };
-
-//   const shortenHash = (hash: string) =>
-//     `${hash.slice(0, 6)}...${hash.slice(-4)}`;
-
-//   return (
-//     <div className="bg-black rounded-3xl text-white w-[45%] h-[600px]">
-//       <div className="rounded-t-3xl bg-green-500 py-2 px-4">
-//         <div className="rounded-full h-20 w-20 border-8 border-[#baf7d0] items-center">
-//           <ArrowUpRight className="h-16 w-16 font-bold text-[#baf7d0]" />
-//         </div>
-//       </div>
-//       <div className="p-6">
-//         <div className="flex items-center justify-between mb-4">
-//           <div className="flex items-center">
-//             <h2 className="text-2xl font-bold">{txData.action}</h2>
-//           </div>
-//           <span
-//             className={`px-3 py-1 rounded-md text-sm ${
-//               txData.status ? "bg-green-500" : "bg-red-500"
-//             }`}
-//           >
-//             {txData.status ? "Success" : "Failed"}
-//           </span>
-//         </div>
-
-//         <div className="mb-6 text-sm bg-black font-light">
-//           <span className="mr-2 text-gray-300">
-//             {formatDate(txData.timestamp)}
-//           </span>
-//           •
-//           <span className="ml-2 text-gray-500 font-light leading-10">
-//             Confirmed in {txData.confirmations} block
-//             {txData.confirmations !== 1 ? "s" : ""}
-//           </span>
-//         </div>
-
-//         <div className="space-y-4">
-//           <div className="flex items-center justify-between">
-//             <div className="flex items-center">
-//               <span className="mr-2">Located in</span>
-//               <HelpCircle className="h-4 w-4" />
-//             </div>
-//             <Link href={`/newui/block/${txData.blockNumber}`}>
-//             <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
-//               {txData.blockNumber}
-//             </div></Link>
-//           </div>
-
-//           <div className="flex items-center justify-between">
-//             <div className="flex items-center">
-//               <span className="mr-2">From</span>
-//               <HelpCircle className="h-4 w-4" />
-//             </div>
-//             <Link href={`/newui/address/${txData.from}`}>
-//             <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border border-gray-400 leading">
-//               {shortenHash(txData.from)}
-//             </div></Link>
-//           </div>
-
-//           <div className="flex items-center justify-between">
-//             <div className="flex items-center">
-//               <span className="mr-2">To</span>
-//               <HelpCircle className="h-4 w-4" />
-//             </div>
-//             <Link href={`/newui/address/${txData.to}`}>
-//               <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
-//                 {txData.to ? shortenHash(txData.to) : "Contract Creation"}
-//               </div>
-//             </Link>
-//           </div>
-//         </div>
-
-//         <div className="mt-6">
-//           <span className="text-sm mb-2">Tags</span>
-//           <div className="flex flex-wrap gap-2">
-//             <span className="bg-black bg-opacity-20 px-3 py-1 rounded-full text-sm">
-//               Value: {txData.value.toString()} Wei
-//             </span>
-//             <span className="bg-black bg-opacity-20 px-3 py-1 rounded-full text-sm">
-//               Gas Used: {txData.gasUsed.toString()}
-//             </span>
-//           </div>
-//         </div>
-
-//         <div className="mt-6 bg-gray-500 bg-opacity-20 p-4 rounded-xl">
-//           <div className="flex items-center justify-between mb-2">
-//             <span>Transaction Hash</span>
-//             <HelpCircle className="h-4 w-4" />
-//           </div>
-//           <div className="flex items-center justify-between">
-// <Link href={`/newui/tx/${txData.hash}`}>
-//               <span className="text-sm font-inter leading">{shortenHash(txData.hash)}</span>
-//               </Link>
-//             <Copy className="h-4 w-4" />
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
 
 const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({ txData }) => {
   if (!txData) return <div className="w-[45%] text-center text-blue"><Loading /></div>;
