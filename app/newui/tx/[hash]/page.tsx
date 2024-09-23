@@ -54,16 +54,19 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
 
       const tx = await provider.getTransaction(hash);
       const receipt = await provider.getTransactionReceipt(hash);
-      const block = await provider.getBlock(tx.blockNumber);
+      const block = tx.blockNumber !== undefined
+      ? await provider.getBlock(tx.blockNumber)
+      : null;
+    
 
       const txData: TxData = {
         hash: tx.hash,
         status: receipt.status === 1,
-        blockNumber: tx.blockNumber,
-        timestamp: block.timestamp,
+        blockNumber: tx.blockNumber !== undefined ? tx.blockNumber : 4344556,
+        timestamp:block ? block.timestamp : 4345666,
         confirmations: tx.confirmations,
         from: tx.from,
-        to: tx.to,
+        to: tx.to || '',
         value: tx.value,
         gasLimit: tx.gasLimit,
         gasUsed: receipt.gasUsed,

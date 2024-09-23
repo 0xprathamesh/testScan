@@ -21,7 +21,7 @@ interface BlockData extends ethers.providers.Block {
 interface Transaction {
   hash: string;
   from: string;
-  to: string;
+  to?: string;
   value: ethers.BigNumber;
 }
 
