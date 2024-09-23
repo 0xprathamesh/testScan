@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Layout from '@/components/newui/Layout';
 import { FileText, User } from 'lucide-react';
 
-// Define an interface for the asset data
+
 interface Asset {
   name: string;
   icon: string;
@@ -13,8 +13,18 @@ interface Asset {
   holders: number;
 }
 
+const Skeleton: React.FC = () => {
+  return (
+    <div className="animate-pulse space-y-4">
+      {[...Array(5)].map((_, index) => (
+        <div key={index} className="h-12 bg-gray-200 rounded"></div>
+      ))}
+    </div>
+  );
+};
+
 const AssetsTable: React.FC = () => {
-  const [assets, setAssets] = useState<Asset[]>([]); // Assets should be an array of the Asset type
+  const [assets, setAssets] = useState<Asset[]>([]); 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,14 +37,12 @@ const AssetsTable: React.FC = () => {
     '0x3fb46c4db76d8e9f69f3f8388f43a7ca7e140807',
   ];
 
-  // Function to format the token supply
   const formatTokenSupply = (supply: any): string => {
     const supplyBigInt = BigInt(supply);
     const scaledSupply = supplyBigInt / BigInt(1e18);
     return scaledSupply.toLocaleString();
   };
 
-  // Function to fetch total holders count for a given contract address
   const fetchTotalHoldersCount = async (address: string): Promise<number> => {
     try {
       let page = 1;
@@ -64,7 +72,6 @@ const AssetsTable: React.FC = () => {
     }
   };
 
-  // Fetch assets data when the component mounts
   useEffect(() => {
     const fetchAssetsData = async () => {
       try {
@@ -104,7 +111,7 @@ const AssetsTable: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Skeleton />; 
   }
 
   if (error) {
