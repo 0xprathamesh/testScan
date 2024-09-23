@@ -8,7 +8,7 @@ import PaginationComponent from "./Pagination";
 interface Transaction {
   hash: string;
   from: string;
-  to: string;
+  to?: string;
   value: ethers.BigNumber;
 }
 

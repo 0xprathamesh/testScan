@@ -178,7 +178,7 @@ const TransactionTable = () => {
                         {tx.to ? truncateAddress(tx.to) : "Contract Creation"}
                         <Copy
                           className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
-                          onClick={() => navigator.clipboard.writeText(tx.to)}
+                          onClick={() => navigator.clipboard.writeText(tx.from)}
                         />
                       </div>
                     </td>

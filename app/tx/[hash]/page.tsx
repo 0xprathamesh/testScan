@@ -55,13 +55,15 @@ const DetailedTransactionPage: React.FC<PageProps> = ({ params }) => {
 
   const fetchTransactionData = async (hash: string) => {
     try {
-      const rpcUrl = localStorage.getItem("rpcUrl") || "https://erpc.xinfin.network/";
+      const rpcUrl =
+        localStorage.getItem("rpcUrl") || "https://erpc.xinfin.network/";
       const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
       const tx = await provider.getTransaction(hash);
       const receipt = await provider.getTransactionReceipt(hash);
-      const block = tx.blockNumber !== undefined 
-      ? await provider.getBlock(tx.blockNumber) 
-      : null;
+      const block =
+        tx.blockNumber !== undefined
+          ? await provider.getBlock(tx.blockNumber)
+          : null;
 
       if (tx && receipt && block) {
         const tokenTransfers = parseTokenTransfers(receipt.logs);
@@ -121,7 +123,12 @@ const DetailedTransactionPage: React.FC<PageProps> = ({ params }) => {
   };
 
   if (error) return <div className="text-red-500">{error}</div>;
-  if (!txData) return <div className="h-40 m-auto text-blue"><Loading /></div>;
+  if (!txData)
+    return (
+      <div className="h-40 m-auto text-blue">
+        <Loading />
+      </div>
+    );
 
   return (
     <>
@@ -154,7 +161,11 @@ const DetailedTransactionPage: React.FC<PageProps> = ({ params }) => {
             <p className="py-6 font-mono break-all">{txData.hash}</p>
 
             <TitleComponent title="Status" />
-            <p className={`py-6 ${txData.status ? "text-green-500" : "text-red-500"}`}>
+            <p
+              className={`py-6 ${
+                txData.status ? "text-green-500" : "text-red-500"
+              }`}
+            >
               {txData.status ? "Success" : "Failed"}
             </p>
 
@@ -182,9 +193,7 @@ const DetailedTransactionPage: React.FC<PageProps> = ({ params }) => {
             </p>
 
             <TitleComponent title="Value" />
-            <p className="py-6">
-              {ethers.utils.formatEther(txData.value)} ETH
-            </p>
+            <p className="py-6">{ethers.utils.formatEther(txData.value)} ETH</p>
 
             <TitleComponent title="Transaction Fee" />
             <p className="py-6">

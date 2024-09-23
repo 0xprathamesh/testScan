@@ -153,25 +153,8 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ params }) => {
               </th>
             </tr>
           </thead>
-          {/* <tbody>
-            {externalTxs.map((tx, index) => (
-              <tr key={index} className="border-b">
-                <td className="px-4 py-2 text-sm text-blue-600">
-                  <Copyable text="" copyText={tx.hash}>
-                    {tx.hash.substring(0, 10)}...
-                  </Copyable>
-                </td>
-                <td className="px-4 py-2 text-sm">{tx.blockNum}</td>
-                <td className="px-4 py-2 text-sm">{tx.from}</td>
-                <td className="px-4 py-2 text-sm">{tx.to}</td>
-                <td className="px-4 py-2 text-sm">{tx.value} ETH</td>
-                <td className="px-4 py-2 text-sm">{tx.txnFee} ETH</td>
-                <td className="px-4 py-2 text-sm">
-                  {new Date(tx.metadata.blockTimestamp).toLocaleString()}
-                </td>
-              </tr>
-            ))}
-          </tbody> */}
+
+
         </table>
       </div>
     </div>

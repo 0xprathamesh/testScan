@@ -11,14 +11,14 @@ const Explore = () => {
         <h1 className="text-4xl font-bold mb-4">MANTA</h1>
         <p className="text-lg text-gray-600 mb-8">
           The first EVM-native modular execution layer for wide ZK applications
-          adoption, with Manta's universal circuit and zk interface
+          adoption, with Manta universal circuit and zk interface
         </p>
 
         <div className="flex justify-between mb-8">
           <div>
             <h2 className="text-3xl font-bold text-blue-500">80% Cheaper</h2>
             <p className="text-gray-600">
-              lower transaction costs through Celestia and Caldera's OP Stack
+              lower transaction costs through Celestia and Caldera OP Stack
               Rollup solution
             </p>
           </div>

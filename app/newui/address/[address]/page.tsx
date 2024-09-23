@@ -200,7 +200,7 @@ const Address: React.FC<PageProps> = ({ params }) => {
               className="w-8 h-8 mr-2"
             />
             <div>
-              <p className="font-bold">You've spotted a Tortoise!</p>
+              <p className="font-bold">You have spotted a Tortoise!</p>
               <p className="text-sm">
                 Tortoise are new users with a wallet with less than $100
               </p>
