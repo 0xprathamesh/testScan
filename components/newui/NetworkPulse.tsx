@@ -142,16 +142,19 @@ const BlockBox: React.FC<Block & { isFirst: boolean }> = ({
   </div>
 );
 
+
 const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
   const [blockchainData, setBlockchainData] = useState<any>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [blocks, setBlocks] = useState<Block[]>([]);
+  const [loading, setLoading] = useState(true);
   const txSliderRef = useRef<HTMLDivElement>(null);
   const blockSliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const data = await getBlockchainData(rpcUrl);
         setBlockchainData(data);
 
@@ -174,8 +177,10 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
           )
         );
         setBlocks(latestBlocks as Block[]);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false);
       }
     };
 
@@ -194,13 +199,6 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
     }
   };
 
-  if (!blockchainData)
-    return (
-      <div className="h-40 m-auto text-blue">
-        <Loading />
-      </div>
-    );
-
   return (
     <div className="py-6 px-2 rounded-3xl mx-auto max-w-[1220px]">
       <h1 className="text-2xl font-bold mb-2">Network Pulse</h1>
@@ -212,8 +210,9 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Transactions</h2>
           <div className="flex items-center">
-<Link href={`/newui/blocks`} className="mr-4">
-            <p className="text-sm text-blue font-inter">View all</p></Link>
+            <Link href={`/newui/blocks`} className="mr-4">
+              <p className="text-sm text-blue font-inter">View all</p>
+            </Link>
             <button onClick={() => scroll(txSliderRef, -200)} className="mr-2">
               ←
             </button>
@@ -222,9 +221,13 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
         </div>
         <div className="overflow-x-auto w-full py-4" ref={txSliderRef}>
           <div className="flex items-center space-x-4 transition-all duration-300 ease-in-out">
-            {transactions.map((tx, index) => (
-              <TransactionBox key={tx.hash} {...tx} isFirst={index === 0} />
-            ))}
+            {loading
+              ? Array(10).fill(0).map((_, index) => (
+                  <TransactionBoxSkeleton key={index} isFirst={index === 0} />
+                ))
+              : transactions.map((tx, index) => (
+                  <TransactionBox key={tx.hash} {...tx} isFirst={index === 0} />
+                ))}
           </div>
         </div>
       </div>
@@ -236,8 +239,9 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
             Processing blocks of transactions
           </h2>
           <div className="flex items-center">
-<Link href={`/newui/txns`} className="mr-4">
-            <p className="text-sm text-blue font-inter">View all</p></Link>
+            <Link href={`/newui/txns`} className="mr-4">
+              <p className="text-sm text-blue font-inter">View all</p>
+            </Link>
             <button
               onClick={() => scroll(blockSliderRef, -200)}
               className="mr-2"
@@ -249,9 +253,13 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
         </div>
         <div className="overflow-x-auto w-full py-4" ref={blockSliderRef}>
           <div className="flex items-center space-x-4 transition-all duration-300 ease-in-out">
-            {blocks.map((block, index) => (
-              <BlockBox key={block.number} {...block} isFirst={index === 0} />
-            ))}
+            {loading
+              ? Array(10).fill(0).map((_, index) => (
+                  <BlockBoxSkeleton key={index} isFirst={index === 0} />
+                ))
+              : blocks.map((block, index) => (
+                  <BlockBox key={block.number} {...block} isFirst={index === 0} />
+                ))}
           </div>
         </div>
       </div>
@@ -261,6 +269,59 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
 
 export default NetworkPulse;
 
+
+
+
+
+
+
+const Skeleton: React.FC<{
+  width?: string;
+  height?: string;
+  className?: string;
+  variant?: 'rectangular' | 'circular' | 'text';
+}> = ({ width, height, className, variant = 'rectangular' }) => {
+  const baseClasses = "animate-pulse bg-gray-200";
+  const variantClasses = {
+    rectangular: "rounded",
+    circular: "rounded-full",
+    text: "rounded w-full h-4"
+  };
+
+  return (
+    <div 
+      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+      style={{ width, height }}
+    />
+  );
+};
+
+// ... (keep your existing interface definitions and helper functions)
+
+const TransactionBoxSkeleton: React.FC<{ isFirst: boolean }> = ({ isFirst }) => (
+  <div className={`p-6 rounded-3xl flex-shrink-0 ${isFirst ? "w-[340px]" : "w-48 h-32"}`}>
+    <Skeleton width={isFirst ? "100%" : "80%"} height="24px" className="mb-2" />
+    {isFirst && (
+      <>
+        <Skeleton width="100%" height="16px" className="mb-2" />
+        <Skeleton width="100%" height="16px" className="mb-2" />
+        <Skeleton width="80%" height="16px" />
+      </>
+    )}
+  </div>
+);
+
+const BlockBoxSkeleton: React.FC<{ isFirst: boolean }> = ({ isFirst }) => (
+  <div className={`p-6 rounded-3xl flex-shrink-0 ${isFirst ? "w-[280px]" : "w-36 h-32"}`}>
+    <Skeleton width={isFirst ? "100%" : "80%"} height="24px" className="mb-2" />
+    {isFirst && (
+      <>
+        <Skeleton width="100%" height="16px" className="mb-2" />
+        <Skeleton width="80%" height="16px" />
+      </>
+    )}
+  </div>
+);
 // import React, { useState, useEffect } from 'react';
 // import { ethers } from "ethers";
 // import { getBlockchainData } from './utils/xdcrpc'; // Adjust the import path as needed

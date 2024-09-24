@@ -1,15 +1,29 @@
-import React from 'react'
+"use client"
+import React, { useState, useEffect } from 'react'
 import Layout from '@/components/newui/Layout'
 import { ArrowRight, Check, X } from 'lucide-react'
 
 const VerifiedContracts = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+
   const contracts = [
     { name: 'UniswapV2Pair', address: '0xb31...626f', balance: '0 ETH', txns: 1, compiler: 'Solidity', version: 'v0.5.16+commit.9c3226ce', optimization: true, constructorArg: false, status: 'Verified', time: '4h ago' },
     { name: 'GnosisSafeProxy', address: '0x6c3...09e4', balance: '0 ETH', txns: 0, compiler: 'Solidity', version: 'v0.7.6+commit.7338295f', optimization: false, constructorArg: true, status: 'Verified', time: '4h ago' },
     { name: 'iZiSwapPool', address: '0x429...836B', balance: '0 ETH', txns: 0, compiler: 'Solidity', version: 'v0.8.4+commit.c7e474f2', optimization: true, constructorArg: false, status: 'Verified', time: '4h ago' },
     { name: 'iZiSwapPool', address: '0x322...e429', balance: '0 ETH', txns: 0, compiler: 'Solidity', version: 'v0.8.4+commit.c7e474f2', optimization: true, constructorArg: false, status: 'Verified', time: '5h ago' },
     { name: 'UniswapV3Pool', address: '0x862...2a8C', balance: '0 ETH', txns: 0, compiler: 'Solidity', version: 'v0.7.6+commit.7338295f', optimization: true, constructorArg: false, status: 'Verified', time: '5h ago' },
-  ]
+  ];
+
+  // Simulate data loading
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500); // Simulate a 1.5 second loading time
+  }, []);
+
+  if (loading) {
+    return <Skeleton />;
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -61,4 +75,15 @@ const VerifiedContracts = () => {
     </div>
   )
 }
-export default VerifiedContracts
+
+const Skeleton: React.FC = () => {
+  return (
+    <div className="animate-pulse space-y-4">
+      {[...Array(5)].map((_, index) => (
+        <div key={index} className="h-10 bg-gray-200 rounded"></div>
+      ))}
+    </div>
+  );
+};
+
+export default VerifiedContracts;
