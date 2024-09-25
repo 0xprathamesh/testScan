@@ -131,7 +131,7 @@ const DashboardPage = () => {
           </p>
         </div>
 
-        {/* Total blocks card */}
+
         <div className="bg-black text-white rounded-3xl p-4">
           <h3 className="text-sm font-light mb-4 text-gray-200">Total blocks</h3>
           <h2 className="text-3xl font-semibold mb-2">{latestBlockNumber}</h2>
@@ -150,7 +150,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Transaction movement card */}
+
         <div className="bg-black text-white rounded-3xl p-4 lg:col-span-2">
           <h3 className="text-sm font-normal mb-4">
             Transaction movement on chain

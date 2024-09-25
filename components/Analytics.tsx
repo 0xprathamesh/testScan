@@ -83,11 +83,11 @@ const XDCPriceDashboard = () => {
     }
 
     try {
-      // Fetch coin data from CoinGecko API
+   
       const coinResponse = await fetch(coinGeckoApiUrl);
       const coinData = await coinResponse.json();
 
-      // Fetch blockchain data from XDC RPC
+
       const [latestBlock, gasPrice, nodeCount, syncing] = await Promise.all([
         fetchRPCData("eth_getBlockByNumber", ["latest", false]),
         fetchRPCData("eth_gasPrice", []),
@@ -96,7 +96,7 @@ const XDCPriceDashboard = () => {
       ]);
 
       const blockNumber = parseInt(latestBlock.number, 16);
-      const medianGasPrice = parseInt(gasPrice, 16) / 1e9; // Convert to Gwei
+      const medianGasPrice = parseInt(gasPrice, 16) / 1e9;
       const connectedNodes = parseInt(nodeCount, 16);
 
       setBlockchainData({
@@ -116,9 +116,9 @@ const XDCPriceDashboard = () => {
 
   useEffect(() => {
     fetchData();
-    const intervalId = setInterval(fetchData, 60000); // Update every 60 seconds
+    const intervalId = setInterval(fetchData, 60000); 
     return () => clearInterval(intervalId);
-  }, [rpcUrl, coinGeckoApiUrl]); // Refetch if URLs change
+  }, [rpcUrl, coinGeckoApiUrl]); 
 
   if (loading) {
     return (
@@ -141,7 +141,7 @@ const XDCPriceDashboard = () => {
   const { totalBlocks, medianGasPrice, connectedNodes, isSyncing } =
     blockchainData;
 
-  // Safely access sparkline_7d price data
+ 
   const sparklineData = coinData.market_data?.sparkline_7d?.price || [];
 
   const chartData = {
@@ -156,7 +156,7 @@ const XDCPriceDashboard = () => {
         backgroundColor: "rgba(53, 162, 235, 0.5)",
         fill: true,
         pointRadius: 0, // Remove dots on the line
-        tension: 0.1, // Smooth the line curve
+        tension: 0.1, 
       },
     ],
   };

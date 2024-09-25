@@ -5,21 +5,35 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { GoSearch } from "react-icons/go";
 import { HiOutlineArrowSmDown, HiOutlineArrowSmUp } from "react-icons/hi";
+import DidYouKnow from "@/components/newui/Didyouknow";
 import { getCoinData } from "@/components/newui/utils/coingeko";
 import Image from "next/image";
 
+import { FiArrowRight } from "react-icons/fi";
+import { MdKeyboardArrowRight, MdOutlineArrowOutward } from "react-icons/md";
+import Link from "next/link";
+import { getBlockchainData } from "@/components/newui/utils/xdcrpc";
+import { PiArrowElbowDownRightFill } from "react-icons/pi";
+import { IoCubeOutline } from "react-icons/io5";
+
 const MantaDashboard: React.FC = () => {
+  const [blockchainData, setBlockchainData] = useState<any>(null);
   const [isSticky, setIsSticky] = useState(false);
   const [coinData, setCoinData] = useState<any>(null);
   const [input, setInput] = useState<string>("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]); // State for recent searches
+
   const stickyRef = useRef(null);
   const router = useRouter();
 
   const fetchData = async () => {
     try {
       const data = await getCoinData();
+      const blockchainDataApi = await getBlockchainData(
+        "https://erpc.xinfin.network/"
+      );
+      setBlockchainData(blockchainDataApi);
       setCoinData(data);
     } catch (err) {
       console.log(err);
@@ -48,10 +62,12 @@ const MantaDashboard: React.FC = () => {
   const handleSuggestionClick = (suggestion: string) => {
     const [type, value] = suggestion.split(": ").map((str) => str.trim());
 
-    // Update recent searches
     setRecentSearches((prev) => {
-      const updatedSearches = [suggestion, ...prev.filter((item) => item !== suggestion)];
-      return updatedSearches.slice(0, 3); // Keep only the last 3 searches
+      const updatedSearches = [
+        suggestion,
+        ...prev.filter((item) => item !== suggestion),
+      ];
+      return updatedSearches.slice(0, 3);
     });
 
     // Navigate based on the search type
@@ -69,18 +85,31 @@ const MantaDashboard: React.FC = () => {
         break;
     }
   };
+  if (!blockchainData) {
+    return <Layout>""</Layout>;
+  }
+  const parseAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
 
   const xdcPrice = coinData?.market_data?.current_price?.usd ?? "Loading...";
   const xdcBTCPrice = coinData?.market_data?.current_price?.btc ?? "Loading...";
-  const xdcPriceChange = coinData?.market_data?.price_change_percentage_24h ?? "Loading...";
-
+  const xdcPriceChange =
+    coinData?.market_data?.price_change_percentage_24h ?? "Loading...";
+  const { totalTransactions, latestTransaction } = blockchainData;
+  const parsedTransactionhash = parseAddress(latestTransaction);
   return (
     <Layout>
-      <div className="flex flex-col md:flex-row md:w-full p-6 justify-between w-full">
-        {/* Search Section */}
+      <div className="flex flex-col md:flex-row md:w-full p-6 justify-between w-full mb-40">
         <div className="w-full md:w-1/2" ref={stickyRef}>
-          <div className={`transition-all duration-300 ease-in-out ${isSticky ? "sticky top-0 pt-4" : ""}`}>
-            <h1 className="text-3xl font-bold mb-6 font-mplus">What are you looking for?</h1>
+          <div
+            className={`transition-all duration-300 ease-in-out ${
+              isSticky ? "sticky top-0 pt-4" : ""
+            }`}
+          >
+            <h1 className="text-3xl font-bold mb-6 font-mplus">
+              What are you looking for?
+            </h1>
             <form>
               <div className="relative">
                 <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -112,7 +141,9 @@ const MantaDashboard: React.FC = () => {
             </form>
 
             <div className="mt-4">
-              <h2 className="text-lg font-normal font-inter mb-2">Recent searches:</h2>
+              <h2 className="text-lg font-normal font-inter mb-2">
+                Recent searches:
+              </h2>
               <div className="">
                 {recentSearches.length > 0 ? (
                   recentSearches.map((search, index) => (
@@ -131,15 +162,17 @@ const MantaDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Section */}
-        <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 md:mt-0 md:ml-8">
-          <div className="bg-black text-white p-6 rounded-3xl col-span-1 md:col-span-2">
-            <h3 className="text-sm text-gray-400 mb-2">Single transaction costs just around</h3>
+        <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-10 md:mt-0 md:ml-8">
+          <div className="bg-black text-white p-6 rounded-3xl col-span-1 md:col-span-2 ">
+            <h3 className="text-sm text-gray-400 mb-2">
+              Single transaction costs just around
+            </h3>
             <p className="text-2xl font-bold">$0.00099</p>
             <p className="text-gray-400">(0.02 Gwei)</p>
             <p className="mt-4 flex items-center text-purple-400 text-sm font-chivo font-light">
               <span className=" mr-2 text-xl ">💡</span>
-              For a single 💰, you can savor 3030 transactions on Manta, while only 21 on Ethereum. 🤯
+              For a single 💰, you can savor 3030 transactions on Manta, while
+              only 21 on Ethereum. 🤯
             </p>
           </div>
 
@@ -149,7 +182,12 @@ const MantaDashboard: React.FC = () => {
             <div className="flex flex-col ">
               <div className="rounded-full mb-6 mt-4">
                 {coinData?.image?.thumb ? (
-                  <Image src={coinData.image.large} alt="" height={96} width={96} />
+                  <Image
+                    src={coinData.image.large}
+                    alt=""
+                    height={96}
+                    width={96}
+                  />
                 ) : (
                   ""
                 )}
@@ -161,7 +199,11 @@ const MantaDashboard: React.FC = () => {
                   <p className="text-xl">${xdcPrice}</p>
                   <p className="text-sm text-gray-400">
                     @ {xdcBTCPrice} BTC
-                    <span className={`text-${xdcPriceChange > 0 ? "green" : "red"}-500`}>
+                    <span
+                      className={`text-${
+                        xdcPriceChange > 0 ? "green" : "red"
+                      }-500`}
+                    >
                       ({xdcPriceChange}%)
                     </span>
                   </p>
@@ -184,6 +226,90 @@ const MantaDashboard: React.FC = () => {
                 <p className="text-4xl font-bold text-white">55,833</p>
               </div>
               <HiOutlineArrowSmUp className="text-[96px] text-green-500 font-bold" />
+            </div>
+          </div>
+
+          <div className="bg-white border-gray-300 border-[0.5px] text-white p-6 rounded-3xl col-span-1 md:col-span-2">
+            <h3 className="text-sm text-gray-400 mb-2 flex items-center justify-between ">
+              Total transactions on Chain{" "}
+              <Link href={`/newui/txns`} className="">
+                <MdKeyboardArrowRight className="h-6 w-6 " />
+              </Link>
+            </h3>
+            <p className="text-2xl font-bold text-black">{totalTransactions}</p>
+            <p className="text-gray-400">(0.02 Gwei)</p>
+            <div className="h-16 relative mb-2">
+              <svg className="w-full h-full">
+                <path
+                  d="M0,32 L50,28 L100,30 L150,25 L200,15 L250,14 L300,13"
+                  stroke="red"
+                  fill="none"
+                  strokeWidth="2"
+                />
+              </svg>
+            </div>
+            <p className="mt-4 flex items-center text-[#66798e] text-sm font-chivo font-light">
+              <span className=" mr-2 text-xl ">💡</span>
+              For a single 💰, you can savor 3030 transactions on Manta, while
+              only 21 on Ethereum. 🤯
+            </p>
+          </div>
+          <DidYouKnow />
+          <div className="bg-black p-6 rounded-3xl">
+            <h3 className="mb-2 text-sm text-gray-400 flex items-center justify-between">
+              Ongoing Transaction
+              <Link href={`/newui/txns`} className="">
+                <MdKeyboardArrowRight className="h-6 w-6 " />
+              </Link>
+            </h3>
+            <div className="flex flex-col ">
+              <MdOutlineArrowOutward className="w-8 p-1 h-8 mb-2 text-white bg-[#217f9e] rounded-full border-[#98e6ff]" />
+
+              <div className="text-white">
+                <p className="text-2xl font-semibold leading hover:underline mb-2">
+                  0xcd23...34244
+                </p>
+                <div>
+                  <p className="text-sm font-chivo  font-extralight flex items-center gap-1">
+                    <PiArrowElbowDownRightFill /> A few seconds ago
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    <span className={`text-sm mt-1`}>
+                      $0.01 (0.000000885 Gwei)
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-black p-6 rounded-3xl">
+            <h3 className="mb-2 text-sm text-gray-400 flex items-center justify-between">
+             Latest Blocks
+              <Link href={`/newui/txns`} className="">
+                <MdKeyboardArrowRight className="h-6 w-6 " />
+              </Link>
+            </h3>
+            <div className="flex flex-col ">
+              <IoCubeOutline className="w-8 p-1 h-8 mb-2 text-white bg-[#217f9e] rounded-full border-[#98e6ff]" />
+
+              <div className="text-white">
+                <Link href={`/newui/blocks`} className="">
+                <p className="text-2xl font-semibold leading hover:underline mb-2">
+                 8645321
+                  </p>
+                  </Link>
+                <div>
+                  <p className="text-sm font-chivo  font-extralight flex items-center gap-1">
+                    <PiArrowElbowDownRightFill /> 41 Transactions
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    <span className={`text-sm mt-1`}>
+                      $0.01 (0.000000885 Gwei)
+                    </span>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

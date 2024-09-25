@@ -7,11 +7,12 @@ const getBlockchainData = async (rpcUrl: string) => {
 
     // Get latest block number
     const latestBlockNumber = await provider.getBlockNumber();
-
+  
     // Get latest block details
     const latestBlock = await provider.getBlock(latestBlockNumber);
-      const totalBlockTransactions = await latestBlock.transactions.length;
-    // Get total transactions in the latest block
+    const totalBlockTransactions = await latestBlock.transactions.length;
+    const latestTransaction = await latestBlock.transactions.slice(0, 1);
+    // Get total transactions on chain
     const totalTransactions = "325.67M";
     const totalBlocks = await provider.getBlock(latestBlockNumber)
     // You can also get other block data such as:
@@ -29,6 +30,7 @@ const getBlockchainData = async (rpcUrl: string) => {
       miner,
       timestamp,
       latestBlock,
+      latestTransaction
     };
   } catch (error) {
     console.error("Error fetching blockchain data:", error);

@@ -4,7 +4,7 @@ import { client } from "@/utils/client";
 
 const Navbar: React.FC = () => {
   return (
-    <div className="fixed top-0 left-20 right-0  border-b border-gray-200 z-10 backdrop-blur-md ">
+    <div className=" bg-white fixed top-0 left-20 right-0  border-b border-gray-200 z-10 backdrop-blur-md ">
       <div className="flex justify-between items-center px-4 py-2">
         <div className="flex items-center gap-4">
           <p className="font-semibold font-inter text-lg ">
