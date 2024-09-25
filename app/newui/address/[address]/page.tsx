@@ -209,34 +209,7 @@ const Address: React.FC<PageProps> = ({ params }) => {
         )}
       </div>
 
-      {/* <div className="mt-4">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex">
-            {[
-              "wallet",
-              "activity",
-              "tokenTransfers",
-              "internalTransactions",
-              "insights",
-            ].map((tab) => (
-              <a
-                key={tab}
-                href="#"
-                className={`border-b-2 py-2 px-4 text-sm font-medium ${
-                  activeTab === tab
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                } ${tab === "insights" ? "text-gray-400" : ""}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab.charAt(0).toUpperCase() +
-                  tab.slice(1).replace(/([A-Z])/g, " $1")}
-                {tab === "insights" && " (Coming Soon)"}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </div> */}
+   
       <div className="mt-4">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex">
@@ -276,45 +249,7 @@ const Address: React.FC<PageProps> = ({ params }) => {
       </div>
       <div className="mt-4">{renderTabContent()}</div>
 
-      {/* <div className="mt-4">
-        <div className="flex space-x-2 mb-4">
-          <span className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
-            All ({assets.length})
-          </span>
-          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-            Tokens ({assets.length})
-          </span>
-        </div>
-        {assets.map((asset, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-lg p-4 flex items-center justify-between mb-2"
-          >
-            <div className="flex items-center">
-              <img
-                src={`/api/placeholder/32/32?text=${asset.symbol}`}
-                alt={asset.name}
-                className="w-8 h-8 mr-2"
-              />
-              <div>
-                <p className="font-medium">
-                  {asset.name} ({asset.symbol})
-                </p>
-                <p className="text-sm text-gray-500">Token</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="font-medium">
-                ${asset.value.toFixed(2)} ({asset.balance.toFixed(4)}{" "}
-                {asset.symbol})
-              </p>
-              <p className="text-sm text-gray-500">
-                1 {asset.symbol} = ${asset.price.toFixed(2)}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div> */}
+   
     </Layout>
   );
 };

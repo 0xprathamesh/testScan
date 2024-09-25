@@ -14,11 +14,11 @@ const VerifiedContracts = () => {
     { name: 'UniswapV3Pool', address: '0x862...2a8C', balance: '0 ETH', txns: 0, compiler: 'Solidity', version: 'v0.7.6+commit.7338295f', optimization: true, constructorArg: false, status: 'Verified', time: '5h ago' },
   ];
 
-  // Simulate data loading
+
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 1500); // Simulate a 1.5 second loading time
+    }, 1500); 
   }, []);
 
   if (loading) {

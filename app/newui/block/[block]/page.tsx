@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import Layout from "@/components/newui/Layout";
-import { ArrowLeft, ArrowUpRight, Copy, HelpCircle } from "lucide-react";
-import Loading from '@/components/elements/Loading';
+import { ArrowLeft, HelpCircle } from "lucide-react";
 import Link from 'next/link';
 import TransactionTable from '@/components/TransactionTable';
 import { IoCubeOutline } from 'react-icons/io5';
@@ -29,6 +28,7 @@ const Block: React.FC<PageProps> = ({ params }) => {
   const [blockData, setBlockData] = useState<BlockData | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
     if (params.block) {
@@ -55,6 +55,7 @@ const Block: React.FC<PageProps> = ({ params }) => {
       const txPromises = block.transactions.map(txHash => provider.getTransaction(txHash));
       const txs = await Promise.all(txPromises);
       setTransactions(txs);
+      setLoading(false);
     } catch (err) {
       setError("Error fetching block data");
       console.error(err);
@@ -65,36 +66,42 @@ const Block: React.FC<PageProps> = ({ params }) => {
     return <Layout><div className="text-red-500">{error}</div></Layout>;
   }
 
-  if (!blockData) {
-    return <Layout><div className='text-blue '><Loading/></div></Layout>;
+  if (loading) {
+    return (
+      <Layout>
+        <div className="p-6 font-sans">
+          <div className="flex items-center mb-6">
+            <Skeleton width="96px" height="24px" />
+          </div>
+          <div className="flex">
+            <Skeleton width="40%" height="600px" variant="rectangular" />
+            <Skeleton width="70%" height="600px" className="ml-4" variant="rectangular" />
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
   return (
     <Layout>
-    
-      <div className=" p-6 font-sans">
+      <div className="p-6 font-sans">
         <div className="flex items-center mb-6">
           <Link href="/" className="mr-4">
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <div>
-            <div className="text-sm ">Block Details</div>
+            <div className="text-sm">Block Details</div>
             <h1 className="text-xs text-blue font-bold">Home</h1>
           </div>
         </div>
 
-        <div className="flex  items-center">
-
+        <div className="flex">
           <BlockDetailsCard blockData={blockData} />
-
-          <div className='w-[70%] ml-4'>
-          <TransactionTable transactions={transactions} itemsPerPage={9} />
+          <div className="w-[70%] ml-4">
+            <TransactionTable transactions={transactions} itemsPerPage={9} />
           </div>
-       
         </div>
-        </div>
-       
-
+      </div>
     </Layout>
   );
 };
@@ -132,7 +139,7 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
               <span className="mr-2 text-sm font-inter">Block Hash</span>
               <HelpCircle className="h-4 w-4" />
             </div>
-            <div className="bg-white bg-opacity-20 px-3 py-1  rounded-md text-sm border-gray-400 border leading">
+            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
               {blockData.hash.slice(0, 10)}...{blockData.hash.slice(-4)}
             </div>
           </div>
@@ -174,4 +181,31 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
   );
 };
 
+
+const Skeleton: React.FC<{
+  width?: string;
+  height?: string;
+  className?: string;
+  variant?: 'rectangular' | 'circular' | 'text';
+}> = ({ width, height, className, variant = 'rectangular' }) => {
+  const baseClasses = "animate-pulse bg-gray-200";
+  const variantClasses = {
+    rectangular: "rounded",
+    circular: "rounded-full",
+    text: "rounded w-full h-4"
+  };
+
+  return (
+    <div 
+      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+      style={{ width, height }}
+    />
+  );
+};
+
 export default Block;
+
+
+
+
+
