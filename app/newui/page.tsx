@@ -86,7 +86,7 @@ const MantaDashboard: React.FC = () => {
     }
   };
   if (!blockchainData) {
-    return <Layout>""</Layout>;
+    return <Layout><div className="opacity-0">""</div> </Layout>;
   }
   const parseAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
