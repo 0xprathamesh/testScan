@@ -20,23 +20,36 @@ interface TxData {
   effectiveGasPrice: any;
   data: string;
   action: string;
-  tokenTransfers: any[]; 
+  tokenTransfers: TokenTransfer[]; 
+}
+
+
+interface TokenTransfer {
+  from: string;
+  to: string;
+  amount: string;
+  token: string;
 }
 
 interface TransactionDetailsProps {
   txData: TxData | null;
 }
 
+const parseAddress = (address: string) => {
+  return address.slice(0, 6) + "..." + address.slice(-4);
+};
 const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
   const [activeTab, setActiveTab] = useState("Overview");
   const [showTabs, setShowTabs] = useState(false); 
   const router = useRouter();
   const tabs = [
     "Overview",
+    "Token Transfer",
     "Internal Transactions",
     "Logs",
     "State",
     "Raw Trace",
+
   ];
 
   return (
@@ -99,6 +112,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
             {showTabs && activeTab === "Internal Transactions" && (
               <InternalTransactionsTab txData={txData} />
             )}
+            {showTabs && activeTab === "Token Transfers" && <TokenTransfers txData={txData} />}
             {showTabs && activeTab === "Logs" && <LogsTab txData={txData} />}
             {showTabs && activeTab === "State" && <StateTab txData={txData} />}
             {showTabs && activeTab === "Raw Trace" && (
@@ -113,6 +127,56 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
 
 export default TransactionDetails;
 
+const TokenTransfers: React.FC<TransactionDetailsProps> = ({ txData }) => {
+  if (!txData) return null;
+  return (
+    <div>
+        {txData.tokenTransfers.length > 0 && (
+          <div className="bg-white px-8 py-4 rounded-lg mt-8">
+            <div className="text-md font-chivo text-gray-900 mb-2">
+              ERC-20 Tokens Transferred
+            </div>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    From
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    To
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Value
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Token
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {txData.tokenTransfers.map((transfer, index) => (
+                  <tr key={index}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {parseAddress(transfer.from)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {parseAddress(transfer.to)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {ethers.utils.formatEther(transfer.amount)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {parseAddress(transfer.token)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+    </div>
+  );
+}
 
 const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
   if (!txData) return null;
@@ -184,6 +248,7 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
     </div>
   );
 };
+
 
 const InternalTransactionsTab: React.FC<TransactionDetailsProps> = ({
   txData,

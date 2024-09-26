@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { ArrowRight } from "lucide-react";
-
+import Disney from "../../public/assets/image.webp";
 interface StatCardProps {
     title: string;
     description: string;
@@ -14,8 +14,8 @@ interface StatCardProps {
   }
 const ExploreComponent = () => {
   return (
-    <div className=" mx-auto px-6 bg-white rounded-lg mb-20">
-      <div className="bg-gray-50 p-4 rounded-3xl">
+    <div className=" mx-auto px-6  rounded-lg mb-20">
+      <div className="bg-white p-4 rounded-3xl">
         <h1 className="text-5xl font-bold  text-blue-600 mb-4">MANTA</h1>
         <p className="text-md font-normal text-gray-700  mb-8">
           The first EVM-native modular execution layer for wide ZK applications
@@ -53,14 +53,14 @@ const StatCard:React.FC<StatCardProps > = ({ title, description }) => (
     <h2 className="text-2xl font-inter font-semibold text-[#06afe8]">
       {title}
     </h2>
-    <p className="text-gray-600">{description}</p>
+    <p className="text-gray-600 font-bold text-sm">{description}</p>
   </div>
 );
 
 const FeaturedCard:React.FC<FeaturedCardProps> = ({ title, buttonText }) => (
-  <div className="bg-gray-800 p-6 rounded-3xl shadow-md hover:shadow-xl transition-shadow duration-300">
+  <div className="bg-black p-6 rounded-3xl shadow-md hover:shadow-xl transition-shadow duration-300">
     <h3 className="text-[#06afe8] mb-2">FEATURED</h3>
-    <h2 className="text-xl font-bold text-white mb-4">{title}</h2>
+    <h2 className="text-4xl font-semibold w-[460px] text-white mb-4">{title}</h2>
     <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200 flex items-center">
       {buttonText} <ArrowRight className="ml-2" size={20} />
     </button>
