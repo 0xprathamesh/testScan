@@ -6,6 +6,8 @@ import Loading from "../elements/Loading";
 import { ethers } from "ethers";
 import { FaCode } from "react-icons/fa";
 import { LuCode2 } from "react-icons/lu";
+import InternalTransactions from "./InternalTransaction";
+
 interface TxData {
   hash: string;
   status: boolean;
