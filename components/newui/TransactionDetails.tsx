@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { ArrowLeft, ArrowUpRight, Copy, HelpCircle } from "lucide-react";
+import { ArrowBigDown, ArrowLeft, ArrowUpRight, Copy, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Loading from "../elements/Loading";
 import { ethers } from "ethers";
 import { FaCode } from "react-icons/fa";
 import { LuCode2 } from "react-icons/lu";
+import InternalTransactions from "./InternalTransaction";
+
 interface TxData {
   hash: string;
   status: boolean;
@@ -59,11 +61,12 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
         <button className="mr-4" onClick={() => router.push("/newui")}>
           <ArrowLeft className="h-6 w-6" />
         </button>
+        
         <div>
-          <div className="text-sm text-blue-500">
-            Home • {txData?.hash.slice(0, 6)}...{txData?.hash.slice(-4)}
+          <div className="text-sm text-blue">
+            Transaction Details • <span className="text-sm font-light ml-2">{txData?.hash.slice(0, 6)}...{txData?.hash.slice(-4)}</span> 
           </div>
-          <h1 className="text-2xl font-bold">Transaction details</h1>
+          <h1 className=" font-light">Home</h1>
         </div>
         {/* Toggle button */}
 
@@ -87,25 +90,23 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
               {tabs.map((tab) => (
                 <button
                   key={tab}
-                  className={`px-4 py-2 ${
+                  className={`px-4 py-2  ${
                     activeTab === tab
                       ? "text-blue-500 border-b-2 border-blue-500"
                       : "text-gray-500"
                   }`}
                   onClick={() => setActiveTab(tab)}
                 >
-                  {tab}
+                   <span className="text-sm font-chivo">{ tab}</span>
                 </button>
               ))}
             </div>
           )}
-          <div className="mt-4">
+          <div className="mt-4 text-sm ">
       
             {activeTab === "Overview" && (
               <>
-                {showTabs && (
-                  <h3 className="text-lg font-semibold">Overview</h3>
-                )}
+  
                 <OverviewTab txData={txData} />
               </>
             )}
@@ -193,8 +194,8 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white p-4 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-2">Transaction Value</h3>
+      <div className="bg-white p-4 rounded-3xl border border-gray-200">
+        <h3 className="text-lg font-light mb-2">Transaction Value</h3>
         <div className="flex items-center bg-gray-100 p-3 rounded">
           <span className="font-bold text-lg">
             {ethers.utils.formatEther(txData.value)} ETH
@@ -202,11 +203,11 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-white p-4 rounded-3xl border-gray-200 border">
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg">From</h3>
+          <h3 className="text-sm font-inter">From</h3>
           <div className="flex items-center">
-            <span className="text-gray-600 mr-2">
+            <span className="text-gray-600 mr-2 text-sm leading">
               {shortenAddress(txData.from)}
             </span>
             <Copy
@@ -215,13 +216,13 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
             />
           </div>
         </div>
-      </div>
 
-      <div className="bg-white p-4 rounded-lg shadow">
+<div className=" flex items-center justify-between ml-60 text-gray-500"><ArrowBigDown /></div>
+     
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg">To</h3>
+          <h3 className="text-sm font-inter">To</h3>
           <div className="flex items-center">
-            <span className="text-gray-600 mr-2">
+            <span className="text-gray-600 mr-2 text-sm leading">
               {txData.to ? shortenAddress(txData.to) : "Contract Creation"}
             </span>
             {txData.to && (
@@ -234,7 +235,7 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-white p-4 rounded-3xl border-gray-200 border">
         <h3 className="text-lg font-semibold mb-2">Transaction Fee</h3>
         <div className="flex justify-between items-center">
           <span className="text-2xl font-bold">
