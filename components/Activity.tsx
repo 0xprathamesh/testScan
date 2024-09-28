@@ -32,6 +32,7 @@ const Activity: React.FC<ActivityProps> = ({ address }) => {
 
         const transactionData = response.items.map((item: any) => ({
           hash: item.hash || "N/A",
+          method: item.method === null ? item.tx_types : item.method,
           from: item.from?.hash || "Unknown",
           to: item.to?.hash || "Unknown",
           value: (parseInt(item.value) / 10 ** 18).toFixed(6),
@@ -86,7 +87,7 @@ const Activity: React.FC<ActivityProps> = ({ address }) => {
                 </svg>
               </div>
               <div>
-                <p className="font-medium">Mint NFT</p>
+                <p className="font-medium">{tx.method}</p>
                 <p className="text-sm font-semibold text-[#06afe8] flex items-center">
                   #{parseAddress(tx.hash)}{" "}
                   <FiCopy
