@@ -61,7 +61,7 @@ import Image from "next/image";
 interface Token {
   name: string;
   type: string;
-  icon: string;
+  icon_url: string | null;
   symbol: string;
   balance: string;
   value: string | null;
@@ -89,11 +89,12 @@ const Wallet: React.FC<WalletProps> = ({ address }) => {
           const usdValue = token.exchange_rate
             ? (parseFloat(balance) * parseFloat(token.exchange_rate)).toFixed(2)
             : null;
-
+          console.log(token.icon_url);
+          const iconUrl = token.icon_url || "/path-to-default-icon.png";
           return {
             name: token.name,
             type: token.type,
-            icon: token.icon,
+            icon_url: iconUrl,
             symbol: token.symbol,
             balance,
             value: usdValue,
@@ -134,54 +135,35 @@ const Wallet: React.FC<WalletProps> = ({ address }) => {
               <div className="flex items-center p-4 ">
                 <li className=" rounded-full flex items-center justify-center mr-3">
                   <Image
-                    src={`https://coin-images.coingecko.com/coins/images/16922/small/StorX_Logo_white_300x300-01.png?1696516493`}
+                    src={token.icon_url}
                     width={12}
                     height={12}
                     alt="icon"
                     className="w-12 h-12"
                   />
                 </li>
-                <div>
+                <div className="">
                   <div className="flex items-center font-semibold font-inter">
-                    {token.name}{" "}({token.symbol})
+                    {token.name} ({token.symbol})
                     <FileText size={16} className="ml-1 text-gray-400" />
                   </div>
                   <span className="text-sm text-gray-600 px-2 py-1 bg-gray-100 rounded-md">
                     {token.type}
                   </span>
                 </div>
-                {/* <li>{token.name || "Unknown Token"}</li>
-                <li className="text-right">{token.balance}</li> */}
-                {/* <li className="text-right">
-                  {token.value ? `$${token.value}` : "N/A"}
-                </li> */}
+                <div className="text-right ml-80">
+                  <p className="font-medium">
+                    {token.balance} {token.symbol}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {token.value ? `$${token.value}` : "N/A"}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-      {/* <table className="w-full">
-        <thead>
-          <tr>
-            <th className="text-left">Token</th>
-            <th className="text-left">Symbol</th>
-            <th className="text-right">Balance</th>
-            <th className="text-right">Value (USD)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tokens.map((token, index) => (
-            <tr key={index}>
-              <td>{token.name || "Unknown Token"}</td>
-              <td>{token.symbol || "N/A"}</td>
-              <td className="text-right">{token.balance}</td>
-              <td className="text-right">
-                {token.value ? `$${token.value}` : "N/A"}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table> */}
     </div>
   );
 };

@@ -194,7 +194,7 @@ const Address: React.FC<PageProps> = ({ params }) => {
           </div>
         </div>
 
-        {userDetails.netWorth < 100 && (
+        {userDetails && (
           <div className="bg-white rounded-3xl flex items-center h-60 w-[400px] shadow-md">
 
             <div className=""> 
