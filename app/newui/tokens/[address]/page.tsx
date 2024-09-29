@@ -16,6 +16,7 @@ import InternalTx from "@/components/InternalTx";
 import ContractAddress from "@/components/newui/ContractAddress";
 import ContractTransactions from "@/components/newui/ContractTransactions";
 import Transfers from "@/components/newui/Transfers";
+import TokenHolders from "@/components/newui/TokenHolders";
 
 interface PageProps {
   params: {
@@ -39,7 +40,7 @@ const Token: React.FC<PageProps> = ({ params }) => {
         return <Transfers address={params.address} />;
 
       case "holders":
-        return <InternalTx address={params.address} />;
+        return <TokenHolders address={params.address} />;
       default:
         return <Transfers address={params.address} />;
     }
