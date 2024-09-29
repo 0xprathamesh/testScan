@@ -106,6 +106,7 @@ export const blockService = {
 export const addressService = {
     addresses: (query: any) => api.get(`/addresses${query}`).then(onSuccess, onError),
     getAddress: (address: any) => api.get(`/addresses/${address}`).then(onSuccess, onError),
+    getContract:(address:any)=> api.get(`/smart-contracts/${address}`).then(onSuccess,onError),
     verifiedAddressesStats: () => contractApi.get(`/smart-contracts/counters`).then(onSuccess, onError),
     verifiedAddresses: (query: any) => contractApi.get(`/smart-contracts${query}`).then(onSuccess, onError),
     getVerifiedAddress: (address: any, path: any) => contractApi.get(`/smart-contracts/${address}${path}`).then(onSuccess, onError),
