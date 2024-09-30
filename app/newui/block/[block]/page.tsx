@@ -23,7 +23,6 @@ interface Transaction {
   to?: string;
   value: ethers.BigNumber;
 }
-
 const Block: React.FC<PageProps> = ({ params }) => {
   const [blockData, setBlockData] = useState<BlockData | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -96,7 +95,11 @@ const Block: React.FC<PageProps> = ({ params }) => {
         </div>
 
         <div className="flex">
-          <BlockDetailsCard blockData={blockData} />
+          {blockData ? ( 
+            <BlockDetailsCard blockData={blockData} />
+          ) : (
+            <div className="text-red-500">No block data available</div> 
+          )}
           <div className="w-[70%] ml-4">
             <TransactionTable transactions={transactions} itemsPerPage={9} />
           </div>
@@ -105,7 +108,6 @@ const Block: React.FC<PageProps> = ({ params }) => {
     </Layout>
   );
 };
-
 const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);

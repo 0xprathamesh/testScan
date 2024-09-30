@@ -104,7 +104,7 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
 
       {/* Contract Age Card */}
       <div className="bg-gray-900 text-white rounded-xl p-6">
-        <h3 className="text-lg font-semibold mb-4">Contract's age</h3>
+        <h3 className="text-lg font-semibold mb-4">Contract age</h3>
         <p className="text-2xl font-bold text-blue-400 mb-4">1 year</p>
         <div className="space-y-2">
           <div className="flex justify-between">

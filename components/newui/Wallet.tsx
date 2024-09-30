@@ -1,59 +1,5 @@
-"use client";
-
-import { useEffect, useState } from "react";
-// import React from 'react'
-// interface Asset {
-//     name: string;
-//     symbol: string;
-//     balance: number;
-//     value: number;
-//     price: number;
-//   }
-// const Wallet:React.FC<{assets:Asset[]}> = ({assets}) => {
-//   return (
-//     <div className="mt-4">
-//     <div className="flex space-x-2 mb-4">
-//       <span className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
-//         All ({assets.length})
-//       </span>
-//       <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-//         Tokens ({assets.length})
-//       </span>
-//     </div>
-//     {assets.map((asset, index) => (
-//       <div
-//         key={index}
-//         className="bg-white rounded-lg p-4 flex items-center justify-between mb-2"
-//       >
-//         <div className="flex items-center">
-//           <img
-//             src={`/api/placeholder/32/32?text=${asset.symbol}`}
-//             alt={asset.name}
-//             className="w-8 h-8 mr-2"
-//           />
-//           <div>
-//             <p className="font-medium">
-//               {asset.name} ({asset.symbol})
-//             </p>
-//             <p className="text-sm text-gray-500">Token</p>
-//           </div>
-//         </div>
-//         <div className="text-right">
-//           <p className="font-medium">
-//             ${asset.value.toFixed(2)} ({asset.balance.toFixed(4)}{" "}
-//             {asset.symbol})
-//           </p>
-//           <p className="text-sm text-gray-500">
-//             1 {asset.symbol} = ${asset.price.toFixed(2)}
-//           </p>
-//         </div>
-//       </div>
-//     ))}
-//   </div>
-//   )
-// }
-
-// export default Walletimport React, { useState, useEffect } from 'react';
+"use client"
+import React, { useState, useEffect } from "react";
 import { addressService } from "./utils/apiroutes";
 import { FileText } from "lucide-react";
 import Image from "next/image";
@@ -61,7 +7,7 @@ import Image from "next/image";
 interface Token {
   name: string;
   type: string;
-  icon_url: string | null;
+  icon_url: string | null; 
   symbol: string;
   balance: string;
   value: string | null;
@@ -89,8 +35,10 @@ const Wallet: React.FC<WalletProps> = ({ address }) => {
           const usdValue = token.exchange_rate
             ? (parseFloat(balance) * parseFloat(token.exchange_rate)).toFixed(2)
             : null;
-          console.log(token.icon_url);
-          const iconUrl = token.icon_url || "/path-to-default-icon.png";
+
+          // Use a fallback URL if icon_url is null
+          const iconUrl = token.icon_url || "/path-to-default-icon.png"; 
+          
           return {
             name: token.name,
             type: token.type,
@@ -116,7 +64,6 @@ const Wallet: React.FC<WalletProps> = ({ address }) => {
 
   return (
     <div>
-      {" "}
       <div className="bg-white rounded-3xl w-[869px]">
         <div className="flex space-x-2 p-4">
           <span className="bg-gray-200 text-gray-800 px-3 py-1 rounded-lg text-sm font-medium">
@@ -129,20 +76,20 @@ const Wallet: React.FC<WalletProps> = ({ address }) => {
             NFTs
           </span>
         </div>
-        <div className=" border-t-[0.5px]">
+        <div className="border-t-[0.5px]">
           {tokens.map((token, index) => (
-            <div className="border-t " key={index}>
-              <div className="flex items-center p-4 ">
-                <li className=" rounded-full flex items-center justify-center mr-3">
+            <div className="border-t" key={index}>
+              <div className="flex items-center p-4">
+                <li className="rounded-full flex items-center justify-center mr-3">
                   <Image
-                    src={token.icon_url}
+                    src={token.icon_url ||  ""} 
                     width={12}
                     height={12}
                     alt="icon"
                     className="w-12 h-12"
                   />
                 </li>
-                <div className="">
+                <div>
                   <div className="flex items-center font-semibold font-inter">
                     {token.name} ({token.symbol})
                     <FileText size={16} className="ml-1 text-gray-400" />
