@@ -14,7 +14,7 @@ import Wallet from "@/components/newui/Wallet";
 import TokenTransfers from "@/components/TokenTransfers";
 import InternalTx from "@/components/InternalTx";
 import ContractAddress from "@/components/newui/ContractAddress";
- // Import your Contract component
+
 
 interface PageProps {
   params: {
@@ -54,12 +54,12 @@ const Address: React.FC<PageProps> = ({ params }) => {
         const rpcUrl = "https://erpc.xinfin.network/";
         const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
-        // Check if the address is a contract
+     
         const code = await provider.getCode(params.address);
-        setIsContract(code !== "0x"); // If code is not "0x", it's a contract
+        setIsContract(code !== "0x"); 
 
         if (code === "0x") {
-          // If it's not a contract, fetch the balance and user data
+        
           const balance = await provider.getBalance(params.address);
           const ethBalance = parseFloat(ethers.utils.formatEther(balance));
           const ethPrice = 2450.54;

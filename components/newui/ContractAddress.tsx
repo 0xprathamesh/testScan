@@ -14,6 +14,7 @@ import Wallet from "@/components/newui/Wallet";
 import TokenTransfers from "@/components/TokenTransfers";
 import InternalTx from "@/components/InternalTx";
 import ContractTransactions from "./ContractTransactions";
+import ContractDetailsCard from "./ContractDetailsCard";
 
 interface PageProps {
   params: {
@@ -37,12 +38,9 @@ const parseAddress = (address: string): string => {
 const ContractAddress: React.FC<PageProps> = ({ params }) => {
   const [activeTab, setActiveTab] = useState<string>("transactions");
 
-  useEffect(() => {
-    
-  })
+  useEffect(() => {});
   const renderTabContent = () => {
     switch (activeTab) {
-
       case "transactions":
         return <ContractTransactions address={params.address} />;
 
@@ -91,8 +89,8 @@ const ContractAddress: React.FC<PageProps> = ({ params }) => {
           <p>Card 3 content here</p>
         </div>
       </div> */}
-
-<div className="grid grid-cols-3 gap-4">
+      <ContractDetailsCard address={params.address} />
+      {/* <div className="grid grid-cols-3 gap-4">
         <div className="bg-gray-900 text-white rounded-xl p-6">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center">
@@ -165,18 +163,12 @@ const ContractAddress: React.FC<PageProps> = ({ params }) => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* Tabs */}
       <div className="mt-4">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex">
-            {[
-             
-              "transactions",
-            
-              "internalTransactions",
-    
-            ].map((tab) => (
+            {["transactions", "internalTransactions"].map((tab) => (
               <a
                 key={tab}
                 href="#"
