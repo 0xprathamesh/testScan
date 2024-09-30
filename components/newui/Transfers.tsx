@@ -20,6 +20,30 @@ interface TokenProps {
   address: string;
 }
 
+const Skeleton: React.FC = () => (
+  <div className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0 w-full animate-pulse">
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center">
+        <div className="bg-gray-200 rounded-full p-2 h-8 w-8" />
+        <div className="ml-4 flex flex-col w-full">
+          <div className="bg-gray-200 h-4 w-1/3 mb-2 rounded" />
+          <div className="bg-gray-200 h-4 w-1/4 mb-2 rounded" />
+          <div className="bg-gray-200 h-3 w-1/6 rounded" />
+        </div>
+      </div>
+
+      {/* Block Placeholder */}
+      <div className="bg-gray-200 h-8 w-16 rounded-md" />
+
+      {/* Timestamp Placeholder */}
+      <div className="bg-gray-200 h-3 w-24 rounded" />
+
+      {/* Status Placeholder */}
+      <div className="bg-gray-200 h-8 w-20 rounded-md" />
+    </div>
+  </div>
+);
+
 const Transfers: React.FC<TokenProps> = ({ address }) => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -53,12 +77,27 @@ const Transfers: React.FC<TokenProps> = ({ address }) => {
     fetchTransfers();
   }, [address]);
 
-  if (loading) return <div>Loading transactions...</div>;
+  if (loading) {
+    return (
+      <div className="bg-white rounded-3xl p-4 w-[869px]">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Activity</h2>
+          <ChevronUp className="w-5 h-5" />
+        </div>
+        <div className="space-y-4">
+          {[...Array(5)].map((_, index) => (
+            <Skeleton key={index} />
+          ))}
+        </div>
+      </div>
+    );
+  }
   if (error) return <div>{error}</div>;
 
   const parseAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
+  
   return (
     <div className="bg-white rounded-3xl p-4 w-[869px]">
       <div className="flex justify-between items-center mb-4">
@@ -159,4 +198,5 @@ const Transfers: React.FC<TokenProps> = ({ address }) => {
     </div>
   );
 };
+
 export default Transfers;

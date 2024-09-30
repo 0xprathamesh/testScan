@@ -50,12 +50,46 @@ const Activity: React.FC<ActivityProps> = ({ address }) => {
     fetchTransactions();
   }, [address]);
 
-  if (loading) return <div>Loading transactions...</div>;
-  if (error) return <div>{error}</div>;
-
   const parseAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
+
+  const renderSkeleton = () => (
+    <div className="flex justify-between items-center py-2 border-b border-gray-200">
+      <div className="flex items-center space-x-2">
+        <div className="bg-gray-200 rounded-full p-2 w-8 h-8 animate-pulse"></div>
+        <div>
+          <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
+          <div className="w-36 h-4 bg-gray-200 rounded mt-2 animate-pulse"></div>
+        </div>
+      </div>
+      <div className="flex items-center space-x-2">
+        <div className="bg-gray-200 rounded-full p-2 w-8 h-8 animate-pulse"></div>
+        <div className="text-right">
+          <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+          <div className="w-24 h-4 bg-gray-200 rounded mt-2 animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-3xl p-4 w-[869px]">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Activity</h2>
+          <ChevronUp className="w-5 h-5" />
+        </div>
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index}>{renderSkeleton()}</div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="bg-white rounded-3xl p-4 w-[869px]">
@@ -98,9 +132,6 @@ const Activity: React.FC<ActivityProps> = ({ address }) => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="bg-orange-100 rounded-full p-1">
-    
-              </div>
               <div className="text-right">
                 <p className="font-medium">0 ETH</p>
                 <p className="text-sm text-gray-500">{tx.value} XDC</p>
@@ -114,6 +145,7 @@ const Activity: React.FC<ActivityProps> = ({ address }) => {
 };
 
 export default Activity;
+
 // "use client"
 // import React, { useState, useEffect } from "react";
 // import { addressService } from "./newui/utils/apiroutes";
