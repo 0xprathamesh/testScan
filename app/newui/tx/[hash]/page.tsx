@@ -144,6 +144,7 @@ import Layout from "@/components/newui/Layout";
 import TransactionDetails from "@/components/newui/TransactionDetails";
 import Loading from "@/components/elements/Loading";
 import { transactionService } from "@/components/newui/utils/apiroutes";
+import { parseAddress } from "@/lib/helpers";
 
 interface PageProps {
   params: {
@@ -180,24 +181,108 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // const fetchTransactionData = async (hash: string) => {
+  //   const fetchFromApi = process.env.NEXT_PUBLIC_FETCH_API === "true";
+
+  //   if (fetchFromApi) {
+  //     try {
+  //       const dataResponse = await transactionService.getTransaction(hash);
+  //       const txData: TxData = {
+  //         hash: dataResponse.hash,
+  //         status: dataResponse.status === "ok",
+  //         blockNumber: dataResponse.block_number,
+  //         timestamp: dataResponse.timestamp,
+  //         confirmations: dataResponse.confirmations,
+  //         from: dataResponse.from?.hash || "",
+  //         to: dataResponse.to?.hash || "",
+  //         value: ethers.BigNumber.from(dataResponse.value),
+  //         gasLimit: ethers.BigNumber.from(dataResponse.gas_limit),
+  //         gasUsed: ethers.BigNumber.from(dataResponse.gas_used),
+  //         effectiveGasPrice: ethers.BigNumber.from(dataResponse.gas_price),
+  //         data: dataResponse.input,
+  //         action: dataResponse.tx_types,
+  //         tokenTransfers: dataResponse.token_transfers.map((transfer: any) => ({
+  //           from: transfer.from,
+  //           to: transfer.to,
+  //           amount: transfer.amount,
+  //           token: transfer.token,
+  //         })),
+  //       };
+  //       setTxData(txData);
+  //       setLoading(false);
+  //       setError(null);
+  //     } catch (err) {
+  //       console.error("Error fetching transaction data from API:", err);
+  //       setError("An error occurred while fetching transaction data from API");
+  //       setLoading(false);
+  //     }
+  //   } else {
+  //     try {
+  //       const rpcUrl = "https://erpc.xinfin.network/";
+  //       const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+
+  //       const tx = await provider.getTransaction(hash);
+  //       const receipt = await provider.getTransactionReceipt(hash);
+  //       const block =
+  //         tx.blockNumber !== undefined
+  //           ? await provider.getBlock(tx.blockNumber)
+  //           : null;
+
+  //       if (tx && receipt && block) {
+  //         const tokenTransfers = parseTokenTransfers(receipt.logs);
+  //         const action = determineTransactionAction(tx, tokenTransfers);
+
+  //         const txData: TxData = {
+  //           hash: tx.hash,
+  //           status: receipt.status === 1,
+  //           blockNumber: tx.blockNumber!,
+  //           timestamp: block.timestamp,
+  //           confirmations: (await provider.getBlockNumber()) - tx.blockNumber!,
+  //           from: tx.from,
+  //           to: tx.to || "",
+  //           value: tx.value,
+  //           gasLimit: tx.gasLimit,
+  //           gasUsed: receipt.gasUsed,
+  //           effectiveGasPrice: receipt.effectiveGasPrice,
+  //           data: tx.data,
+  //           action,
+  //           tokenTransfers,
+  //         };
+
+  //         setTxData(txData);
+  //         setLoading(false)
+  //         setError(null);
+  //       } else {
+  //         setError("Transaction data not found");
+  //       }
+  //     } catch (err) {
+  //       console.error(err);
+  //       setError("An error occurred while fetching transaction data from RPC");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  // };
   const fetchTransactionData = async (hash: string) => {
     const fetchFromApi = process.env.NEXT_PUBLIC_FETCH_API === "true";
-
+  
     if (fetchFromApi) {
       try {
         const dataResponse = await transactionService.getTransaction(hash);
+  
+   
         const txData: TxData = {
           hash: dataResponse.hash,
-          status: dataResponse.status === "ok",
+          status: dataResponse.status === "ok" ? true : false,
           blockNumber: dataResponse.block_number,
-          timestamp: dataResponse.timestamp,
+          timestamp: parseInt(dataResponse.timestamp),
           confirmations: dataResponse.confirmations,
           from: dataResponse.from?.hash || "",
           to: dataResponse.to?.hash || "",
-          value: ethers.BigNumber.from(dataResponse.value),
-          gasLimit: ethers.BigNumber.from(dataResponse.gas_limit),
-          gasUsed: ethers.BigNumber.from(dataResponse.gas_used),
-          effectiveGasPrice: ethers.BigNumber.from(dataResponse.gas_price),
+          value: ethers.BigNumber.from(dataResponse.value || "0"),  // Add default value here
+          gasLimit: ethers.BigNumber.from(dataResponse.gas_limit || "0"),  // Add default value here
+          gasUsed: ethers.BigNumber.from(dataResponse.gas_used || "0"),  // Add default value here
+          effectiveGasPrice: ethers.BigNumber.from(dataResponse.gas_price || "0"),  // Add default value here
           data: dataResponse.input,
           action: dataResponse.tx_types,
           tokenTransfers: dataResponse.token_transfers.map((transfer: any) => ({
@@ -219,18 +304,18 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
       try {
         const rpcUrl = "https://erpc.xinfin.network/";
         const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-
+  
         const tx = await provider.getTransaction(hash);
         const receipt = await provider.getTransactionReceipt(hash);
         const block =
           tx.blockNumber !== undefined
             ? await provider.getBlock(tx.blockNumber)
             : null;
-
+  
         if (tx && receipt && block) {
           const tokenTransfers = parseTokenTransfers(receipt.logs);
           const action = determineTransactionAction(tx, tokenTransfers);
-
+  
           const txData: TxData = {
             hash: tx.hash,
             status: receipt.status === 1,
@@ -247,8 +332,9 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
             action,
             tokenTransfers,
           };
-
+  
           setTxData(txData);
+          setLoading(false);
           setError(null);
         } else {
           setError("Transaction data not found");
@@ -261,7 +347,7 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
       }
     }
   };
-
+  
   const parseTokenTransfers = (
     logs: ethers.providers.Log[]
   ): TokenTransfer[] => {
@@ -322,6 +408,7 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
           <div>No transaction data available</div>
         )}
       </div>
+      <TokenTransfers hash={params.hash} />
       {/* <TransactionData hash={params.hash} /> */}
     </Layout>
   );
@@ -353,9 +440,9 @@ export default Transaction;
 //   action: string;
 //   tokenTransfers:TokenTransfer[]
 // }
-// interface TransactionProps {
-//   hash: string;
-// }
+interface TransactionProps {
+  hash: string;
+}
 // const TransactionData = ({ hash }: TransactionProps) => {
 // const [transactionDatas, setTransactionDatas] = useState<TransactionData | null>(null)
 //   const [tx, setTx] = useState<Transaction | null>(null);
@@ -430,3 +517,88 @@ export default Transaction;
 //     </div>
 //   );
 // };
+
+const TokenTransfers = ({ hash }: TransactionProps) => {
+  const [tokenTransfers, setTokenTransfers] = useState<TokenTransfer[] | null>(
+    []
+  );
+
+  // Fetch token transfers when the component mounts
+  useEffect(() => {
+    fetchTransfers();
+    // It's a good practice to add an empty dependency array to avoid infinite loops
+  }, [hash]);
+
+  const fetchTransfers = async () => {
+    try {
+      const response = await transactionService.getTransaction(hash);
+
+      const data = response.token_transfers.map((item: any) => ({
+        from: item.from?.hash || "", // Default to empty string if null
+        to: item.to?.hash || "",
+        amount: item.total?.value || "0", // Default to '0' if value is not available
+        token: item.token?.address || "", // Assuming the token is identified by its address
+      }));
+
+      setTokenTransfers(data); // Set the mapped token transfers
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <div>
+      {/* Check if there are token transfers to display */}
+      {tokenTransfers && tokenTransfers.length > 0 ? (
+        <div className="bg-white px-8 py-4 rounded-lg mt-8">
+          <div className="text-md font-chivo text-gray-900 mb-2">
+            ERC-20 Tokens Transferred
+          </div>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  From
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  To
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Value
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Token
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {tokenTransfers.map((transfer, index) => (
+                <tr key={index}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {parseAddress(transfer.from)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {parseAddress(transfer.to)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {/* Format the amount based on the token's decimals (assuming it's in wei) */}
+               {transfer.amount}
+                    {/* Adjust decimals as needed */}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {parseAddress(transfer.token)}{" "}
+                    {/* Assuming the token is the address */}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="text-sm text-gray-500 mt-4">
+          No token transfers available for this transaction.
+        </div>
+      )}
+    </div>
+  );
+};

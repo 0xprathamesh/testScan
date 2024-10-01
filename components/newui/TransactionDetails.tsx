@@ -38,8 +38,7 @@ interface TokenTransfer {
   token: string;
 }
 
-
-interface Hash {
+interface HashProps {
   hash: string;
 }
 interface TransactionDetailsProps {
@@ -50,15 +49,11 @@ const parseAddress = (address: string) => {
   return address.slice(0, 6) + "..." + address.slice(-4);
 };
 const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
-  if (!txData) return null;
-
-  const hash = txData.hash;
   const [activeTab, setActiveTab] = useState("Overview");
   const [showTabs, setShowTabs] = useState(false);
   const router = useRouter();
   const tabs = [
     "Overview",
-    "Token Transfer",
     "Internal Transactions",
     "Logs",
     "State",
@@ -123,9 +118,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
             {showTabs && activeTab === "Internal Transactions" && (
               <InternalTransactionsTab txData={txData} />
             )}
-            {showTabs && activeTab === "Token Transfers" && (
-              <TokenTransfers hash={hash} />
-            )}
+
             {showTabs && activeTab === "Logs" && <LogsTab txData={txData} />}
             {showTabs && activeTab === "State" && <StateTab txData={txData} />}
             {showTabs && activeTab === "Raw Trace" && (
@@ -139,96 +132,6 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
 };
 
 export default TransactionDetails;
-
-const TokenTransfers:React.FC<Hash> = ({ hash }) => {
-  const [tokenTransfers, setTokenTransfers] = useState<TokenTransfer[] | null>(
-    null
-  );
-
- 
-
-  // Fetch token transfers when the component mounts
-  useEffect(() => {
-    fetchTransfers();
-    // It's a good practice to add an empty dependency array to avoid infinite loops
-  }, [hash]);
-
-  const fetchTransfers = async () => {
-    try {
-      const response = await transactionService.getTransaction(hash);
-      console.log("Token Transfers =====>", response.token_transfers);
-
-      // Map the response to match your TokenTransfer interface
-      const data = response.token_transfers.map((item: any) => ({
-        from: item.from?.hash || "", // Default to empty string if null
-        to: item.to?.hash || "",
-        amount: item.total?.value || "0", // Default to '0' if value is not available
-        token: item.token?.address || "", // Assuming the token is identified by its address
-      }));
-
-      console.log(data);
-      setTokenTransfers(data); // Set the mapped token transfers
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  return (
-    <div>
-      {/* Check if there are token transfers to display */}
-      {tokenTransfers && tokenTransfers.length > 0 ? (
-        <div className="bg-white px-8 py-4 rounded-lg mt-8">
-          <div className="text-md font-chivo text-gray-900 mb-2">
-            ERC-20 Tokens Transferred
-          </div>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  From
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  To
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Value
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Token
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {tokenTransfers.map((transfer, index) => (
-                <tr key={index}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {parseAddress(transfer.from)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {parseAddress(transfer.to)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {/* Format the amount based on the token's decimals (assuming it's in wei) */}
-                    {ethers.utils.formatUnits(transfer.amount, 18)}{" "}
-                    {/* Adjust decimals as needed */}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {parseAddress(transfer.token)}{" "}
-                    {/* Assuming the token is the address */}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="text-sm text-gray-500 mt-4">
-          No token transfers available for this transaction.
-        </div>
-      )}
-    </div>
-  );
-};
 
 const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
   if (!txData) return null;
@@ -371,7 +274,7 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
     try {
       const response = await transactionService.getTransaction(txData.hash);
       const action = response.tx_types;
-      console.log(action);
+
       setMethod(action);
     } catch (err) {
       console.log(err);
@@ -482,3 +385,4 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
     </div>
   );
 };
+
