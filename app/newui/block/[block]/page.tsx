@@ -17,7 +17,7 @@ interface PageProps {
 interface BlockData {
   number: number;
   hash: string;
-  timestamp: number;
+  timestamp: string;
   gasUsed: ethers.BigNumber;
   gasLimit: ethers.BigNumber;
   transactions?: string[];  
@@ -50,7 +50,7 @@ const Block: React.FC<PageProps> = ({ params }) => {
 
   const fetchBlockData = async (blockNumber: number) => {
     try {
-      const fetchDataAPI = process.env.NEXT_PUBLIC_FETCH_API === 'false';
+      const fetchDataAPI = process.env.NEXT_PUBLIC_FETCH_API === 'true';
 
       if (fetchDataAPI) {
 
@@ -58,7 +58,7 @@ const Block: React.FC<PageProps> = ({ params }) => {
         const transactionResponse = await blockService.getBlockTransaction(blockNumber, '?limit=50&page=1');
         
         const blockData: BlockData = {
-          number: blockResponse.number,
+          number: blockResponse.height,
           hash: blockResponse.hash,
           timestamp: blockResponse.timestamp,
           gasUsed: ethers.BigNumber.from(blockResponse.gas_used),
@@ -88,7 +88,7 @@ const Block: React.FC<PageProps> = ({ params }) => {
         const blockData: BlockData = {
           number: block.number,
           hash: block.hash,
-          timestamp: block.timestamp,
+          timestamp: block.timestamp.toString(),
           gasUsed: block.gasUsed,
           gasLimit: block.gasLimit,
           transactions: block.transactions,
@@ -179,7 +179,7 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
         </div>
 
         <div className="mb-6 text-sm bg-black font-light">
-          <span className="mr-2 text-gray-300">{formatDate(blockData.timestamp)}</span>•
+          <span className="mr-2 text-gray-300">{blockData.timestamp}</span>•
           <span className="ml-2 text-gray-500 font-light leading-10">
             {blockData.confirmations} confirmation{blockData.confirmations !== 1 ? 's' : ''}
           </span>
