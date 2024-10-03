@@ -156,10 +156,13 @@ interface PageProps {
 }
 
 interface TokenTransfer {
+  tokenName?: string;
+  symbol?: string;
   from: string;
   to: string;
   amount: string;
   token: string;
+  icon?: string;
 }
 
 interface TxData {
@@ -297,6 +300,7 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
             to: transfer.to,
             amount: transfer.amount,
             token: transfer.token,
+          
           })),
         };
         setTxData(txData);
@@ -362,10 +366,13 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
     return logs
       .filter((log) => log.topics[0] === transferTopic)
       .map((log) => ({
+        tokenName: "W",
+        symbol:"He",
         from: ethers.utils.getAddress("0x" + log.topics[1].slice(26)),
         to: ethers.utils.getAddress("0x" + log.topics[2].slice(26)),
         amount: ethers.BigNumber.from(log.data).toString(),
         token: log.address,
+
       }));
   };
 
@@ -424,30 +431,6 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
 
 export default Transaction;
 
-// interface Transaction {
-//   hash: string;
-//   block: number;
-//   from: string;
-//   to: string;
-//   value: number;
-//   fee: number;
-// }
-// interface TransactionData {
-//   hash: string;
-//   status: boolean;
-//   blocknumber: number;
-//   timestamp: number;
-//   confirmations: number;
-//   from: string;
-//   to: string;
-//   value: ethers.BigNumber;
-//   gasLimit: ethers.BigNumber;
-//   gasUsed: ethers.BigNumber;
-//   effectiveGasPrice: ethers.BigNumber;
-//   data: string;
-//   action: string;
-//   tokenTransfers:TokenTransfer[]
-// }
 interface TransactionProps {
   hash: string;
 }
@@ -531,10 +514,10 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
     []
   );
 
-  // Fetch token transfers when the component mounts
+
   useEffect(() => {
     fetchTransfers();
-    // It's a good practice to add an empty dependency array to avoid infinite loops
+
   }, [hash]);
 
   const fetchTransfers = async () => {
@@ -542,13 +525,15 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
       const response = await transactionService.getTransaction(hash);
 
       const data = response.token_transfers.map((item: any) => ({
-        from: item.from?.hash || "", // Default to empty string if null
+        from: item.from?.hash || "", 
         to: item.to?.hash || "",
-        amount: item.total?.value || "0", // Default to '0' if value is not available
-        token: item.token?.address || "", // Assuming the token is identified by its address
+        amount: item.total?.value || "0",
+        token: item.token?.address || "", 
+        icon: item.token?.icon_url,
+
       }));
 
-      setTokenTransfers(data); // Set the mapped token transfers
+      setTokenTransfers(data); 
     } catch (err) {
       console.error(err);
     }
@@ -634,7 +619,7 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
         </div>
       ) : (
         <div className="text-sm text-gray-500 mt-4">
-          No token transfers available for this transaction.
+        
         </div>
       )}
     </div>

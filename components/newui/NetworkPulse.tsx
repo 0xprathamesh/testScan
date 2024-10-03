@@ -216,7 +216,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
     const interval = setInterval(fetchData, 10000);
     
     return () => clearInterval(interval);
-  }, [rpcUrl]);
+  }, []);
 
   const fetchRPCData = async () => {
     const data = await getBlockchainData(rpcUrl);
@@ -245,7 +245,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
 
   const fetchAPIData = async () => {
     try {
-      const transactionResponse = await transactionService.transactions(`?limit=10&page=1`);
+      const transactionResponse = await transactionService.transactions(`?limit=20&page=1`);
       const transactionApiData = transactionResponse.items.map((item: any) => ({
         hash: item.hash,
         from: item.from?.hash,
