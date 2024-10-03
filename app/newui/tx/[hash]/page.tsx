@@ -145,6 +145,9 @@ import TransactionDetails from "@/components/newui/TransactionDetails";
 import Loading from "@/components/elements/Loading";
 import { transactionService } from "@/components/newui/utils/apiroutes";
 import { parseAddress } from "@/lib/helpers";
+import TokenTransfers from "@/components/TokenTransfers";
+import Link from "next/link";
+import { FiArrowRight, FiCopy } from "react-icons/fi";
 
 interface PageProps {
   params: {
@@ -265,24 +268,28 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
   // };
   const fetchTransactionData = async (hash: string) => {
     const fetchFromApi = process.env.NEXT_PUBLIC_FETCH_API === "true";
-  
+
     if (fetchFromApi) {
       try {
         const dataResponse = await transactionService.getTransaction(hash);
-  
-   
+        console.log(dataResponse.timestamp);
+
         const txData: TxData = {
           hash: dataResponse.hash,
           status: dataResponse.status === "ok" ? true : false,
           blockNumber: dataResponse.block_number,
-          timestamp: parseInt(dataResponse.timestamp),
+          timestamp: Math.floor(
+            new Date(dataResponse.timestamp).getTime() / 1000
+          ),
           confirmations: dataResponse.confirmations,
           from: dataResponse.from?.hash || "",
           to: dataResponse.to?.hash || "",
-          value: ethers.BigNumber.from(dataResponse.value || "0"),  // Add default value here
-          gasLimit: ethers.BigNumber.from(dataResponse.gas_limit || "0"),  // Add default value here
-          gasUsed: ethers.BigNumber.from(dataResponse.gas_used || "0"),  // Add default value here
-          effectiveGasPrice: ethers.BigNumber.from(dataResponse.gas_price || "0"),  // Add default value here
+          value: ethers.BigNumber.from(dataResponse.value || "0"), // Add default value here
+          gasLimit: ethers.BigNumber.from(dataResponse.gas_limit || "0"), // Add default value here
+          gasUsed: ethers.BigNumber.from(dataResponse.gas_used || "0"), // Add default value here
+          effectiveGasPrice: ethers.BigNumber.from(
+            dataResponse.gas_price || "0"
+          ), // Add default value here
           data: dataResponse.input,
           action: dataResponse.tx_types,
           tokenTransfers: dataResponse.token_transfers.map((transfer: any) => ({
@@ -304,18 +311,18 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
       try {
         const rpcUrl = "https://erpc.xinfin.network/";
         const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-  
+
         const tx = await provider.getTransaction(hash);
         const receipt = await provider.getTransactionReceipt(hash);
         const block =
           tx.blockNumber !== undefined
             ? await provider.getBlock(tx.blockNumber)
             : null;
-  
+
         if (tx && receipt && block) {
           const tokenTransfers = parseTokenTransfers(receipt.logs);
           const action = determineTransactionAction(tx, tokenTransfers);
-  
+
           const txData: TxData = {
             hash: tx.hash,
             status: receipt.status === 1,
@@ -332,7 +339,7 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
             action,
             tokenTransfers,
           };
-  
+
           setTxData(txData);
           setLoading(false);
           setError(null);
@@ -347,7 +354,7 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
       }
     }
   };
-  
+
   const parseTokenTransfers = (
     logs: ethers.providers.Log[]
   ): TokenTransfer[] => {
@@ -408,7 +415,8 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
           <div>No transaction data available</div>
         )}
       </div>
-      <TokenTransfers hash={params.hash} />
+      <TokenTransfer hash={params.hash} />
+
       {/* <TransactionData hash={params.hash} /> */}
     </Layout>
   );
@@ -518,7 +526,7 @@ interface TransactionProps {
 //   );
 // };
 
-const TokenTransfers = ({ hash }: TransactionProps) => {
+const TokenTransfer = ({ hash }: TransactionProps) => {
   const [tokenTransfers, setTokenTransfers] = useState<TokenTransfer[] | null>(
     []
   );
@@ -545,54 +553,84 @@ const TokenTransfers = ({ hash }: TransactionProps) => {
       console.error(err);
     }
   };
-
+  const formatTokenAmount = (amount: string, decimals: number) => {
+    return (parseInt(amount) / 10 ** decimals).toFixed(4); // Adjust decimal places as needed
+  };
   return (
     <div>
-      {/* Check if there are token transfers to display */}
       {tokenTransfers && tokenTransfers.length > 0 ? (
         <div className="bg-white px-8 py-4 rounded-lg mt-8">
           <div className="text-md font-chivo text-gray-900 mb-2">
             ERC-20 Tokens Transferred
           </div>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  From
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  To
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Value
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Token
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {tokenTransfers.map((transfer, index) => (
-                <tr key={index}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {parseAddress(transfer.from)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {parseAddress(transfer.to)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {/* Format the amount based on the token's decimals (assuming it's in wei) */}
-               {transfer.amount}
-                    {/* Adjust decimals as needed */}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {parseAddress(transfer.token)}{" "}
-                    {/* Assuming the token is the address */}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="space-y-4">
+            {tokenTransfers.map((transfer, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0"
+              >
+                <div className="flex items-center space-x-2">
+                  <div>
+                    <p className="font-medium">Token Transfer</p>
+                    <p className="text-sm font-semibold text-[#06afe8] flex items-center">
+                      <Link href={`/newui/tx/${hash}`}>
+                        #{parseAddress(hash)}{" "}
+                      </Link>
+                      <FiCopy
+                        className="ml-2 text-gray-400 cursor-pointer"
+                        onClick={() => navigator.clipboard.writeText(hash)}
+                      />
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-x-4">
+                  <div className="text-blue text-sm font-light leading font-chivo flex items-center">
+                    <Link href={`/newui/address/${transfer.from}`}>
+                      {parseAddress(transfer.from)}
+                    </Link>
+                    <FiCopy
+                      className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+                      onClick={() =>
+                        navigator.clipboard.writeText(transfer.from)
+                      }
+                    />
+                  </div>
+                  <FiArrowRight className="h-4 w-4" />
+                  <div className="text-blue text-sm font-light leading font-chivo flex items-center">
+                    <Link href={`/newui/address/${transfer.to}`}>
+                      {parseAddress(transfer.to)}
+                    </Link>
+                    <FiCopy
+                      className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+                      onClick={() => navigator.clipboard.writeText(transfer.to)}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500">
+                    {formatTokenAmount(
+                      transfer.amount,
+                      18
+                    )}{" "} XDC
+                   
+                  </p>
+                </div>
+                <div className="text-blue text-sm font-light leading font-chivo flex items-center">
+                    <Link href={`/newui/tokens/${transfer.token}`}>
+                      {parseAddress(transfer.token)}
+                    </Link>
+                    <FiCopy
+                      className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+                      onClick={() =>
+                        navigator.clipboard.writeText(transfer.token)
+                      }
+                    />
+                  </div>
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <div className="text-sm text-gray-500 mt-4">
