@@ -48,7 +48,10 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
     fetchContract();
   }, [address]);
 
-  const parseAddress = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  const parseAddress = (addr: string | null | undefined) => {
+    if (!addr) return "N/A"; // Return a default value if addr is null or undefined
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
 
   // Skeleton loader component
   const SkeletonLoader = () => (

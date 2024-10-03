@@ -40,7 +40,7 @@ const TokenTransfers: React.FC<TokenTransfersProps> = ({ address }) => {
           token: {
             symbol: item.token?.symbol || "Unknown",
             name: item.token?.name || "Unknown Token",
-            icon_url: item.token?.icon_url || "/path-to-default-icon.png",
+            icon_url: item.token?.symbol ? `https://cdn.blocksscan.io/tokens/img/${item.token.symbol}.png` : "", 
           },
           from: item.from?.hash || "Unknown",
           to: item.to?.hash || "Unknown",
@@ -111,7 +111,7 @@ const TokenTransfers: React.FC<TokenTransfersProps> = ({ address }) => {
             key={index}
             className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0"
           >
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center">
               <div className="rounded-full">
                 <Image
                   src={transfer.token.icon_url}
@@ -121,7 +121,7 @@ const TokenTransfers: React.FC<TokenTransfersProps> = ({ address }) => {
                   className="w-8 h-8"
                 />
               </div>
-              <div>
+              <div className="ml-1">
                 <p className="font-medium">{transfer.token.name} Transfer</p>
                 <p className="text-sm font-semibold text-[#06afe8] flex items-center">
                   <Link href={`/newui/tx/${transfer.hash}`}>
