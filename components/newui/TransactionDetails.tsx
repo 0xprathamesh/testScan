@@ -13,7 +13,8 @@ import { ethers } from "ethers";
 import { FaCode } from "react-icons/fa";
 import { LuCode2 } from "react-icons/lu";
 import { transactionService } from "./utils/apiroutes";
-
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 interface TxData {
   hash: string;
   status: boolean;
@@ -55,28 +56,33 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
   const tabs = [
     "Overview",
     "Internal Transactions",
-    "Logs",
+    "JSON",
     "State",
-    "Raw Trace",
+
   ];
 
   return (
     <div className="font-inter">
       {/* Header */}
       <div className="flex items-center mb-6">
-        <button className="mr-4" onClick={() => router.push("/newui")}>
-          <ArrowLeft className="h-6 w-6" />
-        </button>
-
         <div>
-          <div className="text-sm text-blue">
-            Transaction Details •{" "}
+          <div className="flex items-center">
+            <Link href="/newui">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+            </Link>
+            <span className="text-md font-semibold">User Details •</span>
+          </div>
+          <div>
+            <Link href="/newui" className="text-blue text-sm">
+              Home •
+            </Link>
+
             <span className="text-sm font-light ml-2">
               {txData?.hash.slice(0, 6)}...{txData?.hash.slice(-4)}
             </span>
           </div>
-          <h1 className=" font-light">Home</h1>
         </div>
+
         {/* Toggle button */}
 
         <button
@@ -119,7 +125,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
               <InternalTransactionsTab txData={txData} />
             )}
 
-            {showTabs && activeTab === "Logs" && <LogsTab txData={txData} />}
+            {showTabs && activeTab === "JSON" && <JSONTab txData={txData} />}
             {showTabs && activeTab === "State" && <StateTab txData={txData} />}
             {showTabs && activeTab === "Raw Trace" && (
               <RawTraceTab txData={txData} />
@@ -139,10 +145,10 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
   const formatGasFee = (gasUsed: any, gasPrice: any) => {
     // Calculate the total gas fee in Wei
     const feeInWei = Number(gasUsed) * Number(gasPrice);
-    
+
     // Convert Wei to Ether (divide by 10^18)
     const feeInEther = feeInWei / 10 ** 18;
-    
+
     // Return the result as a string, formatted to 6 decimal places for readability
     return feeInEther.toFixed(6);
   };
@@ -153,10 +159,10 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
   return (
     <div className="space-y-4">
       <div className="bg-white p-4 rounded-3xl border border-gray-200">
-        <h3 className="text-lg font-light mb-2">Transaction Value</h3>
+        <h3 className="text-lg font-inter mb-2">Transaction Value</h3>
         <div className="flex items-center bg-gray-100 p-3 rounded">
-          <span className="font-bold text-lg">
-            {ethers.utils.formatEther(txData.value)} ETH
+          <span className="font-semibold text-lg font-chivo">
+            {ethers.utils.formatEther(txData.value)} XDC
           </span>
         </div>
       </div>
@@ -165,9 +171,10 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-sm font-inter">From</h3>
           <div className="flex items-center">
-            <span className="text-gray-600 mr-2 text-sm leading">
+            <Link href={`/newui/address/${txData.from}`} className="text-gray-600 mr-2 text-sm leading">
+            
               {shortenAddress(txData.from)}
-            </span>
+            </Link>
             <Copy
               className="h-4 w-4 ml-2 cursor-pointer text-gray-400"
               onClick={() => navigator.clipboard.writeText(txData.from)}
@@ -182,9 +189,9 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-sm font-inter">To</h3>
           <div className="flex items-center">
-            <span className="text-gray-600 mr-2 text-sm leading">
+            <Link href={`/newui/address/${txData.to}`} className="text-gray-600 mr-2 text-sm leading">
               {txData.to ? shortenAddress(txData.to) : "Contract Creation"}
-            </span>
+            </Link>
             {txData.to && (
               <Copy
                 className="h-4 w-4 ml-2 cursor-pointer text-gray-400"
@@ -196,9 +203,9 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
       </div>
 
       <div className="bg-white p-4 rounded-3xl border-gray-200 border">
-        <h3 className="text-lg font-semibold mb-2">Transaction Fee</h3>
+        <h3 className="text-lg font-inter mb-2">Transaction Fee</h3>
         <div className="flex justify-between items-center">
-          <span className="text-2xl font-bold">
+          <span className="text-lg font-chivo font-semibold">
             {formatGasFee(txData.gasUsed, txData.effectiveGasPrice)} XDC
           </span>
           <span className="text-gray-500">
@@ -222,14 +229,24 @@ const InternalTransactionsTab: React.FC<TransactionDetailsProps> = ({
   );
 };
 
-const LogsTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
+const JSONTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
   if (!txData) return null;
   return (
     <div className="bg-white p-4 rounded-lg">
-      <h3 className="font-semibold mb-2">Transaction Logs</h3>
-      <pre className="bg-gray-100 p-2 rounded overflow-x-auto">
-        {JSON.stringify(txData, null, 2)}
-      </pre>
+      <div className="h-[500px] overflow-auto">
+        <SyntaxHighlighter
+          language="json"
+          style={vscDarkPlus}
+          customStyle={{
+            margin: 0,
+            padding: "1rem",
+            fontSize: "0.875rem",
+            textWrap: "wrap",
+          }}
+        >
+          {JSON.stringify(txData, null, 2)}
+        </SyntaxHighlighter>
+      </div>
     </div>
   );
 };
@@ -278,8 +295,8 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
   const fetchAction = async () => {
     try {
       const response = await transactionService.getTransaction(txData.hash);
-      const action = response.tx_types;
-
+      const action = response.tx_types.length > 0 ? response.tx_types : "Send";
+      console.log(action);
       setMethod(action);
     } catch (err) {
       console.log(err);
@@ -300,7 +317,7 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             {/* Dynamically update the label for the transaction type */}
-            <h2 className="text-2xl font-bold">{method}</h2>
+            <h2 className="text-2xl font-semibold capitalize font-chivo">{method}</h2>
           </div>
           <span
             className={`px-3 py-1 rounded-md text-sm ${
@@ -325,7 +342,7 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <span className="mr-2">Located in</span>
+              <span className="mr-2 text-sm ">Located in</span>
               <HelpCircle className="h-4 w-4" />
             </div>
             <Link href={`/newui/block/${txData.blockNumber}`}>
@@ -337,7 +354,7 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
 
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <span className="mr-2">From</span>
+              <span className="mr-2 text-sm">From</span>
               <HelpCircle className="h-4 w-4" />
             </div>
             <Link href={`/newui/address/${txData.from}`}>
@@ -349,7 +366,7 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
 
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <span className="mr-2">To</span>
+              <span className="mr-2 text-sm">To</span>
               <HelpCircle className="h-4 w-4" />
             </div>
             <Link href={`/newui/address/${txData.to}`}>
@@ -364,7 +381,7 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
           <span className="text-sm mb-2">Tags</span>
           <div className="flex flex-wrap gap-2">
             <span className="bg-black bg-opacity-20 px-3 py-1 rounded-full text-sm">
-              Value: {txData.value.toString()} XDC
+              Value: {ethers.utils.formatEther(txData.value)} XDC
             </span>
             <span className="bg-black bg-opacity-20 px-3 py-1 rounded-full text-sm">
               Gas Used: {txData.gasUsed.toString()}
@@ -383,11 +400,13 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
                 {shortenHash(txData.hash)}
               </span>
             </Link>
-            <Copy className="h-4 w-4" />
+            <Copy
+              className="h-4 w-4"
+              onClick={() => navigator.clipboard.writeText(txData.hash)}
+            />
           </div>
         </div>
       </div>
     </div>
   );
 };
-
