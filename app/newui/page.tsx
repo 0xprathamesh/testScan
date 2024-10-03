@@ -33,6 +33,7 @@ const MantaDashboard: React.FC = () => {
       const blockchainDataApi = await getBlockchainData(
         "https://erpc.xinfin.network/"
       );
+
       setBlockchainData(blockchainDataApi);
       setCoinData(data);
     } catch (err) {
@@ -96,8 +97,10 @@ const MantaDashboard: React.FC = () => {
   const xdcBTCPrice = coinData?.market_data?.current_price?.btc ?? "Loading...";
   const xdcPriceChange =
     coinData?.market_data?.price_change_percentage_24h ?? "Loading...";
-  const { totalTransactions, latestTransaction } = blockchainData;
-  const parsedTransactionhash = parseAddress(latestTransaction);
+  const { totalTransactions, latestTransaction, latestBlockNumber, latestBlock } = blockchainData;
+
+  const parsedTransactionhash = parseAddress(latestTransaction.toString());
+
   return (
     <Layout>
       <div className="flex flex-col md:flex-row md:w-full p-6 justify-between w-full mb-40">
@@ -267,7 +270,8 @@ const MantaDashboard: React.FC = () => {
 
               <div className="text-white">
                 <p className="text-2xl font-semibold leading hover:underline mb-2">
-                  0xcd23...34244
+                  <Link href={`/newui/tx/${latestTransaction.toString()}`}>
+                  {parsedTransactionhash}</Link>
                 </p>
                 <div>
                   <p className="text-sm font-chivo  font-extralight flex items-center gap-1">
@@ -296,7 +300,9 @@ const MantaDashboard: React.FC = () => {
               <div className="text-white">
                 <Link href={`/newui/blocks`} className="">
                 <p className="text-2xl font-semibold leading hover:underline mb-2">
-                 8645321
+                    <Link href={`/newui/block/${latestBlockNumber}`}>
+                      {latestBlockNumber}
+                 </Link>
                   </p>
                   </Link>
                 <div>

@@ -137,9 +137,14 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
   if (!txData) return null;
 
   const formatGasFee = (gasUsed: any, gasPrice: any) => {
-    // Calculate the total gas fee
-    const fee = Number(gasUsed) * Number(gasPrice);
-    return fee.toString();
+    // Calculate the total gas fee in Wei
+    const feeInWei = Number(gasUsed) * Number(gasPrice);
+    
+    // Convert Wei to Ether (divide by 10^18)
+    const feeInEther = feeInWei / 10 ** 18;
+    
+    // Return the result as a string, formatted to 6 decimal places for readability
+    return feeInEther.toFixed(6);
   };
 
   const shortenAddress = (address: string) =>
@@ -194,7 +199,7 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
         <h3 className="text-lg font-semibold mb-2">Transaction Fee</h3>
         <div className="flex justify-between items-center">
           <span className="text-2xl font-bold">
-            {formatGasFee(txData.gasUsed, txData.effectiveGasPrice)} Wei
+            {formatGasFee(txData.gasUsed, txData.effectiveGasPrice)} XDC
           </span>
           <span className="text-gray-500">
             {txData.gasUsed.toString()} Gas Used

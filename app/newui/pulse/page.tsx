@@ -2,30 +2,45 @@
 import Layout from "@/components/newui/Layout";
 import React, { useState, useEffect } from "react";
 import { getBlockchainData } from "@/components/newui/utils/xdcrpc";
-import Spinner from "@/components/elements/Spinner";
-import Loading from "@/components/elements/Loading";
 import { IoReceiptOutline, IoCubeOutline } from "react-icons/io5";
 import { MdArrowForwardIos } from "react-icons/md";
 import { GrCubes } from "react-icons/gr";
 import { FaEthereum } from "react-icons/fa";
 import NetworkPulse from "@/components/newui/NetworkPulse";
+import {
+  blockService,
+  dashboardService,
+  transactionService,
+} from "@/components/newui/utils/apiroutes";
 
+interface BlockData {
+  number: string;
+  timestamp: string;
+  hash: string;
+  miner: {
+    hash: string;
+  };
+  size: number;
+  gasUsed: string;
+  gasLimit: string;
+  txCount: number;
+}
 
 const Skeleton: React.FC<{
   width?: string;
   height?: string;
   className?: string;
-  variant?: 'rectangular' | 'circular' | 'text';
-}> = ({ width, height, className, variant = 'rectangular' }) => {
+  variant?: "rectangular" | "circular" | "text";
+}> = ({ width, height, className, variant = "rectangular" }) => {
   const baseClasses = "animate-pulse bg-gray-200";
   const variantClasses = {
     rectangular: "rounded",
     circular: "rounded-full",
-    text: "rounded w-full h-4"
+    text: "rounded w-full h-4",
   };
 
   return (
-    <div 
+    <div
       className={`${baseClasses} ${variantClasses[variant]} ${className}`}
       style={{ width, height }}
     />
@@ -47,9 +62,24 @@ const SkeletonTransactionMovement = () => (
     <div className="flex justify-between items-center">
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className="text-center">
-          <Skeleton width="48px" height="48px" className="mx-auto mb-4 mt-4" variant="circular" />
-          <Skeleton width="60px" height="16px" className="mx-auto mb-2" variant="text" />
-          <Skeleton width="40px" height="12px" className="mx-auto" variant="text" />
+          <Skeleton
+            width="48px"
+            height="48px"
+            className="mx-auto mb-4 mt-4"
+            variant="circular"
+          />
+          <Skeleton
+            width="60px"
+            height="16px"
+            className="mx-auto mb-2"
+            variant="text"
+          />
+          <Skeleton
+            width="40px"
+            height="12px"
+            className="mx-auto"
+            variant="text"
+          />
         </div>
       ))}
     </div>
@@ -60,20 +90,67 @@ const DashboardPage = () => {
   const [blockchainData, setBlockchainData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  // useEffect(() => {
+
+  //   const fetchData = async () => {
+  //     try {
+  //       const data = await getBlockchainData("https://erpc.xinfin.network/");
+  //       setBlockchainData(data);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching blockchain data:", error);
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+  const USE_API = process.env.NEXT_PUBLIC_FETCH_API === "true";
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getBlockchainData("https://erpc.xinfin.network/");
-        setBlockchainData(data);
-        setLoading(false);
+        setLoading(true);
+        if (USE_API) {
+          await fetchAPIData();
+        } else {
+          await fetchRPCData();
+        }
       } catch (error) {
         console.error("Error fetching blockchain data:", error);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
+  const fetchRPCData = async () => {
+    try {
+      const data = await getBlockchainData("https://erpc.xinfin.network/");
+      setBlockchainData(data);
+    } catch (error) {
+      console.error("Error fetching RPC data:", error);
+    }
+  };
+
+  const fetchAPIData = async () => {
+    try {
+      const response = await dashboardService.stats();
+      console.log(response);
+
+      const { total_blocks, total_transactions } = response;
+
+      const apiData = {
+        latestBlockNumber: total_blocks,
+        totalTransactions: total_transactions,
+      };
+
+      setBlockchainData(apiData);
+    } catch (error) {
+      console.error("Error fetching API data:", error);
+    }
+  };
 
   const renderContent = () => {
     if (loading) {
@@ -92,9 +169,9 @@ const DashboardPage = () => {
 
     const { totalTransactions, latestBlockNumber } = blockchainData;
 
+
     return (
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
-        {/* Total transactions card */}
         <div className="bg-black text-white rounded-3xl p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-sm font-light font-inter text-gray-200">
@@ -131,9 +208,10 @@ const DashboardPage = () => {
           </p>
         </div>
 
-
         <div className="bg-black text-white rounded-3xl p-4">
-          <h3 className="text-sm font-light mb-4 text-gray-200">Total blocks</h3>
+          <h3 className="text-sm font-light mb-4 text-gray-200">
+            Total blocks
+          </h3>
           <h2 className="text-3xl font-semibold mb-2">{latestBlockNumber}</h2>
           <p className="text-xs mb-4 font-light text-[#cbd5e1]">
             Each block takes an average of 5 seconds to process
@@ -149,7 +227,6 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
-
 
         <div className="bg-black text-white rounded-3xl p-4 lg:col-span-2">
           <h3 className="text-sm font-normal mb-4">
@@ -182,7 +259,9 @@ const DashboardPage = () => {
             <MdArrowForwardIos />
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-600 rounded-full mx-auto mb-2 flex items-center justify-center">
-                <span className="text-2xl"><FaEthereum /></span>
+                <span className="text-2xl">
+                  <FaEthereum />
+                </span>
               </div>
               <p className="text-xs">L1 chain</p>
               <p className="text-xs text-gray-400">~ 1 sec</p>

@@ -7,6 +7,7 @@ import Copyable from "../elements/Copyable";
 import Spinner from "./Spinner";
 import { IoReceiptOutline, IoCubeOutline } from "react-icons/io5";
 import Link from "next/link";
+import { transactionService,blockService } from "./utils/apiroutes";
 
 interface Transaction {
   hash: string;
@@ -141,6 +142,51 @@ const BlockBox: React.FC<Block & { isFirst: boolean }> = ({
 
 
 const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
+  // const [blockchainData, setBlockchainData] = useState<any>(null);
+  // const [transactions, setTransactions] = useState<Transaction[]>([]);
+  // const [blocks, setBlocks] = useState<Block[]>([]);
+  // const [loading, setLoading] = useState(true);
+  // const txSliderRef = useRef<HTMLDivElement>(null);
+  // const blockSliderRef = useRef<HTMLDivElement>(null);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const data = await getBlockchainData(rpcUrl);
+  //       setBlockchainData(data);
+
+  //       const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+  //       const latestBlock = await provider.getBlock("latest");
+  //       const latestTransactions = await Promise.all(
+  //         latestBlock.transactions.slice(0, 10).map(async (tx) => {
+  //           const transaction = await provider.getTransaction(tx);
+  //           return {
+  //             ...transaction,
+  //             timestamp: latestBlock.timestamp,
+  //           } as Transaction;
+  //         })
+  //       );
+  //       setTransactions(latestTransactions);
+
+  //       const latestBlocks = await Promise.all(
+  //         [...Array(10)].map((_, i) =>
+  //           provider.getBlock(latestBlock.number - i)
+  //         )
+  //       );
+  //       setBlocks(latestBlocks as Block[]);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  //   const interval = setInterval(fetchData, 10000);
+    
+  //   return () => clearInterval(interval);
+  // }, [rpcUrl]);
   const [blockchainData, setBlockchainData] = useState<any>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [blocks, setBlocks] = useState<Block[]>([]);
@@ -148,32 +194,17 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
   const txSliderRef = useRef<HTMLDivElement>(null);
   const blockSliderRef = useRef<HTMLDivElement>(null);
 
+  const USE_API = process.env.NEXT_PUBLIC_FETCH_API === "true";
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const data = await getBlockchainData(rpcUrl);
-        setBlockchainData(data);
-
-        const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-        const latestBlock = await provider.getBlock("latest");
-        const latestTransactions = await Promise.all(
-          latestBlock.transactions.slice(0, 10).map(async (tx) => {
-            const transaction = await provider.getTransaction(tx);
-            return {
-              ...transaction,
-              timestamp: latestBlock.timestamp,
-            } as Transaction;
-          })
-        );
-        setTransactions(latestTransactions);
-
-        const latestBlocks = await Promise.all(
-          [...Array(10)].map((_, i) =>
-            provider.getBlock(latestBlock.number - i)
-          )
-        );
-        setBlocks(latestBlocks as Block[]);
+        if (USE_API) {
+          await fetchAPIData();
+        } else {
+          await fetchRPCData();
+        }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -183,10 +214,62 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
 
     fetchData();
     const interval = setInterval(fetchData, 10000);
-
+    
     return () => clearInterval(interval);
   }, [rpcUrl]);
 
+  const fetchRPCData = async () => {
+    const data = await getBlockchainData(rpcUrl);
+    setBlockchainData(data);
+
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const latestBlock = await provider.getBlock("latest");
+    const latestTransactions = await Promise.all(
+      latestBlock.transactions.slice(0, 10).map(async (tx) => {
+        const transaction = await provider.getTransaction(tx);
+        return {
+          ...transaction,
+          timestamp: latestBlock.timestamp,
+        } as Transaction;
+      })
+    );
+    setTransactions(latestTransactions);
+
+    const latestBlocks = await Promise.all(
+      [...Array(10)].map((_, i) =>
+        provider.getBlock(latestBlock.number - i)
+      )
+    );
+    setBlocks(latestBlocks as Block[]);
+  };
+
+  const fetchAPIData = async () => {
+    try {
+      const transactionResponse = await transactionService.transactions(`?limit=10&page=1`);
+      const transactionApiData = transactionResponse.items.map((item: any) => ({
+        hash: item.hash,
+        from: item.from?.hash,
+        to: item.to?.hash,
+        value: ethers.BigNumber.from(item.value || 0),
+        timestamp: Math.floor(
+          new Date(item.timestamp).getTime() / 1000
+        ),
+      }));
+      setTransactions(transactionApiData);
+
+      const blockResponse = await blockService.blocks(`?limit=10&page=1`);
+      const blockApiData = blockResponse.items.map((item: any) => ({
+        number: item.number,
+        timestamp: Math.floor(
+          new Date(item.timestamp).getTime() / 1000
+        ),
+        transactions: item.transactions || []
+      }));
+      setBlocks(blockApiData);
+    } catch (error) {
+      console.error("Error fetching API data:", error);
+    }
+  };
   const scroll = (
     ref: React.RefObject<HTMLDivElement>,
     scrollOffset: number
@@ -195,6 +278,36 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
       ref.current.scrollLeft += scrollOffset;
     }
   };
+  useEffect(() => {
+    fetchAPIData();
+  })
+  // const fetchAPIData = async () => {
+  //   try {
+  //     const transactionResponse = await transactionService.transactions(`?limit=20&page=1`);
+  //     const transactionApiData = transactionResponse.items.map((item: any) => ({
+  //       hash: item.hash,
+  //       from: item.from?.hash,
+  //       to: item.to?.hash,
+  //       value: 343432334,
+  //       timestamp: 232
+
+  //     }));
+  //     console.log(transactionApiData);
+      
+
+  //     const blockResposne = await blockService.blocks(`?limit=20&page=1`);
+
+  //     const blockApiData = blockResposne.items.map((item: any) => ({
+  //       number: item.number,
+  //       timestamp: item.timestamp,
+         
+  //     }))
+  //     console.log(transactionResponse.items.length);
+  //     console.log(blockResposne.items.length);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
   return (
     <div className="py-6 px-2 rounded-3xl mx-auto max-w-[1220px]">
