@@ -26,9 +26,9 @@ const articleInstance = axios.create({
     },
 });
 
-api.defaults.baseURL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_SOCKET_URL : 'https://api.xdcscan.io';
-
-
+// api.defaults.baseURL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_SOCKET_URL : 'https://api.xdcscan.io';
+api.defaults.baseURL ='https://api.xdcscan.io';
+contractApi.defaults.baseURL = "https://api.xdcscan.io";
 // chartApi.defaults.baseURL = process.env.REACT_APP_CHART_URL || process.env.REACT_APP_SOCKET_URL || api.defaults.baseURL;
 // csvApi.defaults.baseURL = process.env.REACT_APP_CSV_URL || process.env.REACT_APP_SOCKET_URL || api.defaults.baseURL;
 // contractApi.defaults.baseURL = process.env.REACT_APP_SMART_CONTRACT_URL1 || process.env.REACT_APP_SOCKET_URL1 || api.defaults.baseURL;

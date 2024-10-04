@@ -43,7 +43,36 @@ const ContractDetails: React.FC<PageProps> = ({ address }) => {
     fetchContractDetails(); 
   }, [address]);
 
-  if (loading) return <div>Loading contract details...</div>;
+  const renderSkeleton = () => (
+    <div className="flex justify-between items-center py-2 border-b border-gray-200 animate-pulse">
+      <div className="flex items-center space-x-2">
+        <div className="rounded-full bg-gray-200 w-8 h-8"></div>
+        <div>
+          <div className="w-24 h-4 bg-gray-200 rounded"></div>
+          <div className="w-36 h-4 bg-gray-200 rounded mt-2"></div>
+        </div>
+      </div>
+      <div className="text-right">
+        <div className="w-16 h-4 bg-gray-200 rounded"></div>
+        <div className="w-24 h-4 bg-gray-200 rounded mt-2"></div>
+      </div>
+    </div>
+  );
+  if (loading) {
+    return (
+      <div className="bg-white rounded-3xl p-4 w-[869px]">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Activity</h2>
+          <ChevronUp className="w-5 h-5" />
+        </div>
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index}>{renderSkeleton()}</div>
+          ))}
+        </div>
+      </div>
+    );
+  }
   if (error) return <div>{error}</div>;
 
   return (
@@ -93,8 +122,8 @@ const ContractDetails: React.FC<PageProps> = ({ address }) => {
           )}
         </div>
         {isDeployedOpen && (
-          <div className="mt-4 p-2 bg-gray-100 rounded-md overflow-x-auto max-h-60">
-            <pre className="text-sm text-gray-800">
+          <div className="mt-4 p-2 bg-gray-100 rounded-md overflow-auto">
+            <pre className="text-sm text-gray-800 text-wrap">
               {contract?.deployedcode}
             </pre>
             <FiCopy
