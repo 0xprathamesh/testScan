@@ -148,8 +148,7 @@ const CodeTab: React.FC<{ contract: ContractData | null }> = ({ contract }) => {
     </div>
   );
 };
-const ReadContract: React.FC = () => <div>Read Contract</div>;
-const WriteContractTab: React.FC = () => <div>Write Contract</div>;
+
 
 
 const Contract: React.FC<AddressProps> = ({ address }) => {
