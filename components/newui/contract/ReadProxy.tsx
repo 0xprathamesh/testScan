@@ -27,7 +27,7 @@ interface Method {
   type: string;
 }
 
-const ReadContract: React.FC<ReadProps> = ({ address }) => {
+const ReadProxy: React.FC<ReadProps> = ({ address }) => {
   const [contract, setContract] = useState<Method[] | null>(null);
   const [inputs, setInputs] = useState<Record<string, Record<number, string>>>({});
   const [expandedMethods, setExpandedMethods] = useState<Record<string, boolean>>({});
@@ -41,7 +41,7 @@ const ReadContract: React.FC<ReadProps> = ({ address }) => {
         setLoading(true);
         setError(null);
         const response = await addressService.verifiedAddresses(
-          `/${address}/methods-read?is_custom_abi=false`
+          `/${address}/methods-read-proxy?is_custom_abi=false`
         );
        
         const functions = response.filter((method: Method) => 
@@ -198,5 +198,5 @@ const ReadContract: React.FC<ReadProps> = ({ address }) => {
   );
 };
 
-export default ReadContract;
+export default ReadProxy;
 

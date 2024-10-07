@@ -53,13 +53,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
   const [activeTab, setActiveTab] = useState("Overview");
   const [showTabs, setShowTabs] = useState(false);
   const router = useRouter();
-  const tabs = [
-    "Overview",
-    "Internal Transactions",
-    "JSON",
-    "State",
-
-  ];
+  const tabs = ["Overview", "Internal Transactions", "JSON", "State"];
 
   return (
     <div className="font-inter">
@@ -171,8 +165,10 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-sm font-inter">From</h3>
           <div className="flex items-center">
-            <Link href={`/newui/address/${txData.from}`} className="text-gray-600 mr-2 text-sm leading">
-            
+            <Link
+              href={`/newui/address/${txData.from}`}
+              className="text-gray-600 mr-2 text-sm leading"
+            >
               {shortenAddress(txData.from)}
             </Link>
             <Copy
@@ -189,7 +185,10 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-sm font-inter">To</h3>
           <div className="flex items-center">
-            <Link href={`/newui/address/${txData.to}`} className="text-gray-600 mr-2 text-sm leading">
+            <Link
+              href={`/newui/address/${txData.to}`}
+              className="text-gray-600 mr-2 text-sm leading"
+            >
               {txData.to ? shortenAddress(txData.to) : "Contract Creation"}
             </Link>
             {txData.to && (
@@ -277,6 +276,11 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
   txData,
 }) => {
   const [method, setMethod] = useState<string>();
+  useEffect(() => {
+    if (txData) {
+      fetchAction();
+    }
+  }, [txData]);
   if (!txData)
     return (
       <div className="w-[45%] text-center text-blue">
@@ -302,9 +306,6 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
       console.log(err);
     }
   };
-  useEffect(() => {
-    fetchAction();
-  });
 
   return (
     <div className="bg-black rounded-3xl text-white w-[45%] h-[600px]">
@@ -317,7 +318,9 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             {/* Dynamically update the label for the transaction type */}
-            <h2 className="text-2xl font-semibold capitalize font-chivo">{method}</h2>
+            <h2 className="text-2xl font-semibold capitalize font-chivo">
+              {method}
+            </h2>
           </div>
           <span
             className={`px-3 py-1 rounded-md text-sm ${

@@ -6,7 +6,7 @@ import { FiArrowRight, FiCopy } from "react-icons/fi";
 import Image from "next/image";
 import { IoCubeOutline } from "react-icons/io5";
 import Link from "next/link";
-
+import { parseAddress } from "@/lib/helpers";
 interface Transaction {
   hash: string;
   method: string;
@@ -61,7 +61,6 @@ const ContractTransactions: React.FC<TransactionProps> = ({ address }) => {
     fetchTransactions();
   }, [address]);
 
-
   const renderSkeleton = () => (
     <div className="flex justify-between items-center py-2 border-b border-gray-200 animate-pulse">
       <div className="flex items-center space-x-2">
@@ -93,10 +92,6 @@ const ContractTransactions: React.FC<TransactionProps> = ({ address }) => {
     );
   }
   if (error) return <div>{error}</div>;
-
-  const parseAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
 
   return (
     <div className="bg-white rounded-3xl p-4">
@@ -130,10 +125,11 @@ const ContractTransactions: React.FC<TransactionProps> = ({ address }) => {
                 </div>
                 <div className="ml-4">
                   <p className="font-medium  tracking-wider">
-                    {tx.method.charAt(0).toUpperCase() + tx.method.slice(1)}
+                    {tx.method}
                   </p>
                   <p className="text-sm font-semibold text-[#06afe8] flex items-center">
-                    #{parseAddress(tx.hash)}{" "}
+                  <Link href={`/newui/tx/${tx.from}`}>
+                    #{parseAddress(tx.hash)}{" "}</Link>
                     <FiCopy
                       className="ml-2 text-gray-400 cursor-pointer"
                       onClick={() => navigator.clipboard.writeText(tx.hash)}
@@ -149,7 +145,8 @@ const ContractTransactions: React.FC<TransactionProps> = ({ address }) => {
               </Link>
               <div className="flex items-center justify-between gap-x-4 ">
                 <div className="text-blue text-sm font-light leading font-chivo flex items-center">
-                  {parseAddress(tx.from)}
+                  <Link href={`/newui/tx/${tx.from}`}>
+                  {parseAddress(tx.from)}</Link>
                   <FiCopy
                     className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
                     onClick={() => navigator.clipboard.writeText(tx.from)}

@@ -57,9 +57,9 @@ const TransactionTable = () => {
         const block = await provider.getBlockWithTransactions(latestBlockNumber);
         fetchedTransactions = block.transactions.map(tx => ({
           hash: tx.hash,
-          blockNumber: tx.blockNumber,
+          blockNumber: tx.blockNumber  ?? 0,
           from: tx.from,
-          to: tx.to,
+          to: tx.to || null,
           method: getMethodName(tx),
           value: ethers.utils.formatEther(tx.value || "0"),
           gasPrice: tx.gasPrice?.toString(),

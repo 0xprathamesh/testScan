@@ -39,7 +39,7 @@ interface TransactionError extends Error {
   };
 }
 
-const WriteContract: React.FC<WriteProps> = ({ address }) => {
+const WriteProxy: React.FC<WriteProps> = ({ address }) => {
   const account = useActiveAccount();
   const isConnected = useActiveWalletConnectionStatus();
 
@@ -57,7 +57,7 @@ const WriteContract: React.FC<WriteProps> = ({ address }) => {
         setLoading(true);
         setError(null);
         const response = await addressService.verifiedAddresses(
-          `/${address}/methods-write?is_custom_abi=false`
+          `/${address}/methods-write-proxy?is_custom_abi=false`
         );
         setContractAbi(response);
         const functions = response.filter(
@@ -270,7 +270,7 @@ const WriteContract: React.FC<WriteProps> = ({ address }) => {
   );
 };
 
-export default WriteContract;
+export default WriteProxy;
 
 // "use client";
 // import React, { useState, useEffect } from "react";

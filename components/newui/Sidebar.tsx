@@ -12,6 +12,7 @@ import { MdOutlineExplore } from "react-icons/md";
 interface SidebarProps {
   children: React.ReactNode;
 }
+// <Image src="https://cdn.blocksscan.io/tokens/img/xdc.png" height={20} width={20} alt="logo" />
 
 const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const pathname = usePathname();
@@ -21,8 +22,8 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
       <div className="fixed w-20 h-screen p-4 bg-white border-r-[1px] flex flex-col justify-between">
         <div className="flex flex-col items-center">
           <Link href="/newui">
-            <div className="bg-gray-900 text-white p-3 rounded-lg inline-block">
-              <FaEthereum size={20} />
+            <div className="bg-gray-900 text-white p-1 rounded-lg inline-block">
+             <img src="https://cdn.blocksscan.io/tokens/img/xdc.png" height={32} width={32} alt="logo" />
             </div>
           </Link>
           <span className="border-b-[1px] border-gray-200 w-full p-2"></span>

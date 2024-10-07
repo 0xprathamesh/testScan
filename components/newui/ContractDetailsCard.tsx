@@ -26,7 +26,7 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
       try {
         const response = await addressService.getAddress(address);
         const data = response;
-        
+
         const contractData: Contract = {
           name: data.name || "Unknown Contract",
           is_verified: data.is_verified,
@@ -88,20 +88,25 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
             </div>
             <h3 className="text-lg font-semibold">{contract.name}</h3>
           </div>
-          <span className={`${contract.is_verified ? "bg-green-500" : "bg-red-500"} text-xs font-semibold px-2 py-1 rounded`}>
+          <span
+            className={`${
+              contract.is_verified ? "bg-green-500" : "bg-red-500"
+            } text-xs font-semibold px-2 py-1 rounded`}
+          >
             {contract.is_verified ? "Verified" : "Unverified"}
           </span>
         </div>
-        <p className="text-sm text-gray-400 mb-4">{parseAddress(contract.address)}</p>
+        <p className="text-sm text-gray-400 mb-4">
+          {parseAddress(contract.address)}
+        </p>
         <div className="mb-4">
           <p className="text-sm text-gray-400">Balance</p>
-          <p className="text-lg font-semibold">{contract.balance} ETH</p>
-          <p className="text-sm text-gray-400">$3.27 M</p>
+          <p className="text-lg font-semibold">{contract.balance} XDC</p>
         </div>
         <div>
           <p className="text-sm text-gray-400">Transactions</p>
-          <p className="text-lg font-semibold">227,871</p>
-          <p className="text-sm text-gray-400">$21,597.48</p>
+          {/* <p className="text-lg font-semibold">227,871</p>
+          <p className="text-sm text-gray-400">$21,597.48</p> */}
         </div>
       </div>
 
@@ -129,7 +134,9 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
             <span className="text-sm">11/09/2023</span>
           </div>
         </div>
-        <p className="text-xs text-gray-500 mt-4">Contract Source Code Verified (Partial Match)</p>
+        <p className="text-xs text-gray-500 mt-4">
+          Contract Source Code Verified (Partial Match)
+        </p>
       </div>
 
       {/* Health Card */}
@@ -140,13 +147,15 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
           <div className="flex justify-between">
             <span className="text-sm text-gray-400">Last transaction</span>
             <span className="text-sm flex items-center">
-              {parseAddress("0x18...55da")}
+              0x594D...0a4C
               <ExternalLink className="w-3 h-3 ml-1" />
             </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-400">Last Block</span>
-            <span className="text-sm bg-gray-800 px-2 py-1 rounded">3344406</span>
+            <span className="text-sm bg-gray-800 px-2 py-1 rounded">
+              3344406
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm text-gray-400">Date</span>
