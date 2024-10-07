@@ -44,7 +44,9 @@ const ContractTransactions: React.FC<TransactionProps> = ({ address }) => {
           to:
             item.to?.hash && item.to?.name
               ? item.to?.name
-              : parseAddress(item.to?.hash),
+              : item.to?.hash
+              ? parseAddress(item.to?.hash)
+              : "Unknown",
           value: (parseInt(item.value) / 10 ** 18).toFixed(6),
           block: item.block,
           timestamp: item.timestamp,
@@ -124,12 +126,11 @@ const ContractTransactions: React.FC<TransactionProps> = ({ address }) => {
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <p className="font-medium  tracking-wider">
-                    {tx.method}
-                  </p>
+                  <p className="font-medium  tracking-wider">{tx.method}</p>
                   <p className="text-sm font-semibold text-[#06afe8] flex items-center">
-                  <Link href={`/newui/tx/${tx.from}`}>
-                    #{parseAddress(tx.hash)}{" "}</Link>
+                    <Link href={`/newui/tx/${tx.from}`}>
+                      #{parseAddress(tx.hash)}{" "}
+                    </Link>
                     <FiCopy
                       className="ml-2 text-gray-400 cursor-pointer"
                       onClick={() => navigator.clipboard.writeText(tx.hash)}
@@ -146,7 +147,8 @@ const ContractTransactions: React.FC<TransactionProps> = ({ address }) => {
               <div className="flex items-center justify-between gap-x-4 ">
                 <div className="text-blue text-sm font-light leading font-chivo flex items-center">
                   <Link href={`/newui/tx/${tx.from}`}>
-                  {parseAddress(tx.from)}</Link>
+                    {parseAddress(tx.from)}
+                  </Link>
                   <FiCopy
                     className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
                     onClick={() => navigator.clipboard.writeText(tx.from)}
