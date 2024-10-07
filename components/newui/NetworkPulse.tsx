@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ethers } from "ethers";
 import { getBlockchainData } from "./utils/xdcrpc";
-import Loading from "../elements/Loading";
+
 import Copyable from "../elements/Copyable";
 import Spinner from "./Spinner";
 import { IoReceiptOutline, IoCubeOutline } from "react-icons/io5";
@@ -213,7 +213,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 10000);
+    const interval = setInterval(fetchData, 30000);
     
     return () => clearInterval(interval);
   }, []);
@@ -278,9 +278,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
       ref.current.scrollLeft += scrollOffset;
     }
   };
-  useEffect(() => {
-    fetchAPIData();
-  })
+
   // const fetchAPIData = async () => {
   //   try {
   //     const transactionResponse = await transactionService.transactions(`?limit=20&page=1`);
