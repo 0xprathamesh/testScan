@@ -1,17 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import Link from "next/link";
 
+import { insights } from "./utils/data";
 const DidYouKnow = () => {
-
-  const insights = [
-    "Mantas native token, i.e., $MANTA, has seen a ~200% increase in value since its launch in 2022.",
-    "$MANTA is a privacy-focused token, ensuring secure and anonymous transactions.",
-    "The Manta Network is built to provide scalable private DeFi solutions.",
-    "Manta Network leverages zk-SNARK technology to enhance privacy on-chain.",
-  ];
-
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleNext = () => {

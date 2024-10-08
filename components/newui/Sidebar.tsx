@@ -1,13 +1,13 @@
 "use client"
 import Link from "next/link";
 import React from "react";
-import { RxSketchLogo, RxDashboard, RxPerson } from "react-icons/rx";
+import {  RxDashboard,  } from "react-icons/rx";
 import { FiSettings } from "react-icons/fi";
-import { HiOutlineShoppingBag } from "react-icons/hi";
-import { FaEthereum } from "react-icons/fa";
+
 import { BiPulse } from "react-icons/bi";
 import { usePathname, useRouter } from "next/navigation";
 import { MdOutlineExplore } from "react-icons/md";
+import { IoCubeOutline } from "react-icons/io5";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -46,9 +46,14 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               <MdOutlineExplore size={20} />
             </div>
           </Link>
-          <Link href="/newui/playground">
+          <Link href="/newui/txns">
             <div className="bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block">
               <FiSettings size={20} />
+            </div>
+          </Link>
+          <Link href="/newui/blocks">
+            <div className="bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block">
+              <IoCubeOutline size={20} />
             </div>
           </Link>
         </div>

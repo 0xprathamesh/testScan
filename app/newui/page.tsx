@@ -8,14 +8,14 @@ import { HiOutlineArrowSmDown, HiOutlineArrowSmUp } from "react-icons/hi";
 import DidYouKnow from "@/components/newui/Didyouknow";
 import { getCoinData } from "@/components/newui/utils/coingeko";
 import Image from "next/image";
-
+import { dashboardService } from "@/components/newui/utils/apiroutes";
 import { FiArrowRight } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdOutlineArrowOutward } from "react-icons/md";
 import Link from "next/link";
 import { getBlockchainData } from "@/components/newui/utils/xdcrpc";
 import { PiArrowElbowDownRightFill } from "react-icons/pi";
 import { IoCubeOutline } from "react-icons/io5";
-
+import { fetchdata } from "@/components/newui/utils/xdcrpc";
 const MantaDashboard: React.FC = () => {
   const [blockchainData, setBlockchainData] = useState<any>(null);
   const [isSticky, setIsSticky] = useState(false);
@@ -23,7 +23,11 @@ const MantaDashboard: React.FC = () => {
   const [input, setInput] = useState<string>("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]); // State for recent searches
-
+  const [data, setData] = useState({
+    totalAddresses: "",
+    totalBlocks: "",
+    totalTransactions: "",
+  });
   const stickyRef = useRef(null);
   const router = useRouter();
 
@@ -40,9 +44,20 @@ const MantaDashboard: React.FC = () => {
       console.log(err);
     }
   };
+  const fetchStats = async () => {
+    const result = await fetchdata();
+    if (result) {
+      setData({
+        totalAddresses: result.total_addresses,
+        totalBlocks: result.total_blocks,
+        totalTransactions: result.total_transactions
+      });
+    }
+  };
 
   useEffect(() => {
     fetchData();
+    fetchStats();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +102,11 @@ const MantaDashboard: React.FC = () => {
     }
   };
   if (!blockchainData) {
-    return <Layout><div className="opacity-0"></div> </Layout>;
+    return (
+      <Layout>
+        <div className="opacity-0"></div>{" "}
+      </Layout>
+    );
   }
   const parseAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -97,7 +116,12 @@ const MantaDashboard: React.FC = () => {
   const xdcBTCPrice = coinData?.market_data?.current_price?.btc ?? "Loading...";
   const xdcPriceChange =
     coinData?.market_data?.price_change_percentage_24h ?? "Loading...";
-  const { totalTransactions, latestTransaction, latestBlockNumber, latestBlock } = blockchainData;
+  const {
+    totalTransactions,
+    latestTransaction,
+    latestBlockNumber,
+    latestBlock,
+  } = blockchainData;
 
   const parsedTransactionhash = parseAddress(latestTransaction.toString());
 
@@ -218,15 +242,15 @@ const MantaDashboard: React.FC = () => {
           <div className="rounded-3xl shadow grid grid-rows-2">
             <div className="flex justify-between p-6 bg-white rounded-3xl">
               <div>
-                <h3 className="text-lg mb-2">Deposits</h3>
-                <p className="text-4xl font-bold">18,562</p>
+                <h3 className="text-lg mb-2">Total Addresses</h3>
+                <p className="text-4xl font-bold">{data.totalAddresses}</p>
               </div>
               <HiOutlineArrowSmDown className="text-[96px] text-green-500 font-bold" />
             </div>
             <div className="flex justify-between bg-black p-6 rounded-ee-3xl rounded-es-3xl">
               <div>
-                <h3 className="text-lg mb-2 text-white">Withdrawals</h3>
-                <p className="text-4xl font-bold text-white">55,833</p>
+                <h3 className="text-lg mb-2 text-white">Total Blocks</h3>
+                <p className="text-4xl font-bold text-white">{data.totalBlocks}</p>
               </div>
               <HiOutlineArrowSmUp className="text-[96px] text-green-500 font-bold" />
             </div>
@@ -239,7 +263,7 @@ const MantaDashboard: React.FC = () => {
                 <MdKeyboardArrowRight className="h-6 w-6 " />
               </Link>
             </h3>
-            <p className="text-2xl font-bold text-black">{totalTransactions}</p>
+            <p className="text-2xl font-bold text-black">{data.totalTransactions}</p>
             <p className="text-gray-400">(0.02 Gwei)</p>
             <div className="h-16 relative mb-2">
               <svg className="w-full h-full">
@@ -271,7 +295,8 @@ const MantaDashboard: React.FC = () => {
               <div className="text-white">
                 <p className="text-2xl font-semibold leading hover:underline mb-2">
                   <Link href={`/newui/tx/${latestTransaction.toString()}`}>
-                  {parsedTransactionhash}</Link>
+                    {parsedTransactionhash}
+                  </Link>
                 </p>
                 <div>
                   <p className="text-sm font-chivo  font-extralight flex items-center gap-1">
@@ -289,7 +314,7 @@ const MantaDashboard: React.FC = () => {
 
           <div className="bg-black p-6 rounded-3xl">
             <h3 className="mb-2 text-sm text-gray-400 flex items-center justify-between">
-             Latest Blocks
+              Latest Blocks
               <Link href={`/newui/txns`} className="">
                 <MdKeyboardArrowRight className="h-6 w-6 " />
               </Link>
@@ -299,12 +324,12 @@ const MantaDashboard: React.FC = () => {
 
               <div className="text-white">
                 <Link href={`/newui/blocks`} className="">
-                <p className="text-2xl font-semibold leading hover:underline mb-2">
+                  <p className="text-2xl font-semibold leading hover:underline mb-2">
                     <Link href={`/newui/block/${latestBlockNumber}`}>
                       {latestBlockNumber}
-                 </Link>
+                    </Link>
                   </p>
-                  </Link>
+                </Link>
                 <div>
                   <p className="text-sm font-chivo  font-extralight flex items-center gap-1">
                     <PiArrowElbowDownRightFill /> 41 Transactions
