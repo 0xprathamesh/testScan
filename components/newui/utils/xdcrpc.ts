@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { dashboardService } from "./apiroutes";
 
 const getBlockchainData = async (rpcUrl: string) => {
   try {
@@ -37,5 +38,15 @@ const getBlockchainData = async (rpcUrl: string) => {
     throw error;
   }
 };
+const fetchdata = async () => {
+  try {
+    const response = await dashboardService.stats();
+    const { total_addresses, total_blocks, total_transactions } = response;
+    return { total_addresses, total_blocks, total_transactions };
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
 
-export { getBlockchainData };
+export { getBlockchainData, fetchdata };

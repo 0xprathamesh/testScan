@@ -3,71 +3,9 @@ import React, { useState, useEffect } from "react";
 import Layout from "@/components/newui/Layout";
 import { ArrowRight, Check, X } from "lucide-react";
 import { FiCopy } from "react-icons/fi";
+import { contracts } from "./utils/data";
 const VerifiedContracts = () => {
   const [loading, setLoading] = useState<boolean>(true);
-
-  const contracts = [
-    {
-      name: "UniswapV2Pair",
-      address: "0xb31...626f",
-      balance: "0 ETH",
-      txns: 1,
-      compiler: "Solidity",
-      version: "v0.5.16+commit.9c3226ce",
-      optimization: true,
-      constructorArg: false,
-      status: "Verified",
-      time: "4h ago",
-    },
-    {
-      name: "GnosisSafeProxy",
-      address: "0x6c3...09e4",
-      balance: "0 ETH",
-      txns: 0,
-      compiler: "Solidity",
-      version: "v0.7.6+commit.7338295f",
-      optimization: false,
-      constructorArg: true,
-      status: "Verified",
-      time: "4h ago",
-    },
-    {
-      name: "iZiSwapPool",
-      address: "0x429...836B",
-      balance: "0 ETH",
-      txns: 0,
-      compiler: "Solidity",
-      version: "v0.8.4+commit.c7e474f2",
-      optimization: true,
-      constructorArg: false,
-      status: "Verified",
-      time: "4h ago",
-    },
-    {
-      name: "iZiSwapPool",
-      address: "0x322...e429",
-      balance: "0 ETH",
-      txns: 0,
-      compiler: "Solidity",
-      version: "v0.8.4+commit.c7e474f2",
-      optimization: true,
-      constructorArg: false,
-      status: "Verified",
-      time: "5h ago",
-    },
-    {
-      name: "UniswapV3Pool",
-      address: "0x862...2a8C",
-      balance: "0 ETH",
-      txns: 0,
-      compiler: "Solidity",
-      version: "v0.7.6+commit.7338295f",
-      optimization: true,
-      constructorArg: false,
-      status: "Verified",
-      time: "5h ago",
-    },
-  ];
 
   useEffect(() => {
     setTimeout(() => {

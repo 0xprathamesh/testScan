@@ -7,7 +7,6 @@ import Image from "next/image";
 import InternalTx from "@/components/InternalTx";
 import ContractTransactions from "./ContractTransactions";
 import ContractDetailsCard from "./ContractDetailsCard";
-import ContractDetails from "./ContractDetails";
 import Contract from "./contract/Contract";
 
 interface PageProps {

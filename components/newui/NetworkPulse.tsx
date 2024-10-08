@@ -7,7 +7,7 @@ import Copyable from "../elements/Copyable";
 import Spinner from "./Spinner";
 import { IoReceiptOutline, IoCubeOutline } from "react-icons/io5";
 import Link from "next/link";
-import { transactionService,blockService } from "./utils/apiroutes";
+import { transactionService, blockService } from "./utils/apiroutes";
 
 interface Transaction {
   hash: string;
@@ -53,8 +53,9 @@ const TransactionBox: React.FC<Transaction & { isFirst: boolean }> = ({
         <p className="text-sm font-semibold mb-2 flex items-center">
           <IoReceiptOutline className="w-12 h-12 mr-4" />
           <Link href={`/newui/tx/${hash}`} className="hover:underline">
-            {parseAddress(hash)}  </Link> <Copyable text="" copyText={hash} />
-          
+            {parseAddress(hash)}{" "}
+          </Link>{" "}
+          <Copyable text="" copyText={hash} />
           <div className="ml-20">
             <Spinner></Spinner>
           </div>
@@ -65,7 +66,8 @@ const TransactionBox: React.FC<Transaction & { isFirst: boolean }> = ({
             {" "}
             <div className="w-4 h-4 bg-green-500 rounded-full mr-1"></div>{" "}
             <Link href={`/newui/address/${from}`} className="hover:underline">
-            {parseAddress(from)}{" "}</Link>
+              {parseAddress(from)}{" "}
+            </Link>
             <Copyable text="" copyText={from} className="top-[1%]" />{" "}
           </p>
         </div>
@@ -75,7 +77,8 @@ const TransactionBox: React.FC<Transaction & { isFirst: boolean }> = ({
           <p className="text-xs flex">
             <div className="w-4 h-4 bg-red-500 rounded-full mr-1"></div>{" "}
             <Link href={`/newui/address/${to}`} className="hover:underline">
-            {parseAddress(to)}</Link>
+              {parseAddress(to)}
+            </Link>
             <Copyable text="" copyText={to} />
           </p>
         </div>
@@ -86,13 +89,15 @@ const TransactionBox: React.FC<Transaction & { isFirst: boolean }> = ({
       </>
     ) : (
       <>
-          <IoReceiptOutline className="text-[#a9bcca] text-3xl mb-4" />
-       
-          <p className="text-sm font-semibold mb-1 font-inter flex items-center">
+        <IoReceiptOutline className="text-[#a9bcca] text-3xl mb-4" />
+
+        <p className="text-sm font-semibold mb-1 font-inter flex items-center">
           <Link href={`/newui/tx/${hash}`} className="hover:underline">
-          {parseAddress(hash)} </Link> <Copyable text="" className="" copyText={hash} />
-            </p>
-    
+            {parseAddress(hash)}{" "}
+          </Link>{" "}
+          <Copyable text="" className="" copyText={hash} />
+        </p>
+
         <p className="text-xs">{formatTimeAgo(timestamp)}</p>
       </>
     )}
@@ -117,29 +122,36 @@ const BlockBox: React.FC<Block & { isFirst: boolean }> = ({
         <p className="text-sm font-semibold mb-2 flex items-center">
           <IoCubeOutline className="w-12 h-12 mr-4" />
           <Link href={`/newui/block/${number}`} className="hover:underline">
-          {number} </Link> <Copyable text="" copyText={number.toString()} />
+            {number}{" "}
+          </Link>{" "}
+          <Copyable text="" copyText={number.toString()} />
           <div className="ml-10">
             <Spinner></Spinner>
           </div>
         </p>
-        <p className="text-xs"> <Link href={`/newui/txns`} className="hover:underline">Transactions Bundled: {transactions.length}</Link> </p>
+        <p className="text-xs">
+          {" "}
+          <Link href={`/newui/txns`} className="hover:underline">
+            Transactions Bundled: {transactions.length}
+          </Link>{" "}
+        </p>
         <hr className="my-2 text-gray-300" />
         <p className="text-xs mt-2">{formatTimeAgo(timestamp)}</p>
       </>
     ) : (
-        <>
-          <IoCubeOutline className="text-[#a9bcca] text-3xl mb-2" />
-          <p className="text-sm font-semibold mb-1 font-inter flex items-center">
-            <Link href={`/newui/block/${number}`} className="hover:underline" >
-          {number}</Link> <Copyable text="" copyText={number.toString()} />
-          </p>
-          <p className="text-xs">{formatTimeAgo(timestamp)}</p>
-        </>
+      <>
+        <IoCubeOutline className="text-[#a9bcca] text-3xl mb-2" />
+        <p className="text-sm font-semibold mb-1 font-inter flex items-center">
+          <Link href={`/newui/block/${number}`} className="hover:underline">
+            {number}
+          </Link>{" "}
+          <Copyable text="" copyText={number.toString()} />
+        </p>
+        <p className="text-xs">{formatTimeAgo(timestamp)}</p>
+      </>
     )}
-
   </div>
 );
-
 
 const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
   // const [blockchainData, setBlockchainData] = useState<any>(null);
@@ -184,7 +196,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
 
   //   fetchData();
   //   const interval = setInterval(fetchData, 10000);
-    
+
   //   return () => clearInterval(interval);
   // }, [rpcUrl]);
   const [blockchainData, setBlockchainData] = useState<any>(null);
@@ -214,7 +226,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
 
     fetchData();
     const interval = setInterval(fetchData, 30000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -236,34 +248,30 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
     setTransactions(latestTransactions);
 
     const latestBlocks = await Promise.all(
-      [...Array(10)].map((_, i) =>
-        provider.getBlock(latestBlock.number - i)
-      )
+      [...Array(10)].map((_, i) => provider.getBlock(latestBlock.number - i))
     );
     setBlocks(latestBlocks as Block[]);
   };
 
   const fetchAPIData = async () => {
     try {
-      const transactionResponse = await transactionService.transactions(`?limit=20&page=1`);
+      const transactionResponse = await transactionService.transactions(
+        `?limit=20&page=1`
+      );
       const transactionApiData = transactionResponse.items.map((item: any) => ({
         hash: item.hash,
         from: item.from?.hash,
         to: item.to?.hash,
         value: ethers.BigNumber.from(item.value || 0),
-        timestamp: Math.floor(
-          new Date(item.timestamp).getTime() / 1000
-        ),
+        timestamp: Math.floor(new Date(item.timestamp).getTime() / 1000),
       }));
       setTransactions(transactionApiData);
 
       const blockResponse = await blockService.blocks(`?limit=10&page=1`);
       const blockApiData = blockResponse.items.map((item: any) => ({
         number: item.number,
-        timestamp: Math.floor(
-          new Date(item.timestamp).getTime() / 1000
-        ),
-        transactions: item.transactions || []
+        timestamp: Math.floor(new Date(item.timestamp).getTime() / 1000),
+        transactions: item.transactions || [],
       }));
       setBlocks(blockApiData);
     } catch (error) {
@@ -291,14 +299,13 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
 
   //     }));
   //     console.log(transactionApiData);
-      
 
   //     const blockResposne = await blockService.blocks(`?limit=20&page=1`);
 
   //     const blockApiData = blockResposne.items.map((item: any) => ({
   //       number: item.number,
   //       timestamp: item.timestamp,
-         
+
   //     }))
   //     console.log(transactionResponse.items.length);
   //     console.log(blockResposne.items.length);
@@ -330,9 +337,11 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
         <div className="overflow-x-auto w-full py-4" ref={txSliderRef}>
           <div className="flex items-center space-x-4 transition-all duration-300 ease-in-out">
             {loading
-              ? Array(10).fill(0).map((_, index) => (
-                  <TransactionBoxSkeleton key={index} isFirst={index === 0} />
-                ))
+              ? Array(10)
+                  .fill(0)
+                  .map((_, index) => (
+                    <TransactionBoxSkeleton key={index} isFirst={index === 0} />
+                  ))
               : transactions.map((tx, index) => (
                   <TransactionBox key={tx.hash} {...tx} isFirst={index === 0} />
                 ))}
@@ -362,11 +371,17 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
         <div className="overflow-x-auto w-full py-4" ref={blockSliderRef}>
           <div className="flex items-center space-x-4 transition-all duration-300 ease-in-out">
             {loading
-              ? Array(10).fill(0).map((_, index) => (
-                  <BlockBoxSkeleton key={index} isFirst={index === 0} />
-                ))
+              ? Array(10)
+                  .fill(0)
+                  .map((_, index) => (
+                    <BlockBoxSkeleton key={index} isFirst={index === 0} />
+                  ))
               : blocks.map((block, index) => (
-                  <BlockBox key={block.number} {...block} isFirst={index === 0} />
+                  <BlockBox
+                    key={block.number}
+                    {...block}
+                    isFirst={index === 0}
+                  />
                 ))}
           </div>
         </div>
@@ -377,37 +392,35 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
 
 export default NetworkPulse;
 
-
-
-
-
-
-
 const Skeleton: React.FC<{
   width?: string;
   height?: string;
   className?: string;
-  variant?: 'rectangular' | 'circular' | 'text';
-}> = ({ width, height, className, variant = 'rectangular' }) => {
+  variant?: "rectangular" | "circular" | "text";
+}> = ({ width, height, className, variant = "rectangular" }) => {
   const baseClasses = "animate-pulse bg-gray-200";
   const variantClasses = {
     rectangular: "rounded",
     circular: "rounded-full",
-    text: "rounded w-full h-4"
+    text: "rounded w-full h-4",
   };
 
   return (
-    <div 
+    <div
       className={`${baseClasses} ${variantClasses[variant]} ${className}`}
       style={{ width, height }}
     />
   );
 };
 
-
-
-const TransactionBoxSkeleton: React.FC<{ isFirst: boolean }> = ({ isFirst }) => (
-  <div className={`p-6 rounded-3xl flex-shrink-0 ${isFirst ? "w-[340px]" : "w-48 h-32"}`}>
+const TransactionBoxSkeleton: React.FC<{ isFirst: boolean }> = ({
+  isFirst,
+}) => (
+  <div
+    className={`p-6 rounded-3xl flex-shrink-0 ${
+      isFirst ? "w-[340px]" : "w-48 h-32"
+    }`}
+  >
     <Skeleton width={isFirst ? "100%" : "80%"} height="24px" className="mb-2" />
     {isFirst && (
       <>
@@ -420,7 +433,11 @@ const TransactionBoxSkeleton: React.FC<{ isFirst: boolean }> = ({ isFirst }) => 
 );
 
 const BlockBoxSkeleton: React.FC<{ isFirst: boolean }> = ({ isFirst }) => (
-  <div className={`p-6 rounded-3xl flex-shrink-0 ${isFirst ? "w-[280px]" : "w-36 h-32"}`}>
+  <div
+    className={`p-6 rounded-3xl flex-shrink-0 ${
+      isFirst ? "w-[280px]" : "w-36 h-32"
+    }`}
+  >
     <Skeleton width={isFirst ? "100%" : "80%"} height="24px" className="mb-2" />
     {isFirst && (
       <>
