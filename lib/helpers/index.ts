@@ -7,3 +7,12 @@ export const parseHash = (hash:string) => {
 export const parseData = (data: string) => {
     return data.slice(0)
 }
+export const formatNumber = (num:any) => {
+    if (num >= 1_000_000) {
+      return (num / 1_000_000).toFixed(1) + 'M'; // Millions
+    } else if (num >= 1_000) {
+      return (num / 1_000).toFixed(1) + 'K'; // Thousands
+    }
+    return num; // Less than 1000
+  };
+  
