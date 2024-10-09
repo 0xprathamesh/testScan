@@ -163,6 +163,7 @@ interface TokenTransfer {
   amount: string;
   token: string;
   icon?: string;
+  usd_value?:string
 }
 
 interface TxData {
@@ -525,12 +526,14 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
       const response = await transactionService.getTransaction(hash);
 
       const data = response.token_transfers.map((item: any) => ({
+        tokenName:item.token?.name,
         from: item.from?.hash || "", 
         to: item.to?.hash || "",
         amount: item.total?.value || "0",
         token: item.token?.address || "", 
         icon: item.token?.icon_url,
-
+        symbol:item.token?.symbol,
+        usd_value:item.token?.exchange_rate
       }));
 
       setTokenTransfers(data); 
@@ -594,12 +597,13 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
                 </div>
 
                 <div>
+                  <Link href={`/newui/tokens/${transfer.token}`}></Link>
                   <p className="text-sm text-gray-500">
                     {formatTokenAmount(
                       transfer.amount,
                       18
-                    )}{" "} XDC
-                   
+                    )}{" "} 
+                   <span className="text-blue mr-1">{transfer.tokenName}</span>({transfer.symbol})
                   </p>
                 </div>
                 <div className="text-blue text-sm font-light leading font-chivo flex items-center">

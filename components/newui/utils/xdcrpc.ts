@@ -1,6 +1,9 @@
 import { ethers } from "ethers";
-import { dashboardService } from "./apiroutes";
-
+import { dashboardService, addressService } from "./apiroutes";
+interface TopAccount {
+  hash: string;
+  coin_balance: string;
+}
 const getBlockchainData = async (rpcUrl: string) => {
   try {
     // Initialize provider using RPC URL
@@ -8,14 +11,14 @@ const getBlockchainData = async (rpcUrl: string) => {
 
     // Get latest block number
     const latestBlockNumber = await provider.getBlockNumber();
-  
+
     // Get latest block details
     const latestBlock = await provider.getBlock(latestBlockNumber);
     const totalBlockTransactions = await latestBlock.transactions.length;
     const latestTransaction = await latestBlock.transactions.slice(0, 1);
     // Get total transactions on chain
     const totalTransactions = "325.67M";
-    const totalBlocks = await provider.getBlock(latestBlockNumber)
+    const totalBlocks = await provider.getBlock(latestBlockNumber);
     // You can also get other block data such as:
     const gasUsed = latestBlock.gasUsed.toString();
     const gasLimit = latestBlock.gasLimit.toString();
@@ -24,14 +27,14 @@ const getBlockchainData = async (rpcUrl: string) => {
 
     return {
       latestBlockNumber,
-        totalTransactions,
+      totalTransactions,
       totalBlockTransactions,
       gasUsed,
       gasLimit,
       miner,
       timestamp,
       latestBlock,
-      latestTransaction
+      latestTransaction,
     };
   } catch (error) {
     console.error("Error fetching blockchain data:", error);
@@ -48,5 +51,41 @@ const fetchdata = async () => {
     return null;
   }
 };
+const fetchContracts = async () => {
+  try {
+    const resposne = await addressService.getContract(`/counters`);
+    const {
+      smart_contracts,
+      new_smart_contracts_24h,
+      verified_smart_contracts,
+      new_verified_smart_contracts_24h,
+    } = resposne;
+    return {
+      smart_contracts,
+      new_smart_contracts_24h,
+      verified_smart_contracts,
+      new_verified_smart_contracts_24h,
+    };
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+const fetchTopAccounts = async () => {
+  try {
+    const response = await addressService.addresses(`?limit=50&page=1`);
 
-export { getBlockchainData, fetchdata };
+    const topThreeAccounts: TopAccount[] = response.items
+      .slice(0, 3)
+      .map((account: any) => ({
+        hash: account.hash,
+        coin_balance: account.coin_balance,
+      }));
+    return topThreeAccounts;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export { getBlockchainData, fetchdata, fetchTopAccounts,fetchContracts };

@@ -12,22 +12,37 @@ import { dashboardService } from "@/components/newui/utils/apiroutes";
 import { FiArrowRight } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdOutlineArrowOutward } from "react-icons/md";
 import Link from "next/link";
-import { getBlockchainData } from "@/components/newui/utils/xdcrpc";
+import {
+  fetchTopAccounts,
+  getBlockchainData,
+} from "@/components/newui/utils/xdcrpc";
 import { PiArrowElbowDownRightFill } from "react-icons/pi";
 import { IoCubeOutline } from "react-icons/io5";
 import { fetchdata } from "@/components/newui/utils/xdcrpc";
+import { formatNumber } from "@/lib/helpers";
+import { FaRegUserCircle } from "react-icons/fa";
+import Contracts from "@/components/newui/Contracts";
+interface TopAccount {
+  hash: string;
+  coin_balance: string;
+}
+const parseAddress = (address: string) => {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
 const MantaDashboard: React.FC = () => {
   const [blockchainData, setBlockchainData] = useState<any>(null);
   const [isSticky, setIsSticky] = useState(false);
   const [coinData, setCoinData] = useState<any>(null);
   const [input, setInput] = useState<string>("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]); // State for recent searches
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [accounts, setAccounts] = useState<TopAccount[] | null>(null);
   const [data, setData] = useState({
     totalAddresses: "",
     totalBlocks: "",
     totalTransactions: "",
   });
+  const token_symbol = process.env.NEXT_PUBLIC_TOKEN_SYMBOL;
   const stickyRef = useRef(null);
   const router = useRouter();
 
@@ -50,8 +65,12 @@ const MantaDashboard: React.FC = () => {
       setData({
         totalAddresses: result.total_addresses,
         totalBlocks: result.total_blocks,
-        totalTransactions: result.total_transactions
+        totalTransactions: result.total_transactions,
       });
+    }
+    const response = await fetchTopAccounts(); // Fetch the top 3 accounts
+    if (result) {
+      setAccounts(response); // Store the result in state
     }
   };
 
@@ -108,20 +127,17 @@ const MantaDashboard: React.FC = () => {
       </Layout>
     );
   }
-  const parseAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
+  if (!accounts) {
+    return <div>No top accounts available</div>;
+  }
 
-  const xdcPrice = coinData?.market_data?.current_price?.usd ?? "Loading...";
-  const xdcBTCPrice = coinData?.market_data?.current_price?.btc ?? "Loading...";
-  const xdcPriceChange =
+
+  const tokenPrice = coinData?.market_data?.current_price?.usd ?? "Loading...";
+  const tokenBTCPrice =
+    coinData?.market_data?.current_price?.btc ?? "Loading...";
+  const tokenPriceChange =
     coinData?.market_data?.price_change_percentage_24h ?? "Loading...";
-  const {
-    totalTransactions,
-    latestTransaction,
-    latestBlockNumber,
-    latestBlock,
-  } = blockchainData;
+  const { latestTransaction, latestBlockNumber } = blockchainData;
 
   const parsedTransactionhash = parseAddress(latestTransaction.toString());
 
@@ -221,17 +237,17 @@ const MantaDashboard: React.FC = () => {
               </div>
 
               <div className="text-white">
-                <p className="text-2xl font-bold">XDC</p>
+                <p className="text-2xl font-bold">{token_symbol}</p>
                 <div>
-                  <p className="text-xl">${xdcPrice}</p>
+                  <p className="text-xl">${tokenPrice}</p>
                   <p className="text-sm text-gray-400">
-                    @ {xdcBTCPrice} BTC
+                    @ {tokenBTCPrice} BTC
                     <span
                       className={`text-${
-                        xdcPriceChange > 0 ? "green" : "red"
+                        tokenPriceChange > 0 ? "green" : "red"
                       }-500`}
                     >
-                      ({xdcPriceChange}%)
+                      ({tokenPriceChange}%)
                     </span>
                   </p>
                 </div>
@@ -243,27 +259,33 @@ const MantaDashboard: React.FC = () => {
             <div className="flex justify-between p-6 bg-white rounded-3xl">
               <div>
                 <h3 className="text-lg mb-2">Total Addresses</h3>
-                <p className="text-4xl font-bold">{data.totalAddresses}</p>
+                <p className="text-4xl font-bold">
+                  {formatNumber(data.totalAddresses)}
+                </p>
               </div>
               <HiOutlineArrowSmDown className="text-[96px] text-green-500 font-bold" />
             </div>
             <div className="flex justify-between bg-black p-6 rounded-ee-3xl rounded-es-3xl">
               <div>
                 <h3 className="text-lg mb-2 text-white">Total Blocks</h3>
-                <p className="text-4xl font-bold text-white">{data.totalBlocks}</p>
+                <p className="text-4xl font-bold text-white">
+                  {formatNumber(data.totalBlocks)}
+                </p>
               </div>
               <HiOutlineArrowSmUp className="text-[96px] text-green-500 font-bold" />
             </div>
           </div>
 
-          <div className="bg-white border-gray-300 border-[0.5px] text-white p-6 rounded-3xl col-span-1 md:col-span-2">
+          <div className="bg-white  text-white p-6 rounded-3xl col-span-1 md:col-span-2">
             <h3 className="text-sm text-gray-400 mb-2 flex items-center justify-between ">
               Total transactions on Chain{" "}
               <Link href={`/newui/txns`} className="">
                 <MdKeyboardArrowRight className="h-6 w-6 " />
               </Link>
             </h3>
-            <p className="text-2xl font-bold text-black">{data.totalTransactions}</p>
+            <p className="text-2xl font-bold text-black">
+              {formatNumber(data.totalTransactions)}
+            </p>
             <p className="text-gray-400">(0.02 Gwei)</p>
             <div className="h-16 relative mb-2">
               <svg className="w-full h-full">
@@ -336,10 +358,60 @@ const MantaDashboard: React.FC = () => {
                   </p>
                   <p className="text-sm text-gray-400">
                     <span className={`text-sm mt-1`}>
-                      $0.01 (0.000000885 Gwei)
+                      $0.001 (0.000000885 Gwei)
                     </span>
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+       <Contracts />
+          <div className="bg-black p-6 rounded-3xl">
+            <h3 className="mb-2 text-sm text-gray-400 flex items-center justify-between">
+              Total Accounts{" "}
+              <Link href={`/newui/txns`} className="">
+                <MdKeyboardArrowRight className="h-6 w-6 " />
+              </Link>
+            </h3>
+            <div className="flex flex-col mt-10 ">
+              <FaRegUserCircle className="w-8 p-1 h-8 mb-2 text-white bg-[#5286f2] rounded-full border-[#98e6ff]" />
+
+              <div className="text-white">
+                <p className="text-2xl font-semibold leading hover:underline mb-2">
+                  {formatNumber(data.totalAddresses)}
+                </p>
+                <div>
+                  <p className="text-sm font-chivo  font-extralight flex items-center gap-1">
+                    Interacted on Chain
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    <span className={`text-sm mt-1`}>
+                      💡 Thats almost a small town
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-3xl">
+            <h3 className="mb-2 text-sm text-gray-400 flex items-center justify-between">
+              Most Valued Accounts on Chain
+              <Link href={`/newui/txns`} className="">
+                <MdKeyboardArrowRight className="h-6 w-6 " />
+              </Link>
+            </h3>
+            <div className="flex flex-col ">
+              <div className="text-black">
+                <p className="text-2xl  mb-2">
+                  {accounts.map((account, index) => (
+                    <AccountItem
+                      key={index}
+                      rank={index + 1}
+                      address={account.hash}
+                      balance={account.coin_balance}
+                    />
+                  ))}
+                </p>
               </div>
             </div>
           </div>
@@ -350,3 +422,23 @@ const MantaDashboard: React.FC = () => {
 };
 
 export default MantaDashboard;
+interface AccountItemProps {
+  rank: number;
+  address: string;
+  balance: string;
+}
+const formatCoinBalance = (balance: string): string => {
+  const convertedBalance = BigInt(balance) / BigInt(10 ** 18); // Assuming 18 decimals for XDC
+  return convertedBalance.toLocaleString() + " XDC";
+};
+
+const AccountItem: React.FC<AccountItemProps> = ({ rank, address, balance }) => (
+  <div className="flex items-center py-2">
+    <span className="text-gray-400 mr-2">#{rank}</span>
+    <div className="flex-grow">
+      <Link href={`/newui/address/${address}`} className="hover:underline">
+      <p className="text-xl font-chivo leading-2 font-semibold text-gray-400 hover:underline">{parseAddress(address)}</p></Link>
+      <p className="text-xs font-inter ">{formatCoinBalance(balance)}</p>
+    </div>
+  </div>
+);
