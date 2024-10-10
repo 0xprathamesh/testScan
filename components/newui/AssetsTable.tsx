@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { FileText, User } from "lucide-react";
-import { contractAddresses } from "./utils/data";
+import { tokenService } from "./utils/apiroutes";
 
 interface Asset {
   name: string;
@@ -27,83 +27,34 @@ const AssetsTable: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const apiKey = "test";
-
   const formatTokenSupply = (supply: any): string => {
     const supplyBigInt = BigInt(supply);
     const scaledSupply = supplyBigInt / BigInt(1e18);
     return scaledSupply.toLocaleString();
   };
 
-  const fetchTotalHoldersCount = async (address: string): Promise<number> => {
+  const fetchTokens = async () => {
     try {
-      let page = 1;
-      let totalHolders = 0;
-      let hasMorePages = true;
-      const pageSize = 1000;
-
-      while (hasMorePages) {
-        const response = await fetch(
-          `https://api-xdc.blocksscan.io/api?module=token&action=tokenholderlist&contractaddress=${address}&page=${page}&offset=${pageSize}&apikey=${apiKey}`
-        );
-        const data = await response.json();
-
-        if (data.status === "1" && data.result) {
-          totalHolders += data.result.length;
-          hasMorePages = data.result.length === pageSize;
-          page++;
-        } else {
-          hasMorePages = false;
-        }
-      }
-
-      return totalHolders;
+      const response = await tokenService.tokens(`/`);
+      const data = response.items.map((token: any) => ({
+        name: `${token.name} (${token.symbol})`,
+        icon: `https://cdn.blocksscan.io/tokens/img/${token.symbol}.png`,
+        type: token.type,
+        marketCap: `$${parseFloat(token.circulating_market_cap_usd).toLocaleString()}`,
+        totalSupply: `${formatTokenSupply(token.total_supply)} ${token.symbol}`,
+        holders: token.holders,
+      }));
+      setAssets(data);
     } catch (error) {
-      console.error("Error fetching total holders count:", error);
-      return 0;
+      console.log(error);
+      setError("Failed to load assets data.");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const fetchAssetsData = async () => {
-      try {
-        setLoading(true);
-        const assetsData = await Promise.all(
-          contractAddresses.map(async (address) => {
-            const [tokenInfoResponse, holdersCount] = await Promise.all([
-              fetch(
-                `https://api-xdc.blocksscan.io/api?module=token&action=tokeninfo&contractaddress=${address}`
-              ),
-              fetchTotalHoldersCount(address),
-            ]);
-
-            const tokenInfo = await tokenInfoResponse.json();
-            console.log(tokenInfo);
-
-            if (tokenInfo.status === "1") {
-              return {
-                name: `${tokenInfo.result.tokenName} (${tokenInfo.result.symbol})`,
-                icon: tokenInfo.result.symbol.charAt(0),
-                type: tokenInfo.result.tokenType,
-                marketCap: tokenInfo.result.tokenPriceUSD || "N/A",
-                totalSupply: `${formatTokenSupply(
-                  tokenInfo.result.totalSupply
-                )} ${tokenInfo.result.symbol}`,
-                holders: holdersCount,
-              };
-            }
-            return null;
-          })
-        );
-        setAssets(assetsData.filter((asset) => asset !== null) as Asset[]);
-      } catch (err) {
-        setError("Failed to load assets data.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAssetsData();
+    fetchTokens();
   }, []);
 
   if (loading) {
@@ -136,7 +87,7 @@ const AssetsTable: React.FC = () => {
             <tr key={index} className="border-t">
               <td className="py-4 flex items-center">
                 <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                  {asset.icon}
+                  <img src={asset.icon} alt={asset.name} className="w-full h-full object-cover rounded-full" />
                 </div>
                 <div>
                   <div className="flex items-center font-bold">

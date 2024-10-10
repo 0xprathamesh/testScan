@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import VerifiedContracts from "@/components/newui/VerifiedContracts";
 import AssetsTable from "@/components/newui/AssetsTable";
 import ExploreComponent from "@/components/newui/ExploreComponent";
-import BlockInfo from "@/components/BlockInfo";
+
 
 const Explore = () => {
   return (
@@ -18,7 +18,7 @@ const Explore = () => {
       <div className="px-6">
         <AssetsTable />
       </div>
-      <BlockInfo />
+
     </Layout>
   );
 };

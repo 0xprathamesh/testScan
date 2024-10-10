@@ -87,5 +87,13 @@ const fetchTopAccounts = async () => {
     return null;
   }
 };
+const fetchChartData = async () => {
+  try {
+    const resposne = await dashboardService.chartTransactions(undefined, undefined);
+    
+  } catch (err) {
+    console.log(err)
+  }
+}
 
 export { getBlockchainData, fetchdata, fetchTopAccounts,fetchContracts };
