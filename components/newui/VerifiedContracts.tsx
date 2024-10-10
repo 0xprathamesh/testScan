@@ -13,7 +13,7 @@ const VerifiedContracts = () => {
   const fetchData = async () => {
     try {
       const response = await addressService.verifiedAddresses(`/`);
-      setContracts(response.items);
+      setContracts(response.items.slice(0,5));
     } catch (error) {
       console.log(error);
     } finally {

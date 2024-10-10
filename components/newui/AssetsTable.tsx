@@ -21,8 +21,11 @@ const Skeleton: React.FC = () => {
     </div>
   );
 };
+interface AssetsList {
+  quantity:number
+}
 
-const AssetsTable: React.FC = () => {
+const AssetsTable: React.FC<AssetsList> = ({quantity}) => {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +47,7 @@ const AssetsTable: React.FC = () => {
         totalSupply: `${formatTokenSupply(token.total_supply)} ${token.symbol}`,
         holders: token.holders,
       }));
-      setAssets(data);
+      setAssets(data.slice(0,quantity));
     } catch (error) {
       console.log(error);
       setError("Failed to load assets data.");

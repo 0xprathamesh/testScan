@@ -16,7 +16,7 @@ const Explore = () => {
         <VerifiedContracts />
       </div>
       <div className="px-6">
-        <AssetsTable />
+        <AssetsTable quantity={5} />
       </div>
 
     </Layout>
