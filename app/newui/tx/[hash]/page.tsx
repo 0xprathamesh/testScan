@@ -163,7 +163,7 @@ interface TokenTransfer {
   amount: string;
   token: string;
   icon?: string;
-  usd_value?:string
+  usd_value?: string;
 }
 
 interface TxData {
@@ -301,7 +301,6 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
             to: transfer.to,
             amount: transfer.amount,
             token: transfer.token,
-          
           })),
         };
         setTxData(txData);
@@ -368,12 +367,11 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
       .filter((log) => log.topics[0] === transferTopic)
       .map((log) => ({
         tokenName: "W",
-        symbol:"He",
+        symbol: "He",
         from: ethers.utils.getAddress("0x" + log.topics[1].slice(26)),
         to: ethers.utils.getAddress("0x" + log.topics[2].slice(26)),
         amount: ethers.BigNumber.from(log.data).toString(),
         token: log.address,
-
       }));
   };
 
@@ -510,40 +508,151 @@ interface TransactionProps {
 //   );
 // };
 
-const TokenTransfer = ({ hash }: TransactionProps) => {
-  const [tokenTransfers, setTokenTransfers] = useState<TokenTransfer[] | null>(
-    []
-  );
+// const TokenTransfer = ({ hash }: TransactionProps) => {
+//   const [tokenTransfers, setTokenTransfers] = useState<TokenTransfer[] | null>(
+//     []
+//   );
 
+//   useEffect(() => {
+//     fetchTransfers();
+//   }, [hash]);
+
+//   const fetchTransfers = async () => {
+//     try {
+//       const response = await transactionService.getTransaction(hash);
+
+//       const data = response.token_transfers.map((item: any) => ({
+//         tokenName: item.token?.name,
+//         from: item.from?.hash || "",
+//         to: item.to?.hash || "",
+//         amount: item.total?.value || "0",
+//         token: item.token?.address || "",
+
+//         symbol: item.token?.symbol,
+//         icon: `https://cdn.blocksscan.io/tokens/img/${item.symbol}.png`,
+//         usd_value: item.token?.exchange_rate,
+//       }));
+
+//       setTokenTransfers(data);
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   };
+//   const formatTokenAmount = (amount: string, decimals: number) => {
+//     return (parseInt(amount) / 10 ** decimals).toFixed(4); // Adjust decimal places as needed
+//   };
+//   return (
+//     <div>
+//       {tokenTransfers && tokenTransfers.length > 0 ? (
+//         <div className="bg-white px-8 py-4 rounded-lg mt-8">
+//           <div className="text-md font-chivo text-gray-900 mb-2">
+//             ERC-20 Tokens Transferred
+//           </div>
+//           <div className="space-y-4">
+//             {tokenTransfers.map((transfer, index) => (
+//               <div
+//                 key={index}
+//                 className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0"
+//               >
+//                 <div className="flex items-center space-x-2">
+//                   <div>
+//                     <p className="font-medium">Token Transfer</p>
+//                     <p className="text-sm font-semibold text-[#06afe8] flex items-center">
+//                       <Link href={`/newui/tx/${hash}`}>
+//                         #{parseAddress(hash)}{" "}
+//                       </Link>
+//                       <FiCopy
+//                         className="ml-2 text-gray-400 cursor-pointer"
+//                         onClick={() => navigator.clipboard.writeText(hash)}
+//                       />
+//                     </p>
+//                   </div>
+//                 </div>
+
+//                 <div className="flex items-center justify-between gap-x-4">
+//                   <div className="text-blue text-sm font-light leading font-chivo flex items-center">
+//                     <Link href={`/newui/address/${transfer.from}`}>
+//                       {parseAddress(transfer.from)}
+//                     </Link>
+//                     <FiCopy
+//                       className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+//                       onClick={() =>
+//                         navigator.clipboard.writeText(transfer.from)
+//                       }
+//                     />
+//                   </div>
+//                   <FiArrowRight className="h-4 w-4" />
+//                   <div className="text-blue text-sm font-light leading font-chivo flex items-center">
+//                     <Link href={`/newui/address/${transfer.to}`}>
+//                       {parseAddress(transfer.to)}
+//                     </Link>
+//                     <FiCopy
+//                       className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+//                       onClick={() => navigator.clipboard.writeText(transfer.to)}
+//                     />
+//                   </div>
+//                 </div>
+
+//                 <div>
+//                   <Link href={`/newui/tokens/${transfer.token}`}></Link>
+//                   <p className="text-sm text-gray-500">
+//                     {formatTokenAmount(transfer.amount, 18)}{" "}
+//                     <span className="text-blue mr-1">{transfer.tokenName}</span>
+//                     ({transfer.symbol})
+//                   </p>
+//                 </div>
+//                 <div className="text-blue text-sm font-light leading font-chivo flex items-center">
+//                   <Link href={`/newui/tokens/${transfer.token}`}>
+//                     {parseAddress(transfer.token)}
+//                   </Link>
+//                   <FiCopy
+//                     className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+//                     onClick={() =>
+//                       navigator.clipboard.writeText(transfer.token)
+//                     }
+//                   />
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+//       ) : (
+//         <div className="text-sm text-gray-500 mt-4"></div>
+//       )}
+//     </div>
+//   );
+// };
+const TokenTransfer = ({ hash }: TransactionProps) => {
+  const [tokenTransfers, setTokenTransfers] = useState<TokenTransfer[] | null>([]);
 
   useEffect(() => {
     fetchTransfers();
-
   }, [hash]);
 
   const fetchTransfers = async () => {
     try {
       const response = await transactionService.getTransaction(hash);
-
       const data = response.token_transfers.map((item: any) => ({
-        tokenName:item.token?.name,
-        from: item.from?.hash || "", 
+        tokenName: item.token?.name,
+        from: item.from?.hash || "",
         to: item.to?.hash || "",
         amount: item.total?.value || "0",
-        token: item.token?.address || "", 
-        icon: item.token?.icon_url,
-        symbol:item.token?.symbol,
-        usd_value:item.token?.exchange_rate
+        token: item.token?.address || "",
+        symbol: item.token?.symbol,
+        icon: item.token?.symbol ? `https://cdn.blocksscan.io/tokens/img/${item.token.symbol}.png` : "", // Token icon
+        usd_value: item.token?.exchange_rate,
       }));
 
-      setTokenTransfers(data); 
+      setTokenTransfers(data);
     } catch (err) {
       console.error(err);
     }
   };
+
   const formatTokenAmount = (amount: string, decimals: number) => {
     return (parseInt(amount) / 10 ** decimals).toFixed(4); // Adjust decimal places as needed
   };
+
   return (
     <div>
       {tokenTransfers && tokenTransfers.length > 0 ? (
@@ -558,6 +667,17 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
                 className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0"
               >
                 <div className="flex items-center space-x-2">
+                  {/* Token Icon */}
+                  <div className="rounded-full">
+                    <img
+                      src={transfer.icon}
+                      width={32}
+                      height={32}
+                      alt={transfer.symbol}
+                      className="w-8 h-8"
+                    />
+                  </div>
+
                   <div>
                     <p className="font-medium">Token Transfer</p>
                     <p className="text-sm font-semibold text-[#06afe8] flex items-center">
@@ -599,33 +719,30 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
                 <div>
                   <Link href={`/newui/tokens/${transfer.token}`}></Link>
                   <p className="text-sm text-gray-500">
-                    {formatTokenAmount(
-                      transfer.amount,
-                      18
-                    )}{" "} 
-                   <span className="text-blue mr-1">{transfer.tokenName}</span>({transfer.symbol})
+                    {formatTokenAmount(transfer.amount, 18)}{" "}
+                    <span className="text-blue mr-1">{transfer.tokenName}</span>
+                    ({transfer.symbol})
                   </p>
                 </div>
                 <div className="text-blue text-sm font-light leading font-chivo flex items-center">
-                    <Link href={`/newui/tokens/${transfer.token}`}>
-                      {parseAddress(transfer.token)}
-                    </Link>
-                    <FiCopy
-                      className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
-                      onClick={() =>
-                        navigator.clipboard.writeText(transfer.token)
-                      }
-                    />
-                  </div>
+                  <Link href={`/newui/tokens/${transfer.token}`}>
+                    {parseAddress(transfer.token)}
+                  </Link>
+                  <FiCopy
+                    className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+                    onClick={() =>
+                      navigator.clipboard.writeText(transfer.token)
+                    }
+                  />
+                </div>
               </div>
             ))}
           </div>
         </div>
       ) : (
-        <div className="text-sm text-gray-500 mt-4">
-        
-        </div>
+        <div className="text-sm text-gray-500 mt-4"></div>
       )}
     </div>
   );
 };
+
