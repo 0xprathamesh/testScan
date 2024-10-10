@@ -8,8 +8,7 @@ import { HiOutlineArrowSmDown, HiOutlineArrowSmUp } from "react-icons/hi";
 import DidYouKnow from "@/components/newui/Didyouknow";
 import { getCoinData } from "@/components/newui/utils/coingeko";
 import Image from "next/image";
-import { dashboardService } from "@/components/newui/utils/apiroutes";
-import { FiArrowRight } from "react-icons/fi";
+
 import { MdKeyboardArrowRight, MdOutlineArrowOutward } from "react-icons/md";
 import Link from "next/link";
 import {
@@ -22,6 +21,7 @@ import { fetchdata } from "@/components/newui/utils/xdcrpc";
 import { formatNumber } from "@/lib/helpers";
 import { FaRegUserCircle } from "react-icons/fa";
 import Contracts from "@/components/newui/Contracts";
+import ChartComponent from "@/components/newui/ChartComponent";
 interface TopAccount {
   hash: string;
   coin_balance: string;
@@ -131,10 +131,11 @@ const MantaDashboard: React.FC = () => {
     return <div>No top accounts available</div>;
   }
 
-
-  const tokenPrice = coinData?.market_data?.current_price?.usd ?? "Loading...";
-  const tokenBTCPrice =
-    coinData?.market_data?.current_price?.btc ?? "Loading...";
+  const tokenPrice =
+    coinData?.market_data?.current_price?.usd.toFixed(5) ?? "Loading...";
+  const tokenBTCPrice = coinData?.market_data?.current_price?.btc
+    ? coinData.market_data.current_price.btc.toFixed(8) // Adjust the decimal places
+    : "Loading...";
   const tokenPriceChange =
     coinData?.market_data?.price_change_percentage_24h ?? "Loading...";
   const { latestTransaction, latestBlockNumber } = blockchainData;
@@ -287,7 +288,7 @@ const MantaDashboard: React.FC = () => {
               {formatNumber(data.totalTransactions)}
             </p>
             <p className="text-gray-400">(0.02 Gwei)</p>
-            <div className="h-16 relative mb-2">
+            {/* <div className="h-16 relative mb-2">
               <svg className="w-full h-full">
                 <path
                   d="M0,32 L50,28 L100,30 L150,25 L200,15 L250,14 L300,13"
@@ -296,7 +297,9 @@ const MantaDashboard: React.FC = () => {
                   strokeWidth="2"
                 />
               </svg>
-            </div>
+            </div> */}
+            <div className=" relative">
+            <ChartComponent /></div>
             <p className="mt-4 flex items-center text-[#66798e] text-sm font-chivo font-light">
               <span className=" mr-2 text-xl ">💡</span>
               For a single 💰, you can savor 3030 transactions on Manta, while
@@ -365,7 +368,7 @@ const MantaDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-       <Contracts />
+          <Contracts />
           <div className="bg-black p-6 rounded-3xl">
             <h3 className="mb-2 text-sm text-gray-400 flex items-center justify-between">
               Total Accounts{" "}
@@ -415,6 +418,7 @@ const MantaDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+         
         </div>
       </div>
     </Layout>
@@ -432,12 +436,19 @@ const formatCoinBalance = (balance: string): string => {
   return convertedBalance.toLocaleString() + " XDC";
 };
 
-const AccountItem: React.FC<AccountItemProps> = ({ rank, address, balance }) => (
+const AccountItem: React.FC<AccountItemProps> = ({
+  rank,
+  address,
+  balance,
+}) => (
   <div className="flex items-center py-2">
     <span className="text-gray-400 mr-2">#{rank}</span>
     <div className="flex-grow">
       <Link href={`/newui/address/${address}`} className="hover:underline">
-      <p className="text-xl font-chivo leading-2 font-semibold text-gray-400 hover:underline">{parseAddress(address)}</p></Link>
+        <p className="text-xl font-chivo leading-2 font-semibold text-gray-400 hover:underline">
+          {parseAddress(address)}
+        </p>
+      </Link>
       <p className="text-xs font-inter ">{formatCoinBalance(balance)}</p>
     </div>
   </div>
