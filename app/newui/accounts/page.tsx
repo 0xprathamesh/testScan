@@ -84,7 +84,9 @@ const Accounts = () => {
               <tr key={index} className="border-t">
                 <td className="py-3">
                   <div className="text-sm font-semibold text-[#06afe8] flex items-center tracking-wider">
+                    <Link href={`/newui/address/${account.hash}`}>
                     {parseAddress(account.hash)}
+                 </Link>
                     <FiCopy
                       className="ml-2 text-gray-400 cursor-pointer"
                       onClick={() => navigator.clipboard.writeText(account.hash)}

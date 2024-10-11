@@ -6,6 +6,8 @@ import { FiCopy } from "react-icons/fi";
 import { contracts } from "./utils/data";
 import { addressService, dashboardService } from "./utils/apiroutes";
 import { parseAddress } from "@/lib/helpers";
+import Link from "next/link";
+
 const VerifiedContracts = () => {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -13,7 +15,7 @@ const VerifiedContracts = () => {
   const fetchData = async () => {
     try {
       const response = await addressService.verifiedAddresses(`/`);
-      setContracts(response.items.slice(0,5));
+      setContracts(response.items.slice(0, 5));
     } catch (error) {
       console.log(error);
     } finally {
@@ -45,7 +47,7 @@ const VerifiedContracts = () => {
           <tr className="text-left font-light text-black px-4">
             <th className="py-2 font-light">Contracts</th>
             <th className="font-light">Balance</th>
-          
+
             <th className="font-light">Compiler</th>
             <th className="font-light">Version</th>
             <th className="font-light">Settings</th>
@@ -60,7 +62,9 @@ const VerifiedContracts = () => {
                   {contract.name || "Unknown Contract"}
                 </div>
                 <div className="text-sm text-[#06afe8] font-semibold leading-2 flex items-center">
-                  {parseAddress(contract.address.hash)}{" "}
+                  <Link href={`/newui/address/${contract.address.hash}`}>
+                    {parseAddress(contract.address.hash)}{" "}
+                  </Link>
                   <FiCopy
                     className="ml-2 text-gray-400 cursor-pointer"
                     onClick={() =>
