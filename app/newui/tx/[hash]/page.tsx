@@ -163,7 +163,7 @@ interface TokenTransfer {
   amount: string;
   token: string;
   icon?: string;
-  usd_value?: string;
+  usd_value?: number;
 }
 
 interface TxData {
@@ -623,11 +623,20 @@ interface TransactionProps {
 //   );
 // };
 const TokenTransfer = ({ hash }: TransactionProps) => {
-  const [tokenTransfers, setTokenTransfers] = useState<TokenTransfer[] | null>([]);
+  const [tokenTransfers, setTokenTransfers] = useState<TokenTransfer[] | null>(
+    []
+  );
 
   useEffect(() => {
     fetchTransfers();
   }, [hash]);
+
+  const formatUSDValue = (value: number | undefined) => {
+    if (value === undefined) return "USD value unavailable";
+    
+    // Ensure all values are shown in decimal format (8 decimal places)
+    return `$${value.toFixed(8)}`;
+  };
 
   const fetchTransfers = async () => {
     try {
@@ -639,8 +648,12 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
         amount: item.total?.value || "0",
         token: item.token?.address || "",
         symbol: item.token?.symbol,
-        icon: item.token?.symbol ? `https://cdn.blocksscan.io/tokens/img/${item.token.symbol}.png` : "", // Token icon
-        usd_value: item.token?.exchange_rate,
+        icon: item.token?.symbol
+          ? `https://cdn.blocksscan.io/tokens/img/${item.token.symbol}.png`
+          : "", // Token icon
+        usd_value: item.token?.exchange_rate
+          ? (item.total?.value / 10 ** 18) * item.token?.exchange_rate
+          : undefined,
       }));
 
       setTokenTransfers(data);
@@ -719,7 +732,10 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
                 <div>
                   <Link href={`/newui/tokens/${transfer.token}`}></Link>
                   <p className="text-sm text-gray-500">
-                    {formatTokenAmount(transfer.amount, 18)}{" "}
+                    {formatTokenAmount(transfer.amount, 18)}
+                    <span className="bg-black px-1 rounded-md text-white border-[0.1] mx-1">
+                      {formatUSDValue(transfer.usd_value)}
+                    </span>
                     <span className="text-blue mr-1">{transfer.tokenName}</span>
                     ({transfer.symbol})
                   </p>

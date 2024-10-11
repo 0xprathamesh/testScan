@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import VerifiedContracts from "@/components/newui/VerifiedContracts";
 import AssetsTable from "@/components/newui/AssetsTable";
 import ExploreComponent from "@/components/newui/ExploreComponent";
+import Projects from "@/components/newui/Projects";
 
 
 const Explore = () => {
@@ -13,6 +14,7 @@ const Explore = () => {
 <ExploreComponent />
 
       <div className="px-6 mb-10">
+        <Projects />
         <VerifiedContracts />
       </div>
       <div className="px-6">
