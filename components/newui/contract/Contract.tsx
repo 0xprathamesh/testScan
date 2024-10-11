@@ -20,7 +20,7 @@ interface ContractData {
   isVerified: boolean;
   name: string;
   language: string;
-  optimization_runs: number;
+  optimization_runs: string;
   optimization_enabled: boolean;
   compiler_version: string;
   evmVersion: string;
