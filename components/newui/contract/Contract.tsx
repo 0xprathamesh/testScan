@@ -89,7 +89,7 @@ const CodeTab: React.FC<{ contract: ContractData | null }> = ({ contract }) => {
         <div>
           <InfoRow label="Contract Name:" value={contract.name} />
           <InfoRow label="Compiler Version:" value={contract.compiler_version} />
-          <InfoRow label="Optimization Runs:" value={contract.optimization_runs.toString()} />
+          <InfoRow label="Optimization Runs:" value={contract.optimization_runs} />
           <InfoRow label="Contract Source Code (solidity):" value={contract.language} />
         </div>
         <div>
