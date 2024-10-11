@@ -39,7 +39,7 @@ import voyFinanceIcon from './voyFinance-icon.svg';
 import wefiIcon from './wefi-icon.svg';
 import xceltripIcon from './xceltrip-icon.svg';
 import xdcWeb3DomainsIcon from './xdc-web3-domains-icon.svg';
-import xdcLendIcon from './xdclend-icon.svg';
+
 import xdcTradeNetworkIcon from './xdctradenetwork-icon.svg';
 import xdseaIcon from './xdsea-icon.svg';
 import xinfinNameServiceIcon from './xinfin-name-service-icon.svg';
@@ -90,7 +90,7 @@ export {
     wefiIcon,
     xceltripIcon,
     xdcWeb3DomainsIcon,
-    xdcLendIcon,
+
     xdcTradeNetworkIcon,
     xdseaIcon,
     xinfinNameServiceIcon,

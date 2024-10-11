@@ -72,7 +72,7 @@ const AssetsTable: React.FC<AssetsList> = ({quantity}) => {
     <div className="bg-white rounded-3xl border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl font-bold">Assets</h2>
-        <a href="#" className="text-blue-500 hover:underline">
+        <a href="#" className="text-blue hover:underline">
           View All
         </a>
       </div>
