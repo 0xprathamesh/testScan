@@ -48,10 +48,10 @@ import {
   yodaplusIcon,
 } from "../../.././public/assets/ecosystem-dapps";
 export const insights = [
-  "Mantas native token, i.e., $MANTA, has seen a ~200% increase in value since its launch in 2022.",
-  "$MANTA is a privacy-focused token, ensuring secure and anonymous transactions.",
-  "The Manta Network is built to provide scalable private DeFi solutions.",
-  "Manta Network leverages zk-SNARK technology to enhance privacy on-chain.",
+  "XDC Network is an enterprise-grade, open-source blockchain protocol.",
+  "The XDC Network is a groundbreaking blockchain with impressive speed, scalability, low fees, and military-grade security.",
+  "Using XDC Network, businesses can improve their record keeping, exchange data and transfer assets more efficiently and more securely.",
+  "Our community encourages collaboration between a diverse range of developers, participants, and stakeholders in the expanding XDC ecosystem.",
 ];
 
 export const contractAddresses: string[] = [
@@ -383,9 +383,7 @@ export const projects = [
     description:
       "STASIS is a European fintech firm that serves as a bridge between traditional financial services and emerging Web 3 technologies.",
   },
-
 ];
-
 
 // export const projects = [
 //   {

@@ -136,7 +136,7 @@ const WriteContract: React.FC<WriteProps> = ({ address }) => {
       }
 
       const tx = await contractInstance[method.name](...params, overrides);
-      await tx.wait(); // Wait for the transaction to be mined
+      await tx.wait(); 
 
       console.log(`Transaction successful: ${tx.hash}`);
     } catch (err) {

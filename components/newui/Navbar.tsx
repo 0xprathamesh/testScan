@@ -8,7 +8,7 @@ const Navbar: React.FC = () => {
       <div className="flex justify-between items-center px-4 py-2">
         <div className="flex items-center gap-4">
           <p className="font-semibold font-inter text-lg ">
-            Explorer With NewUI
+            SpyScan
           </p>
           <div className="bg-gray-800 px-3 py-1 rounded-md">
             <p className="text-sm text-white font-inter">Mainnet</p>

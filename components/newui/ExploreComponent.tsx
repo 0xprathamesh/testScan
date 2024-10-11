@@ -16,10 +16,10 @@ const ExploreComponent = () => {
   return (
     <div className=" mx-auto px-6  rounded-lg mb-20">
       <div className="bg-white p-4 rounded-3xl">
-        <h1 className="text-5xl font-bold  text-blue-600 mb-4">MANTA</h1>
+        <h1 className="text-5xl font-bold  text-blue-600 mb-4">XDC</h1>
         <p className="text-md font-normal text-gray-700  mb-8">
           The first EVM-native modular execution layer for wide ZK applications
-          adoption, with Manta universal circuit and zk interface.
+          adoption, with XDC universal circuit and zk interface.
         </p>
 
         <div className="flex gap-8 mb-8">
@@ -36,7 +36,7 @@ const ExploreComponent = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
         <FeaturedCard
-          title="New Paradigm is live! Bridge ETH or USDC to earn PENTA yield and Manta Token Rewards"
+          title="New Paradigm is live! Bridge ETH or USDC to earn PENTA yield and XDC Token Rewards"
           buttonText="Join Now"
         />
         <FeaturedCard

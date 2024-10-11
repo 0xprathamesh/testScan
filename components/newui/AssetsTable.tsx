@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { FileText, User } from "lucide-react";
 import { tokenService } from "./utils/apiroutes";
+import Link from "next/link";
 
 interface Asset {
   name: string;
@@ -10,6 +11,7 @@ interface Asset {
   marketCap: string;
   totalSupply: string;
   holders: number;
+  address: string;
 }
 
 const Skeleton: React.FC = () => {
@@ -22,10 +24,10 @@ const Skeleton: React.FC = () => {
   );
 };
 interface AssetsList {
-  quantity:number
+  quantity: number;
 }
 
-const AssetsTable: React.FC<AssetsList> = ({quantity}) => {
+const AssetsTable: React.FC<AssetsList> = ({ quantity }) => {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,11 +45,14 @@ const AssetsTable: React.FC<AssetsList> = ({quantity}) => {
         name: `${token.name} (${token.symbol})`,
         icon: `https://cdn.blocksscan.io/tokens/img/${token.symbol}.png`,
         type: token.type,
-        marketCap: `$${parseFloat(token.circulating_market_cap_usd).toLocaleString()}`,
+        marketCap: `$${parseFloat(
+          token.circulating_market_cap_usd
+        ).toLocaleString()}`,
         totalSupply: `${formatTokenSupply(token.total_supply)} ${token.symbol}`,
         holders: token.holders,
+        address: token.address,
       }));
-      setAssets(data.slice(0,quantity));
+      setAssets(data.slice(0, quantity));
     } catch (error) {
       console.log(error);
       setError("Failed to load assets data.");
@@ -72,7 +77,7 @@ const AssetsTable: React.FC<AssetsList> = ({quantity}) => {
     <div className="bg-white rounded-3xl border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl font-bold">Assets</h2>
-        <a href="#" className="text-blue hover:underline">
+        <a href="/newui/erc20" className="text-blue hover:underline">
           View All
         </a>
       </div>
@@ -90,16 +95,24 @@ const AssetsTable: React.FC<AssetsList> = ({quantity}) => {
             <tr key={index} className="border-t">
               <td className="py-4 flex items-center">
                 <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                  <img src={asset.icon} alt={asset.name} className="w-full h-full object-cover rounded-full" />
+                  <Link href={`/newui/tokens/${asset.address}`}>
+                    <img
+                      src={asset.icon}
+                      alt={asset.name}
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  </Link>
                 </div>
                 <div>
-                  <div className="flex items-center font-bold">
-                    {asset.name}{" "}
-                    <FileText size={16} className="ml-1 text-gray-400" />
-                  </div>
-                  <span className="text-sm text-gray-600 px-2 py-1 bg-gray-100 rounded-md">
-                    {asset.type}
-                  </span>
+                  <Link href={`/newui/tokens/${asset.address}`}>
+                    <div className="flex items-center font-bold">
+                      {asset.name}{" "}
+                      <FileText size={16} className="ml-1 text-gray-400" />
+                    </div>
+                    <span className="text-sm text-gray-600 px-2 py-1 bg-gray-100 rounded-md">
+                      {asset.type}
+                    </span>
+                  </Link>
                 </div>
               </td>
               <td className="font-bold">{asset.marketCap}</td>

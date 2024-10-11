@@ -8,8 +8,7 @@ import React, { useEffect, useState } from "react";
 import { FiCopy } from "react-icons/fi";
 import { parseAddress } from "@/lib/helpers";
 import { addressService } from "@/components/newui/utils/apiroutes";
-import Contracts from "@/components/newui/Contracts";
-
+import Contracts from "@/components/newui/Contracts"
 const VerifiedContractsPage = () => {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -161,7 +160,9 @@ const VerifiedContractsPage = () => {
                     {contract.name || "Unknown Contract"}
                   </div>
                   <div className="text-sm text-[#06afe8] font-semibold leading-2 flex items-center">
+                    <Link href={`/newui/address/${contract.address.hash}`}>
                     {parseAddress(contract.address.hash)}{" "}
+                  </Link>
                     <FiCopy
                       className="ml-2 text-gray-400 cursor-pointer"
                       onClick={() =>

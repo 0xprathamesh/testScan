@@ -29,7 +29,7 @@ interface TopAccount {
 const parseAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
-const MantaDashboard: React.FC = () => {
+const SpyDashboard: React.FC = () => {
   const [blockchainData, setBlockchainData] = useState<any>(null);
   const [isSticky, setIsSticky] = useState(false);
   const [coinData, setCoinData] = useState<any>(null);
@@ -215,7 +215,7 @@ const MantaDashboard: React.FC = () => {
             <p className="text-gray-400">(0.02 Gwei)</p>
             <p className="mt-4 flex items-center text-purple-400 text-sm font-chivo font-light">
               <span className=" mr-2 text-xl ">💡</span>
-              For a single 💰, you can savor 3030 transactions on Manta, while
+              For a single 💰, you can savor 3030 transactions on XDC, while
               only 21 on Ethereum. 🤯
             </p>
           </div>
@@ -302,7 +302,7 @@ const MantaDashboard: React.FC = () => {
             <ChartComponent /></div>
             <p className="mt-4 flex items-center text-[#66798e] text-sm font-chivo font-light">
               <span className=" mr-2 text-xl ">💡</span>
-              For a single 💰, you can savor 3030 transactions on Manta, while
+              For a single 💰, you can savor 3030 transactions on XDC, while
               only 21 on Ethereum. 🤯
             </p>
           </div>
@@ -425,7 +425,7 @@ const MantaDashboard: React.FC = () => {
   );
 };
 
-export default MantaDashboard;
+export default SpyDashboard;
 interface AccountItemProps {
   rank: number;
   address: string;
