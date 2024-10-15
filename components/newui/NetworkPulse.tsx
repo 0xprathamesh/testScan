@@ -325,7 +325,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Transactions</h2>
           <div className="flex items-center">
-            <Link href={`/newui/blocks`} className="mr-4">
+            <Link href={`/newui/txns`} className="mr-4">
               <p className="text-sm text-blue font-inter">View all</p>
             </Link>
             <button onClick={() => scroll(txSliderRef, -200)} className="mr-2">
@@ -356,7 +356,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
             Processing blocks of transactions
           </h2>
           <div className="flex items-center">
-            <Link href={`/newui/txns`} className="mr-4">
+            <Link href={`/newui/blocks`} className="mr-4">
               <p className="text-sm text-blue font-inter">View all</p>
             </Link>
             <button

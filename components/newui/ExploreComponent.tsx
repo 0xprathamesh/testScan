@@ -36,11 +36,12 @@ const ExploreComponent = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
         <FeaturedCard
-          title="New Paradigm is live! Bridge ETH or USDC to earn PENTA yield and XDC Token Rewards"
+          title="The XDC Network is a groundbreaking blockchain with impressive speed, scalability, low fees."
           buttonText="Join Now"
         />
         <FeaturedCard
-          title="SocialFi platform to build and grow web3 community"
+          title="
+          The XDC Network sets a benchmark for digitizing trade finance by enabling the tokenization of diverse trade finance instruments and assets"
           buttonText="Galxe"
         />
       </div>

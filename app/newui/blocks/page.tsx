@@ -9,6 +9,8 @@ import {
   blockService,
   dashboardService,
 } from "@/components/newui/utils/apiroutes";
+import Link from "next/link";
+
 
 const BlocksPage: React.FC = () => {
   const [latestBlocks, setLatestBlocks] = useState<any[]>([]);
@@ -143,12 +145,15 @@ const BlocksPage: React.FC = () => {
             <tbody>
               {latestBlocks.map((block, index) => (
                 <tr key={block.number} className="border-t">
-                  <td className="px-6 py-4">{block.number}</td>
+                  <td className="px-6 py-4">
+                    <Link href={`/newui/block/${block.number}`}>
+                    {block.number}</Link></td>
                   <td className="px-6 py-4">{block.size}</td>
                   <td className="px-6 py-4">{block.transactions}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      {parseAddress(block.miner)}
+                    <Link href={`/newui/block/${block.number}`}>
+                      {parseAddress(block.miner)}</Link>
                       <FiCopy
                         className="ml-2 text-gray-400 cursor-pointer"
                         onClick={() =>
