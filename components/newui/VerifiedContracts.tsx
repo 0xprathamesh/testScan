@@ -38,7 +38,7 @@ const VerifiedContracts = () => {
     <div className="bg-white rounded-3xl border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl font-semibold">Verified Contracts</h2>
-        <a href="#" className="text-blue hover:underline">
+        <a href="/newui/verified-contracts" className="text-blue hover:underline">
           View All
         </a>
       </div>

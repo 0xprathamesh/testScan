@@ -15,6 +15,7 @@ import { LuCode2 } from "react-icons/lu";
 import { transactionService } from "./utils/apiroutes";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import ReactTooltip from "react-tooltip";
 interface TxData {
   hash: string;
   status: boolean;
@@ -127,6 +128,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
           </div>
         </div>
       </div>
+      
     </div>
   );
 };
@@ -349,7 +351,7 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
               <HelpCircle className="h-4 w-4" />
             </div>
             <Link href={`/newui/block/${txData.blockNumber}`}>
-              <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
+              <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading" >
                 {txData.blockNumber}
               </div>
             </Link>
@@ -410,6 +412,8 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
           </div>
         </div>
       </div>
+
     </div>
+
   );
 };

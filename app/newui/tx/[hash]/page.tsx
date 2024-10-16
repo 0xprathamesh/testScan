@@ -148,7 +148,7 @@ import { parseAddress } from "@/lib/helpers";
 import TokenTransfers from "@/components/TokenTransfers";
 import Link from "next/link";
 import { FiArrowRight, FiCopy } from "react-icons/fi";
-
+import { Tooltip as ReactTooltip } from "react-tooltip";
 interface PageProps {
   params: {
     hash: string;

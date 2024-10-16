@@ -85,6 +85,7 @@ const AssetsTable: React.FC<AssetsList> = ({ quantity }) => {
         <thead>
           <tr className="text-left text-gray-500">
             <th className="py-2 font-light">Asset Name</th>
+            
             <th className="font-light">Circulating Market Cap</th>
             <th className="font-light">Total Supply</th>
             <th className="font-light">Holders</th>

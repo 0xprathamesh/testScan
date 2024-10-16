@@ -96,3 +96,46 @@ body ::-webkit-scrollbar {
 
 
   
+
+.custom-button {
+  margin-bottom: 0.5rem; /* mb-2 */
+}
+
+@media (min-width: 768px) {
+  .custom-button {
+    margin-bottom: 0; /* md:mb-0 */
+  }
+}
+
+.custom-button {
+  color: white; /* text-white */
+  background-color: #1d4ed8; /* bg-blue-700 */
+  font-weight: 500; /* font-medium */
+  border-radius: 0.5rem; /* rounded-lg */
+  font-size: 0.875rem; /* text-sm */
+  padding: 0.625rem 1.25rem; /* px-5 py-2.5 */
+  text-align: center; /* text-center */
+}
+
+.custom-button:hover {
+  background-color: #1e40af; /* hover:bg-blue-800 */
+}
+
+.custom-button:focus {
+  outline: none; /* focus:outline-none */
+  background-color: #2563eb; /* focus:ring-blue-300 */
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3); /* focus:ring-4 */
+}
+
+.custom-button.dark {
+  background-color: #2563eb; /* dark:bg-blue-600 */
+}
+
+.custom-button.dark:hover {
+  background-color: #1e3a8a; /* dark:hover:bg-blue-700 */
+}
+
+.custom-button.dark:focus {
+  background-color: #1e3a8a; /* dark:focus:ring-blue-800 */
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.5);
+}
