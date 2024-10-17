@@ -356,7 +356,7 @@ const NetworkPulse: React.FC<{ rpcUrl: string }> = ({ rpcUrl }) => {
             Processing blocks of transactions
           </h2>
           <div className="flex items-center">
-            <Link href={`/newui/blocks`} className="mr-4">//Link
+            <Link href={`/newui/blocks`} className="mr-4">
               <p className="text-sm text-blue font-inter">View all</p>
             </Link>
             <button
