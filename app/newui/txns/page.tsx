@@ -22,6 +22,7 @@ interface Transaction {
   gasPrice?: string;
   gasLimit?: string;
 }
+const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL;
 
 const TransactionTable = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -155,10 +156,10 @@ const TransactionTable = () => {
                   To
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Value (ETH)
+                  Value {currency}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Txn Fee (ETH)
+                  Txn Fee {currency}
                 </th>
               </tr>
             </thead>
@@ -230,7 +231,7 @@ const TransactionTable = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      {parseFloat(tx.value).toFixed(2)} ETH
+                      {parseFloat(tx.value).toFixed(2)} {currency}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {typeof gasFeeInEther === "string" ? gasFeeInEther : parseFloat(gasFeeInEther).toFixed(6)}

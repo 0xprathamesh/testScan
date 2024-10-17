@@ -174,7 +174,7 @@ const TransactionsPage: React.FC<PageProps> = ({ params }) => {
                         </p>
                       </td>
                       <td className="px-4 py-2 text-sm ">
-                        {parseFloat(valueInEther).toFixed(1)} ETH
+                        {parseFloat(valueInEther).toFixed(1)} XDC
                       </td>
                       <td className="px-4 py-2 text-[12px] text-gray-400">{parseFloat(gasFeeInEther).toFixed(6)}</td>
                       <td className="px-4 py-2 text-sm font-light">{age} ago</td>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { fetchContracts } from "./utils/xdcrpc";
 
+import Link from "next/link";
 const Contracts = () => {
   const [data, setData] = useState({
     smart_contracts: "",
@@ -47,7 +48,8 @@ const Contracts = () => {
           </span>
         </div>
       </div>
-      <MdKeyboardArrowRight className="text-gray-400 text-2xl ml-4" />
+   <Link href={`/newui/accounts`}>
+      <MdKeyboardArrowRight className="text-gray-400 text-2xl ml-4" /></Link>
     </div>
   );
 };

@@ -23,7 +23,7 @@ interface ExternalTransaction {
   value: string;
   asset: string;
 }
-
+const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL
 const AddressDetails: React.FC<AddressDetailsProps> = ({ params }) => {
   const { address } = params;
   const [balance, setBalance] = useState<string>("");
@@ -98,7 +98,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ params }) => {
             </h3>
             <ul>
               <li className="flex items-center px-4 text-sm font-light py-2 border-b">
-                Balance: <span className="ml-32">{balance} ETH</span>
+                  Balance: <span className="ml-32">{balance} {currency}</span>
               </li>
             </ul>
           </div>
@@ -108,7 +108,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ params }) => {
             </h3>
             <ul>
               <li className="flex items-center px-4 text-sm font-light py-2 border-b">
-                Balance: <span className="ml-32">{balance} ETH</span>
+                Balance: <span className="ml-32">{balance} {currency}</span>
               </li>
               <li className="flex items-center px-4 text-sm font-light py-2 border-b">
                 Token Tracker:

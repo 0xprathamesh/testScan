@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LineChart, Line, ResponsiveContainer } from "recharts";
+import { LineChart, Line, ResponsiveContainer, Tooltip } from "recharts";
 import { dashboardService } from "./utils/apiroutes";
 
 const ChartComponent = () => {
@@ -7,7 +7,9 @@ const ChartComponent = () => {
 
   const fetchChartData = async () => {
     try {
-      const response = await dashboardService.chartTransactions(2024,2024);
+      const formDate = "2024-10-02"
+      const toDate = "2024-10-17"
+      const response = await dashboardService.chartTransactions(formDate , toDate );
       const formattedData = response?.chart_data?.map((item: any) => ({
         date: item.date,
         tx_count: item.tx_count,
@@ -26,6 +28,8 @@ const ChartComponent = () => {
     <div className="h-40 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
+          <Tooltip />
+
           <Line 
             type="monotone" 
             dataKey="tx_count" 

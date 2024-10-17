@@ -8,11 +8,15 @@ import React, { useEffect, useState } from "react";
 import { FiCopy } from "react-icons/fi";
 import { parseAddress } from "@/lib/helpers";
 import { addressService } from "@/components/newui/utils/apiroutes";
-import Contracts from "@/components/newui/Contracts"
+import { FileText, User } from "lucide-react";
+import Contracts from "@/components/newui/Contracts";
+import { ethers } from "ethers";
+
 const VerifiedContractsPage = () => {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [ethToUsdRate, setEthToUsdRate] = useState<number>(0); // State for ETH to USD rate
 
   const fetchData = async () => {
     try {
@@ -25,8 +29,20 @@ const VerifiedContractsPage = () => {
     }
   };
 
+  const fetchEthToUsdRate = async () => {
+    try {
+      // Fetching ETH to USD conversion rate from a public API
+      const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd");
+      const data = await response.json();
+      setEthToUsdRate(data.ethereum.usd); // Set the ETH to USD rate
+    } catch (error) {
+      console.log("Error fetching ETH to USD rate:", error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchEthToUsdRate(); // Fetch ETH to USD rate on component mount
   }, []);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +51,12 @@ const VerifiedContractsPage = () => {
 
   const formatBalance = (weiBalance: string) => {
     return (parseFloat(weiBalance) / 1e18).toFixed(2); // Converts to Ether and fixes to 2 decimal places
+  };
+
+  const formatUsdValue = (weiBalance: string) => {
+    const ethBalance = parseFloat(weiBalance) / 1e18;
+    const usdValue = ethBalance * ethToUsdRate;
+    return usdValue.toFixed(2); // Format USD value to 2 decimal places
   };
 
   const filteredContracts = contracts.filter((contract) => {
@@ -75,58 +97,7 @@ const VerifiedContractsPage = () => {
         </div>
       </div>
       <div className="w-[60%]">
-        {/* First Card */}
-        {/* <div className="flex-1 bg-black text-white p-6 rounded-lg">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-sm text-gray-400 mb-2">Verified contracts</h2>
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-bold">2218</span>
-                <span className="text-sm text-gray-400">of 28745</span>
-              </div>
-            </div>
-            <div className="relative w-16 h-16">
-              <div className="absolute inset-0 rounded-full border-4 border-gray-700"></div>
-              <div
-                className="absolute inset-0 rounded-full border-4 border-blue-400"
-                style={{
-                  clipPath: "polygon(0 0, 100% 0, 100% 28%, 0 28%)",
-                  transform: "rotate(-90deg)",
-                }}
-              ></div>
-              <span className="absolute inset-0 flex items-center justify-center text-blue-400 font-semibold">
-                7.7%
-              </span>
-            </div>
-          </div>
-        </div> */}
-<Contracts/>
-        {/* Second Card */}
-        {/* <div className="flex-1 bg-black text-white p-6 rounded-lg">
-          <h2 className="text-sm text-gray-400 mb-4">Recent growth in 24h</h2>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400">All contracts</span>
-              <div className="flex items-center gap-2">
-                <span className="text-green-500">+ 26</span>
-                <div className="flex items-center text-gray-400">
-                  <span className="text-xs">↑</span>
-                  <span>0.09%</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400">Verified</span>
-              <div className="flex items-center gap-2">
-                <span className="text-green-500">+ 13</span>
-                <div className="flex items-center text-gray-400">
-                  <span className="text-xs">↑</span>
-                  <span>0.59%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
+        <Contracts/>
       </div>
 
       {/* Search Bar */}
@@ -156,13 +127,13 @@ const VerifiedContractsPage = () => {
             {filteredContracts.map((contract, index) => (
               <tr key={index} className="border-t">
                 <td className="py-3">
-                  <div className="font-bold text-black text-sm">
-                    {contract.name || "Unknown Contract"}
+                  <div className="font-bold text-black text-sm flex items-center ">
+                    {contract.name || "Unknown Contract"} <FileText className="h-3 w-3 mt-1 text-gray-400 ml-2"/>
                   </div>
                   <div className="text-sm text-[#06afe8] font-semibold leading-2 flex items-center">
                     <Link href={`/newui/address/${contract.address.hash}`}>
-                    {parseAddress(contract.address.hash)}{" "}
-                  </Link>
+                      {parseAddress(contract.address.hash)}{" "}
+                    </Link>
                     <FiCopy
                       className="ml-2 text-gray-400 cursor-pointer"
                       onClick={() =>
@@ -172,9 +143,11 @@ const VerifiedContractsPage = () => {
                   </div>
                 </td>
                 <td className="font-bold">
-                  {formatBalance(contract.coin_balance || "0")}
+                  {formatBalance(contract.coin_balance || "0")} ETH
                   <br />
-                  <span className="text-sm font-light text-gray-500">$0</span>
+                  <span className="text-sm font-light text-gray-500">
+                    ${formatUsdValue(contract.coin_balance || "0")}
+                  </span>
                 </td>
                 <td>
                   <span className="bg-gray-200 px-2 py-1 rounded-md text-xs font-light text-gray-600 ">

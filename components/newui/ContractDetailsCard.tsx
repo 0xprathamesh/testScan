@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { addressService } from "./utils/apiroutes";
 import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ethers } from "ethers";
 
 interface PageProps {
   address: string;
@@ -20,7 +21,10 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
   const [contract, setContract] = useState<Contract | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
+  const formatBalance = (weiBalance: string) => {
+    // Convert from wei to Ether
+    return ethers.utils.formatEther(weiBalance);
+  };
   useEffect(() => {
     const fetchContract = async () => {
       try {
@@ -101,7 +105,7 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
         </p>
         <div className="mb-4">
           <p className="text-sm text-gray-400">Balance</p>
-          <p className="text-lg font-semibold">{contract.balance} XDC</p>
+          <p className="text-lg font-semibold">{formatBalance(contract.balance)} XDC</p>
         </div>
         <div>
           <p className="text-sm text-gray-400">Transactions</p>

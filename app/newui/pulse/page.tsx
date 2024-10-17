@@ -12,6 +12,8 @@ import {
   dashboardService,
   transactionService,
 } from "@/components/newui/utils/apiroutes";
+import ChartComponent from "@/components/newui/ChartComponent";
+import { formatNumber } from "@/lib/helpers";
 
 interface BlockData {
   number: string;
@@ -192,20 +194,13 @@ const DashboardPage = () => {
               />
             </svg>
           </div>
-          <h2 className="text-3xl font-semibold mb-4">{totalTransactions}</h2>
-          <div className="h-16 relative mb-4">
-            <svg className="w-full h-full">
-              <path
-                d="M0,32 L50,28 L100,30 L150,25 L200,15 L250,14 L300,13"
-                stroke="red"
-                fill="none"
-                strokeWidth="2"
-              />
-            </svg>
+          <h2 className="text-3xl font-semibold ">{formatNumber(totalTransactions)}</h2>
+          <div className="h-8 relative mb-4">
+    <ChartComponent /> 
           </div>
-          <p className="text-md font-light text-[#cbd5e1]">
+          {/* <p className="text-md font-light text-[#cbd5e1]">
             On average 8.31 Transactions are processed every second
-          </p>
+          </p> */}
         </div>
 
         <div className="bg-black text-white rounded-3xl p-4">

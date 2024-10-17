@@ -9,7 +9,8 @@ interface Asset {
   icon: string;
   type: string;
   marketCap: string;
-  totalSupply: string;
+  price: string;
+  priceChange24h: string;
   holders: number;
   address: string;
 }
@@ -23,6 +24,7 @@ const Skeleton: React.FC = () => {
     </div>
   );
 };
+
 interface AssetsList {
   quantity: number;
 }
@@ -32,12 +34,6 @@ const AssetsTable: React.FC<AssetsList> = ({ quantity }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const formatTokenSupply = (supply: any): string => {
-    const supplyBigInt = BigInt(supply);
-    const scaledSupply = supplyBigInt / BigInt(1e18);
-    return scaledSupply.toLocaleString();
-  };
-
   const fetchTokens = async () => {
     try {
       const response = await tokenService.tokens(`/`);
@@ -45,10 +41,9 @@ const AssetsTable: React.FC<AssetsList> = ({ quantity }) => {
         name: `${token.name} (${token.symbol})`,
         icon: `https://cdn.blocksscan.io/tokens/img/${token.symbol}.png`,
         type: token.type,
-        marketCap: `$${parseFloat(
-          token.circulating_market_cap_usd
-        ).toLocaleString()}`,
-        totalSupply: `${formatTokenSupply(token.total_supply)} ${token.symbol}`,
+        marketCap: `$${parseFloat(token.circulating_market_cap_usd).toLocaleString()}`,
+        price: `$${parseFloat(token.exchange_rate).toFixed(6)}`,
+        priceChange24h: parseFloat(token.price_change_24h).toFixed(2),
         holders: token.holders,
         address: token.address,
       }));
@@ -85,9 +80,9 @@ const AssetsTable: React.FC<AssetsList> = ({ quantity }) => {
         <thead>
           <tr className="text-left text-gray-500">
             <th className="py-2 font-light">Asset Name</th>
-            
-            <th className="font-light">Circulating Market Cap</th>
-            <th className="font-light">Total Supply</th>
+            <th className="py-2 font-light">Price</th>
+            <th className="py-2 font-light">24h Change</th>
+            <th className="py-2 font-light">Circulating Market Cap</th>
             <th className="font-light">Holders</th>
           </tr>
         </thead>
@@ -107,7 +102,7 @@ const AssetsTable: React.FC<AssetsList> = ({ quantity }) => {
                 <div>
                   <Link href={`/newui/tokens/${asset.address}`}>
                     <div className="flex items-center font-bold">
-                      {asset.name}{" "}
+                      {asset.name}
                       <FileText size={16} className="ml-1 text-gray-400" />
                     </div>
                     <span className="text-sm text-gray-600 px-2 py-1 bg-gray-100 rounded-md">
@@ -116,9 +111,18 @@ const AssetsTable: React.FC<AssetsList> = ({ quantity }) => {
                   </Link>
                 </div>
               </td>
-              <td className="font-bold">{asset.marketCap}</td>
-              <td className="font-light text-gray-600">{asset.totalSupply}</td>
-              <td>
+              <td className="font-normal text-sm">{asset.price}</td>
+              <td
+                className={`font-normal text-sm ${
+                  parseFloat(asset.priceChange24h) >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
+              >
+                {asset.priceChange24h}%
+              </td>
+              <td className="font-normal text-sm">{asset.marketCap}</td>
+              <td className="font-normal text-sm">
                 <div className="flex items-center">
                   <User size={16} className="mr-1 text-blue-500" />
                   {asset.holders.toLocaleString()}
