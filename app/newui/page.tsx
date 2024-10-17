@@ -225,16 +225,18 @@ const SpyDashboard: React.FC = () => {
             <h3 className="mb-2 text-sm text-gray-400">Native token</h3>
             <div className="flex flex-col ">
               <div className="rounded-full mb-6 mt-4">
-                {coinData?.image?.thumb ? (
-                  <Image
-                    src={coinData.image.large}
-                    alt=""
-                    height={96}
-                    width={96}
-                  />
-                ) : (
-                  ""
-                )}
+                <Link href={`/`}>
+                  {coinData?.image?.thumb ? (
+                    <Image
+                      src={coinData.image.large}
+                      alt=""
+                      height={96}
+                      width={96}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </Link>
               </div>
 
               <div className="text-white">
@@ -260,18 +262,22 @@ const SpyDashboard: React.FC = () => {
             <div className="flex justify-between p-6 bg-white rounded-3xl">
               <div>
                 <h3 className="text-lg mb-2">Total Addresses</h3>
-                <p className="text-4xl font-bold">
-                  {formatNumber(data.totalAddresses)}
-                </p>
+                <Link href={`/newui/txns`}>
+                  <p className="text-4xl font-bold">
+                    {formatNumber(data.totalAddresses)}
+                  </p>
+                </Link>
               </div>
               <HiOutlineArrowSmDown className="text-[96px] text-green-500 font-bold" />
             </div>
             <div className="flex justify-between bg-black p-6 rounded-ee-3xl rounded-es-3xl">
               <div>
                 <h3 className="text-lg mb-2 text-white">Total Blocks</h3>
-                <p className="text-4xl font-bold text-white">
-                  {formatNumber(data.totalBlocks)}
-                </p>
+                <Link href={`/newui/blocks`}>
+                  <p className="text-4xl font-bold text-white">
+                    {formatNumber(data.totalBlocks)}
+                  </p>{" "}
+                </Link>
               </div>
               <HiOutlineArrowSmUp className="text-[96px] text-green-500 font-bold" />
             </div>
@@ -299,7 +305,8 @@ const SpyDashboard: React.FC = () => {
               </svg>
             </div> */}
             <div className=" relative">
-            <ChartComponent /></div>
+              <ChartComponent />
+            </div>
             <p className="mt-4 flex items-center text-[#66798e] text-sm font-chivo font-light">
               <span className=" mr-2 text-xl ">💡</span>
               For a single 💰, you can savor 3030 transactions on XDC, while
@@ -372,7 +379,7 @@ const SpyDashboard: React.FC = () => {
           <div className="bg-black p-6 rounded-3xl">
             <h3 className="mb-2 text-sm text-gray-400 flex items-center justify-between">
               Total Accounts{" "}
-              <Link href={`/newui/txns`} className="">
+              <Link href={`/newui/accounts`} className="">
                 <MdKeyboardArrowRight className="h-6 w-6 " />
               </Link>
             </h3>
@@ -418,7 +425,6 @@ const SpyDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-         
         </div>
       </div>
     </Layout>

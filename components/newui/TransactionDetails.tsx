@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import {
   ArrowBigDown,
   ArrowLeft,
@@ -16,6 +17,7 @@ import { transactionService } from "./utils/apiroutes";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import ReactTooltip from "react-tooltip";
+
 interface TxData {
   hash: string;
   status: boolean;
@@ -311,7 +313,7 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
 
   return (
     <div className="bg-black rounded-3xl text-white w-[45%] h-[600px]">
-      <div className="rounded-t-3xl bg-green-500 py-2 px-4">
+      <div className="rounded-t-3xl bg-[#16a24b] py-4 px-4">
         <div className="rounded-full h-20 w-20 border-8 border-[#baf7d0] items-center">
           <ArrowUpRight className="h-16 w-16 font-bold text-[#baf7d0]" />
         </div>

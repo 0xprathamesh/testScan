@@ -3,6 +3,7 @@ import { ConnectButton, useNetworkSwitcherModal } from "thirdweb/react";
 import { client, wallets } from "../utils/client";
 import { xdcApothemNetwork } from "@/utils/xdcApothemNetwork";
 import ParentComponent from "./elements/ModalButton";
+
 import {
   useActiveAccount,
   useActiveWalletChain,
@@ -11,6 +12,7 @@ import {
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { dynamicNetworkConfig } from "@/utils/networkConfig";
+import SearchBar from "./elements/Search";
 
 const Navbar = () => {
   const account = useActiveAccount();

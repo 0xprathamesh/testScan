@@ -17,13 +17,14 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
+  const logo = process.env.NEXT_PUBLIC_EXPLORER_LOGO;
   return (
     <div className="flex">
       <div className="fixed w-20 h-screen p-4 bg-white border-r-[1px] flex flex-col justify-between">
         <div className="flex flex-col items-center">
           <Link href="/newui">
-            <div className="bg-gray-900 text-white p-1 rounded-lg inline-block">
-             <img src="https://cdn.blocksscan.io/tokens/img/xdc.png" height={32} width={32} alt="logo" />
+            <div className=" text-white p-1 rounded-lg inline-block">
+             <img src={`https://cdn.blocksscan.io/tokens/img/${logo}.png`} height={32} width={32} alt="logo"  />
             </div>
           </Link>
           <span className="border-b-[1px] border-gray-200 w-full p-2"></span>

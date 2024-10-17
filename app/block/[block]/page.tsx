@@ -148,7 +148,7 @@ const BlockPage: React.FC<PageProps> = ({ params }) => {
                       blockData.baseFeePerGas.mul(blockData.gasUsed)
                     )
                   : "0"}{" "}
-                ETH
+                XDC
               </p>
               <p
                 className="py-3 text-[#357BAD] cursor-pointer"

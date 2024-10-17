@@ -20,7 +20,7 @@ const config = {
     extend: {
       fontFamily: {
         inter: ["Inter", "sans-serif"],
-        chivo: ["Chivo", "sans-serif"],
+        chivo: ["Fira Code", "sans-serif"],
         mplus:["M+PLUS+2","sans-serif"]
       },
       colors: {
