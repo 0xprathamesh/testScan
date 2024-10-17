@@ -1,13 +1,16 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import { ConnectButton } from "thirdweb/react";
 import { client } from "@/utils/client";
 import { IoIosArrowForward } from "react-icons/io";
 import SearchBar from "../elements/Search";
+import { usePathname } from "next/navigation";
 const Navbar: React.FC = () => {
   const [network, setNetwork] = useState("Mainnet");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const name = process.env.NEXT_PUBLIC_PROJECT_NAME;
+  const pathname = usePathname();
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
@@ -16,13 +19,19 @@ const Navbar: React.FC = () => {
     setNetwork(selectedNetwork);
     setDropdownOpen(false);
   };
-  const name = process.env.NEXT_PUBLIC_PROJECT_NAME
+
+  // Check if the current route starts with '/newui'
+  // if (pathname.startsWith("/newui")) {
+  //   return null;
+  // }
+  const explorername = process.env.NEXT_PUBLIC_EXPLORER_NAME;
   return (
     <div className="bg-white fixed top-0 left-20 right-0 border-b border-gray-200 z-10 backdrop-blur-md">
       <div className="flex justify-between items-center px-4 py-2">
         <div className="flex items-center gap-4">
-          <p className="font-semibold font-inter text-lg">{name}</p>
+          <p className="font-semibold font-inter text-lg">{explorername}</p>
           <div className="relative">
+            
             <button
               onClick={toggleDropdown}
               className="bg-gray-800 px-3 py-1 rounded-md text-sm flex items-center text-white space-x-2 font-inter"
@@ -47,7 +56,8 @@ const Navbar: React.FC = () => {
             )}
           </div>
         </div>
-<SearchBar></SearchBar>
+        {pathname !== "/newui" ? <SearchBar /> : null}
+
         <div className="flex items-center space-x-4">
           <div className="relative">
             <ConnectButton client={client} theme={"light"} />

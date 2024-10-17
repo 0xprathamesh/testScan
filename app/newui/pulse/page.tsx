@@ -14,7 +14,8 @@ import {
 } from "@/components/newui/utils/apiroutes";
 import ChartComponent from "@/components/newui/ChartComponent";
 import { formatNumber } from "@/lib/helpers";
-
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 interface BlockData {
   number: string;
   timestamp: string;
@@ -170,8 +171,7 @@ const DashboardPage = () => {
     }
 
     const { totalTransactions, latestBlockNumber } = blockchainData;
-
-
+    const percentage = 5.52;
     return (
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
         <div className="bg-black text-white rounded-3xl p-4">
@@ -194,9 +194,11 @@ const DashboardPage = () => {
               />
             </svg>
           </div>
-          <h2 className="text-3xl font-semibold ">{formatNumber(totalTransactions)}</h2>
-          <div className="h-8 relative mb-4">
-    <ChartComponent /> 
+          <h2 className="text-3xl font-semibold ">
+            {formatNumber(totalTransactions)}
+          </h2>
+          <div className="max-h-8  mb-4">
+            <ChartComponent />
           </div>
           {/* <p className="text-md font-light text-[#cbd5e1]">
             On average 8.31 Transactions are processed every second
@@ -213,11 +215,24 @@ const DashboardPage = () => {
           </p>
           <div className="bg-gray-800 p-3 rounded-md">
             <div className="flex items-center">
-              <div className="ml-2">
-                <p className="text-lg font-bold">5.72%</p>
-                <p className="text-xs text-gray-400">
-                  Network utilization in last 50 blocks
-                </p>
+              <div className="ml-2 flex items-center">
+                <div className="w-12 h-12 mr-2">
+                  <CircularProgressbar
+                    value={percentage}
+                    styles={buildStyles({
+                      textSize: "32px",
+                      pathColor: `#4caf50`, // Progress bar color
+                      textColor: "#fff", // Text color
+                      trailColor: "#d6d6d6", // Background of the progress bar
+                    })}
+                  />
+                </div>
+                <div>
+                  <p className="text-lg font-bold">5.72%</p>
+                  <p className="text-xs text-gray-400">
+                    Network utilization in last 50 blocks
+                  </p>
+                </div>
               </div>
             </div>
           </div>
