@@ -8,7 +8,6 @@ import { HiOutlineArrowSmDown, HiOutlineArrowSmUp } from "react-icons/hi";
 import DidYouKnow from "@/components/newui/Didyouknow";
 import { getCoinData } from "@/components/newui/utils/coingeko";
 import Image from "next/image";
-
 import { MdKeyboardArrowRight, MdOutlineArrowOutward } from "react-icons/md";
 import Link from "next/link";
 import {
@@ -22,6 +21,7 @@ import { formatNumber } from "@/lib/helpers";
 import { FaRegUserCircle } from "react-icons/fa";
 import Contracts from "@/components/newui/Contracts";
 import ChartComponent from "@/components/newui/ChartComponent";
+import Skeleton from "@/components/newui/Skeleton";
 interface TopAccount {
   hash: string;
   coin_balance: string;
@@ -120,10 +120,32 @@ const SpyDashboard: React.FC = () => {
         break;
     }
   };
-  if (!blockchainData) {
+  // if (!blockchainData) {
+  //   return (
+  //     <Layout>
+  //       <div className="opacity-0"></div>{" "}
+  //     </Layout>
+  //   );
+  // }
+  if (!blockchainData || !accounts || !coinData) {
     return (
       <Layout>
-        <div className="opacity-0"></div>{" "}
+        <div className="flex flex-col md:flex-row md:w-full p-6 justify-between w-full mb-40">
+          <div className="w-full md:w-1/2" ref={stickyRef}>
+            <Skeleton width="100%" height="12rem" className="mb-6" />
+            <Skeleton width="100%" height="10rem" className="mb-6" />
+            <Skeleton width="100%" height="20rem" className="mb-6" />
+          </div>
+
+          <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-10 md:mt-0 md:ml-8">
+            <div className="col-span-2">
+              <Skeleton width="100%" height="12rem" className="mb-6" />
+            </div>
+            <Skeleton width="100%" height="12rem" className="mb-6" />
+            <Skeleton width="100%" height="10rem" className="mb-6" />
+            <Skeleton width="100%" height="20rem" className="mb-6" />
+          </div>
+        </div>
       </Layout>
     );
   }
