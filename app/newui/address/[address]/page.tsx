@@ -65,7 +65,7 @@ const Address: React.FC<PageProps> = ({ params }) => {
           const ethPrice = 2450.54;
 
           const userDetails: UserDetails = {
-            name: `Pioneer 79245`,
+            name: `79245`,
             address: params.address,
             avatar: `/api/placeholder/32/32?text=${params.address.slice(0, 2)}`,
             netWorth: ethBalance * ethPrice,
@@ -181,7 +181,7 @@ const Address: React.FC<PageProps> = ({ params }) => {
             />
             <div className="mt-6">
               <h2 className="text-xl font-bold font-inter">
-                {userDetails?.name}
+                Pioneer{userDetails?.name}<span className="text-xs font-chivo">:TODO</span>
               </h2>
               <p className="text-sm font-light font-inter flex items-center text-[#8a98ad]">
                 {parseAddress(userDetails?.address ?? "")}

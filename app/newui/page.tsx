@@ -10,6 +10,9 @@ import { getCoinData } from "@/components/newui/utils/coingeko";
 import Image from "next/image";
 import { MdKeyboardArrowRight, MdOutlineArrowOutward } from "react-icons/md";
 import Link from "next/link";
+import { PiCubeThin } from "react-icons/pi";
+import { PiAddressBookThin } from "react-icons/pi";
+
 import {
   fetchTopAccounts,
   getBlockchainData,
@@ -233,8 +236,8 @@ const SpyDashboard: React.FC = () => {
             <h3 className="text-sm text-gray-400 mb-2">
               Single transaction costs just around
             </h3>
-            <p className="text-2xl font-bold">$0.00099</p>
-            <p className="text-gray-400">(0.02 Gwei)</p>
+            <p className="text-2xl font-bold">$0.00099 <span className="text-xs font-chivo">:TODO</span></p>
+            <p className="text-gray-400">(0.02 Gwei) <span className="text-xs font-chivo">:TODO</span></p>
             <p className="mt-4 flex items-center text-purple-400 text-sm font-chivo font-light">
               <span className=" mr-2 text-xl ">💡</span>
               For a single 💰, you can savor 3030 transactions on XDC, while
@@ -290,7 +293,7 @@ const SpyDashboard: React.FC = () => {
                   </p>
                 </Link>
               </div>
-              <HiOutlineArrowSmDown className="text-[96px] text-green-500 font-bold" />
+              <PiAddressBookThin className="w-12 h-12 mt-8 text-green-500 font-bold" />
             </div>
             <div className="flex justify-between bg-black p-6 rounded-ee-3xl rounded-es-3xl">
               <div>
@@ -301,7 +304,7 @@ const SpyDashboard: React.FC = () => {
                   </p>{" "}
                 </Link>
               </div>
-              <HiOutlineArrowSmUp className="text-[96px] text-green-500 font-bold" />
+              <PiCubeThin className="w-12 h-12 mt-8 text-green-500 font-bold" />
             </div>
           </div>
 
@@ -315,7 +318,7 @@ const SpyDashboard: React.FC = () => {
             <p className="text-2xl font-bold text-black">
               {formatNumber(data.totalTransactions)}
             </p>
-            <p className="text-gray-400">(0.02 Gwei)</p>
+            <p className="text-gray-400">(0.02 Gwei) <span className="text-xs font-chivo">:TODO</span></p>
             {/* <div className="h-16 relative mb-2">
               <svg className="w-full h-full">
                 <path
@@ -358,7 +361,7 @@ const SpyDashboard: React.FC = () => {
                   </p>
                   <p className="text-sm text-gray-400">
                     <span className={`text-sm mt-1`}>
-                      $0.01 (0.000000885 Gwei)
+                      $0.01 (0.000000885 Gwei) <span className="text-xs font-chivo">:TODO</span>
                     </span>
                   </p>
                 </div>
@@ -386,11 +389,11 @@ const SpyDashboard: React.FC = () => {
                 </Link>
                 <div>
                   <p className="text-sm font-chivo  font-extralight flex items-center gap-1">
-                    <PiArrowElbowDownRightFill /> 41 Transactions
+                    <PiArrowElbowDownRightFill /> 41 Transactions  <span className="text-xs font-chivo">:TODO</span>
                   </p>
                   <p className="text-sm text-gray-400">
                     <span className={`text-sm mt-1`}>
-                      $0.001 (0.000000885 Gwei)
+                      $0.001 (0.000000885 Gwei)  <span className="text-xs font-chivo">:TODO</span>
                     </span>
                   </p>
                 </div>
@@ -460,9 +463,21 @@ interface AccountItemProps {
   balance: string;
 }
 const formatCoinBalance = (balance: string): string => {
-  const convertedBalance = BigInt(balance) / BigInt(10 ** 18); // Assuming 18 decimals for XDC
-  return convertedBalance.toLocaleString() + " XDC";
+  const convertedBalance = BigInt(balance) / BigInt(10 ** 18); // Convert balance to XDC by dividing by 10^18
+  
+  if (convertedBalance >= BigInt(1e12)) {
+    return (Number(convertedBalance) / 1e12).toFixed(2) + " T XDC"; // Trillions
+  } else if (convertedBalance >= BigInt(1e9)) {
+    return (Number(convertedBalance) / 1e9).toFixed(2) + " B XDC"; // Billions
+  } else if (convertedBalance >= BigInt(1e6)) {
+    return (Number(convertedBalance) / 1e6).toFixed(2) + " M XDC"; // Millions
+  } else if (convertedBalance >= BigInt(1e3)) {
+    return (Number(convertedBalance) / 1e3).toFixed(2) + " K XDC"; // Thousands
+  }
+
+  return convertedBalance.toLocaleString() + " XDC"; // For smaller values, show as is with no decimals
 };
+
 
 const AccountItem: React.FC<AccountItemProps> = ({
   rank,

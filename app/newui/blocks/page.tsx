@@ -11,7 +11,6 @@ import {
 } from "@/components/newui/utils/apiroutes";
 import Link from "next/link";
 
-
 const BlocksPage: React.FC = () => {
   const [latestBlocks, setLatestBlocks] = useState<any[]>([]);
   const [provider, setProvider] = useState<any>(null);
@@ -37,7 +36,7 @@ const BlocksPage: React.FC = () => {
     try {
       let blocks;
 
-      if (process.env.NEXT_PUBLIC_FETCH_API === "true") {
+      if (process.env.NEXT_PUBLIC_FETCH_API === 'true') {
         const response = await blockService.blocks(`?limit=50&page=1`);
         blocks = response.items.map((item: any) => ({
           number: item.number,
@@ -79,11 +78,9 @@ const BlocksPage: React.FC = () => {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto">
-
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold">Blocks</h1>
         </div>
-
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-gray-800 rounded-lg p-6 flex items-center justify-between">
@@ -111,7 +108,6 @@ const BlocksPage: React.FC = () => {
           </div>
         </div>
 
-
         <div className="bg-white rounded-lg shadow mb-6">
           <div className="p-4">
             <div className="relative">
@@ -123,7 +119,6 @@ const BlocksPage: React.FC = () => {
               <FiSearch className="absolute left-3 top-3 text-gray-400" />
             </div>
           </div>
-
 
           <table className="w-full">
             <thead>
@@ -147,13 +142,16 @@ const BlocksPage: React.FC = () => {
                 <tr key={block.number} className="border-t">
                   <td className="px-6 py-4">
                     <Link href={`/newui/block/${block.number}`}>
-                    {block.number}</Link></td>
+                      {block.number}
+                    </Link>
+                  </td>
                   <td className="px-6 py-4">{block.size}</td>
                   <td className="px-6 py-4">{block.transactions}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                    <Link href={`/newui/block/${block.number}`}>
-                      {parseAddress(block.miner)}</Link>
+                      <Link href={`/newui/address/${block.miner}`}>
+                        {parseAddress(block.miner)}
+                      </Link>
                       <FiCopy
                         className="ml-2 text-gray-400 cursor-pointer"
                         onClick={() =>
@@ -169,7 +167,6 @@ const BlocksPage: React.FC = () => {
             </tbody>
           </table>
         </div>
-
 
         <div className="flex justify-between items-center">
           <span className="text-gray-500">

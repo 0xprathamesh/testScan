@@ -117,25 +117,25 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
       {/* Contract Age Card */}
       <div className="bg-gray-900 text-white rounded-xl p-6">
         <h3 className="text-lg font-semibold mb-4">Contract age</h3>
-        <p className="text-2xl font-bold text-blue-400 mb-4">1 year</p>
+        <p className="text-2xl font-bold text-blue-400 mb-4">1 year <span className="text-xs font-chivo">:TODO</span></p>
         <div className="space-y-2">
           <div className="flex justify-between">
             <span className="text-sm text-gray-400">Through txn</span>
             <span className="text-sm flex items-center">
-              {parseAddress(contract.txn)}
+              {parseAddress(contract.txn)} <span className="text-xs font-chivo">:TODO</span>
               <ExternalLink className="w-3 h-3 ml-1" />
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm text-gray-400">Created by</span>
             <span className="text-sm flex items-center">
-              {parseAddress(contract.creator)}
+              {parseAddress(contract.creator)} <span className="text-xs font-chivo">:TODO</span>
               <ExternalLink className="w-3 h-3 ml-1" />
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm text-gray-400">Date</span>
-            <span className="text-sm">11/09/2023</span>
+            <span className="text-sm">11/09/2023 <span className="text-xs font-chivo">:TODO</span></span>
           </div>
         </div>
         <p className="text-xs text-gray-500 mt-4">
@@ -146,24 +146,24 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
       {/* Health Card */}
       <div className="bg-gray-900 text-white rounded-xl p-6">
         <h3 className="text-lg font-semibold mb-4">Health</h3>
-        <p className="text-2xl font-bold text-green-400 mb-4">Active</p>
+        <p className="text-2xl font-bold text-green-400 mb-4">Active <span className="text-xs font-chivo">:TODO</span></p>
         <div className="space-y-2">
           <div className="flex justify-between">
             <span className="text-sm text-gray-400">Last transaction</span>
             <span className="text-sm flex items-center">
-              0x594D...0a4C
+              0x594D...0a4C <span className="text-xs font-chivo">:TODO</span>
               <ExternalLink className="w-3 h-3 ml-1" />
             </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-400">Last Block</span>
             <span className="text-sm bg-gray-800 px-2 py-1 rounded">
-              3344406
+              3344406 <span className="text-xs font-chivo">:TODO</span>
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm text-gray-400">Date</span>
-            <span className="text-sm">30/09/2024</span>
+            <span className="text-sm">30/09/2024 <span className="text-xs font-chivo">:TODO</span></span>
           </div>
         </div>
       </div>

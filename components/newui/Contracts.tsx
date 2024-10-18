@@ -4,6 +4,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { fetchContracts } from "./utils/xdcrpc";
 
 import Link from "next/link";
+import { HelpCircle } from "lucide-react";
 const Contracts = () => {
   const [data, setData] = useState({
     smart_contracts: "",
@@ -30,7 +31,7 @@ const Contracts = () => {
   return (
     <div className="bg-white p-6 rounded-3xl col-span-2 md:col-span-2 flex items-center justify-between">
       <div className="flex-1">
-        <div className="text-sm text-gray-500 mb-1">Total contracts built on chain</div>
+        <div className="text-sm text-gray-500 mb-1 flex items-center">Total contracts built on chain <HelpCircle className="h-4 w-4 ml-2"/></div>
         <div className="flex items-baseline">
           <span className="text-2xl font-semibold mr-2">{data.smart_contracts}</span>
           <span className="text-xs text-green-500 bg-green-100 px-1 py-0.5 rounded">
@@ -38,9 +39,9 @@ const Contracts = () => {
           </span>
         </div>
       </div>
-      <div className="w-px bg-gray-200 h-12 mx-4"></div>
-      <div className="flex-1">
-        <div className="text-sm text-gray-500 mb-1">Verified</div>
+      <div className="w-px bg-gray-200 h-12 mx-8 "></div>
+      <div className="flex-1 ml-8">
+        <div className="text-sm text-gray-500 mb-1 flex items-center">Verified <HelpCircle className="h-4 w-4 ml-2"/></div>
         <div className="flex items-baseline">
           <span className="text-2xl font-semibold mr-2">{data.verified_smart_contracts}</span>
           <span className="text-xs text-green-500 bg-green-100 px-1 py-0.5 rounded">
