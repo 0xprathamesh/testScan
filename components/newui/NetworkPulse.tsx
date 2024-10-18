@@ -22,6 +22,7 @@ interface Block {
   timestamp: number;
   transactions: any[];
 }
+const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL;
 
 const parseAddress = (address: string) =>
   `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -83,7 +84,7 @@ const TransactionBox: React.FC<Transaction & { isFirst: boolean }> = ({
           </p>
         </div>
         <p className="text-xs mt-2">
-          Value: {ethers.utils.formatEther(value)} ETH
+          Value: {ethers.utils.formatEther(value)} {currency}
         </p>
         <p className="text-xs mt-2">{formatTimeAgo(timestamp)}</p>
       </>

@@ -228,7 +228,7 @@ const DashboardPage = () => {
                   />
                 </div>
                 <div>
-                  <p className="text-lg font-bold">5.72%</p>
+                  <p className="text-lg font-bold">5.72%  <span className="text-xs font-chivo">:TODO</span></p>
                   <p className="text-xs text-gray-400">
                     Network utilization in last 50 blocks
                   </p>

@@ -11,7 +11,7 @@ import { addressService } from "@/components/newui/utils/apiroutes";
 import { FileText, User } from "lucide-react";
 import Contracts from "@/components/newui/Contracts";
 import { ethers } from "ethers";
-
+const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL
 const VerifiedContractsPage = () => {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -143,7 +143,7 @@ const VerifiedContractsPage = () => {
                   </div>
                 </td>
                 <td className="font-bold">
-                  {formatBalance(contract.coin_balance || "0")} ETH
+                  {formatBalance(contract.coin_balance || "0")} {currency}
                   <br />
                   <span className="text-sm font-light text-gray-500">
                     ${formatUsdValue(contract.coin_balance || "0")}
