@@ -32,6 +32,12 @@ interface TopAccount {
 const parseAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
+const shortenHash = (hash: string) => {
+  if (hash.length > 10) {
+    return `${hash.slice(0, 6)}...${hash.slice(-4)}`;
+  }
+  return hash;
+};
 const SpyDashboard: React.FC = () => {
   const [blockchainData, setBlockchainData] = useState<any>(null);
   const [isSticky, setIsSticky] = useState(false);
@@ -170,7 +176,7 @@ const SpyDashboard: React.FC = () => {
   return (
     <Layout>
       <div className="flex flex-col md:flex-row md:w-full p-6 justify-between w-full mb-40">
-        <div className="w-full md:w-1/2" ref={stickyRef}>
+        {/* <div className="w-full md:w-1/2" >
           <div
             className={`transition-all duration-300 ease-in-out ${
               isSticky ? "sticky top-0 pt-4" : ""
@@ -229,8 +235,74 @@ const SpyDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
+        <div className="w-full md:w-1/2">
+      <div
+        className={`transition-all duration-300 ease-in-out ${
+          isSticky ? "sticky top-0 pt-4" : ""
+        }`}
+      >
+        <h1 className="text-3xl font-bold mb-6 font-mplus">
+          What are you looking for?
+        </h1>
+        <form>
+          <div className="relative">
+            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <GoSearch className="w-5 h-5 mb-2 text-gray-500" />
+            </div>
+            <input
+              type="search"
+              id="default-search"
+              value={input}
+              onChange={handleChange}
+              className="w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-md mb-2 outline-none placeholder:font-chivo"
+              placeholder="Search transactions/blocks/address/tokens"
+              required
+            />
+            {suggestions.length > 0 && (
+              <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded shadow-md font-chivo">
+                {suggestions.map((suggestion, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    {/* Display shortened hash for addresses and transaction hashes */}
+                    {suggestion.startsWith("0x")
+                      ? shortenHash(suggestion)
+                      : suggestion}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </form>
 
+        <div className="mt-4">
+          <h2 className="text-lg font-normal font-inter mb-2">
+            Recent searches:
+          </h2>
+          <div className="">
+            {recentSearches.length > 0 ? (
+              recentSearches.map((search, index) => (
+                <span
+                  key={index}
+                  className="text-md text-gray-600 bg-purple-100 px-2 py-1 rounded-xl leading flex w-48 text-center items-center mb-2"
+                >
+                  {/* Use shortenHash function for recent searches as well */}
+                  {/* <Copyable text={search} copyText={search} className="">
+                   
+                  </Copyable> */}
+                   {search.startsWith("0x") ? shortenHash(search) : search}
+                </span>
+              ))
+            ) : (
+              <p className="text-gray-500">No recent searches</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
         <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-10 md:mt-0 md:ml-8">
           <div className="bg-black text-white p-6 rounded-3xl col-span-1 md:col-span-2 ">
             <h3 className="text-sm text-gray-400 mb-2">
@@ -372,7 +444,7 @@ const SpyDashboard: React.FC = () => {
           <div className="bg-black p-6 rounded-3xl">
             <h3 className="mb-2 text-sm text-gray-400 flex items-center justify-between">
               Latest Blocks
-              <Link href={`/newui/txns`} className="">
+              <Link href={`/newui/blocks`} className="">
                 <MdKeyboardArrowRight className="h-6 w-6 " />
               </Link>
             </h3>
@@ -431,7 +503,7 @@ const SpyDashboard: React.FC = () => {
           <div className="bg-white p-6 rounded-3xl">
             <h3 className="mb-2 text-sm text-gray-400 flex items-center justify-between">
               Most Valued Accounts on Chain
-              <Link href={`/newui/txns`} className="">
+              <Link href={`/newui/accounts`} className="">
                 <MdKeyboardArrowRight className="h-6 w-6 " />
               </Link>
             </h3>

@@ -16,7 +16,7 @@ const VerifiedContractsPage = () => {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [ethToUsdRate, setEthToUsdRate] = useState<number>(0); // State for ETH to USD rate
+  const [ethToUsdRate, setEthToUsdRate] = useState<number>(0); 
 
   const fetchData = async () => {
     try {
@@ -31,7 +31,7 @@ const VerifiedContractsPage = () => {
 
   const fetchEthToUsdRate = async () => {
     try {
-      // Fetching ETH to USD conversion rate from a public API
+    
       const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd");
       const data = await response.json();
       setEthToUsdRate(data.ethereum.usd); // Set the ETH to USD rate

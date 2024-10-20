@@ -49,7 +49,7 @@ const Contracts = () => {
           </span>
         </div>
       </div>
-   <Link href={`/newui/accounts`}>
+   <Link href={`/newui/verified-contracts`}>
       <MdKeyboardArrowRight className="text-gray-400 text-2xl ml-4" /></Link>
     </div>
   );

@@ -6,9 +6,7 @@ import OpenAI from "openai";
 //     dangerouslyAllowBrowser: true,
 // });
 
-let api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_MAINNET_API_URL, 
-  });
+let api = axios.create();
 const chartApi = axios.create();
 const csvApi = axios.create();
 const contractApi = axios.create();
@@ -28,12 +26,12 @@ const articleInstance = axios.create({
 });
 const envAPI = process.env.NEXT_PUBLIC_MAINNET_API_URL;
 // api.defaults.baseURL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_SOCKET_URL : 'https://api.xdcscan.io';
-// api.defaults.baseURL = envAPI;
-// contractApi.defaults.baseURL = envAPI;
-export const setAPIBaseURL = (baseURL: string) => {
-  api.defaults.baseURL = baseURL;
-  console.log(`API base URL set to: ${baseURL}`);
-};
+api.defaults.baseURL = envAPI;
+contractApi.defaults.baseURL = envAPI;
+// export const setAPIBaseURL = (baseURL: string) => {
+//   api.defaults.baseURL = baseURL;
+//   console.log(`API base URL set to: ${baseURL}`);
+// };
 // chartApi.defaults.baseURL = process.env.REACT_APP_CHART_URL || process.env.REACT_APP_SOCKET_URL || api.defaults.baseURL;
 // csvApi.defaults.baseURL = process.env.REACT_APP_CSV_URL || process.env.REACT_APP_SOCKET_URL || api.defaults.baseURL;
 // contractApi.defaults.baseURL = process.env.REACT_APP_SMART_CONTRACT_URL1 || process.env.REACT_APP_SOCKET_URL1 || api.defaults.baseURL;

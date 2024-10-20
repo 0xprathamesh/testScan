@@ -124,8 +124,10 @@ const Activity: React.FC<ActivityProps> = ({ address }) => {
               <div>
                 <p className="font-medium">{tx.method}</p>
                 <p className="text-sm font-semibold text-[#06afe8] flex items-center">
-                <Link href={`/newui/tx/${tx.from}`}>{parseAddress(tx.hash)}</Link>
-                
+                  <Link href={`/newui/tx/${tx.hash}`}>
+                    {parseAddress(tx.hash)}
+                  </Link>
+
                   <FiCopy
                     className="ml-2 text-gray-400 cursor-pointer"
                     onClick={() => navigator.clipboard.writeText(tx.hash)}
@@ -133,31 +135,33 @@ const Activity: React.FC<ActivityProps> = ({ address }) => {
                 </p>
               </div>
             </div>
-            
-   <div className="flex items-center justify-between gap-x-4 ">
-<div className="text-blue text-sm font-light leading font-chivo flex items-center">
-  <Link href={`/newui/tx/${tx.from}`}>
-  {parseAddress(tx.from)}</Link>
-  <FiCopy
-    className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
-    onClick={() => navigator.clipboard.writeText(tx.from)}
-  />
-</div>
-<FiArrowRight className="h-4 w-4" />
-              <div className="text-blue text-sm font-light leading font-chivo flex items-center">
-              <Link href={`/newui/tx/${tx.from}`}>  {parseAddress(tx.to)}</Link>
-              
 
-  <FiCopy
-    className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
-    onClick={() => navigator.clipboard.writeText(tx.to)}
-  />
-</div>
-</div> 
+            <div className="flex items-center justify-between gap-x-4 ">
+              <div className="text-blue text-sm font-light leading font-chivo flex items-center">
+                <Link href={`/newui/address/${tx.from}`}>
+                  {parseAddress(tx.from)}
+                </Link>
+                <FiCopy
+                  className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+                  onClick={() => navigator.clipboard.writeText(tx.hash)}
+                />
+              </div>
+              <FiArrowRight className="h-4 w-4" />
+              <div className="text-blue text-sm font-light leading font-chivo flex items-center">
+                <Link href={`/newui/address/${tx.to}`}>
+                  {" "}
+                  {parseAddress(tx.to)}
+                </Link>
+
+                <FiCopy
+                  className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+                  onClick={() => navigator.clipboard.writeText(tx.to)}
+                />
+              </div>
+            </div>
 
             <div className="flex items-center space-x-2">
               <div className="text-right">
-               
                 <p className="text-sm text-gray-500">{tx.value} XDC</p>
               </div>
             </div>
