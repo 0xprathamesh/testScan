@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Layout from "@/components/newui/Layout";
+
 import { ArrowRight, Check, X } from "lucide-react";
 import { FiCopy } from "react-icons/fi";
 import { ethers } from "ethers";
@@ -12,12 +12,12 @@ const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL;
 const VerifiedContracts = () => {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [ethPrice, setEthPrice] = useState<number>(0); // State for Ether to USD conversion rate
+  const [ethPrice, setEthPrice] = useState<number>(0);
 
   const fetchData = async () => {
     try {
       const response = await addressService.verifiedAddresses(`/`);
-      setContracts(response.items.slice(0, 5));
+      setContracts(response.items);
     } catch (error) {
       console.log(error);
     } finally {
@@ -27,7 +27,9 @@ const VerifiedContracts = () => {
 
   const fetchEthPrice = async () => {
     try {
-      const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd");
+      const response = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+      );
       const data = await response.json();
       setEthPrice(data.ethereum.usd);
     } catch (error) {
@@ -43,23 +45,26 @@ const VerifiedContracts = () => {
   if (loading) {
     return <Skeleton />;
   }
-
+  if (!contracts) {
+    return null;
+  }
   const formatBalance = (weiBalance: string) => {
-    // Convert from wei to Ether
     return ethers.utils.formatEther(weiBalance);
   };
 
   const formatUsdValue = (ethBalance: string) => {
-    // Calculate the USD value based on the Ether balance and Ether-to-USD price
     const usdValue = parseFloat(ethBalance) * ethPrice;
-    return usdValue.toFixed(2); // Format to two decimal places
+    return usdValue.toFixed(2);
   };
 
   return (
     <div className="bg-white rounded-3xl border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl font-semibold">Verified Contracts</h2>
-        <a href="/newui/verified-contracts" className="text-blue hover:underline">
+        <a
+          href="/newui/verified-contracts"
+          className="text-blue hover:underline"
+        >
           View All
         </a>
       </div>
@@ -79,7 +84,8 @@ const VerifiedContracts = () => {
             <tr key={index} className="border-t">
               <td className="py-3">
                 <div className="font-bold text-black text-sm flex item-center">
-                  {contract.name || "Unknown Contract"} <FileText className="h-3 w-3 mt-1 text-gray-400 ml-2"/>
+                  {contract.name || "Unknown Contract"}{" "}
+                  <FileText className="h-3 w-3 mt-1 text-gray-400 ml-2" />
                 </div>
                 <div className="text-sm text-[#06afe8] font-semibold leading-2 flex items-center">
                   <Link href={`/newui/address/${contract.address.hash}`}>

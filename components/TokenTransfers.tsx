@@ -136,7 +136,7 @@ const TokenTransfers: React.FC<TokenTransfersProps> = ({ address }) => {
 
             <div className="flex items-center justify-between gap-x-4">
               <div className="text-blue text-sm font-light leading font-chivo flex items-center">
-              <Link href={`/newui/tx/${transfer.from}`}>
+              <Link href={`/newui/address/${transfer.from}`}>
                 {parseAddress(transfer.from)}</Link>
                 <FiCopy
                   className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
@@ -145,7 +145,7 @@ const TokenTransfers: React.FC<TokenTransfersProps> = ({ address }) => {
               </div>
               <FiArrowRight className="h-4 w-4" />
               <div className="text-blue text-sm font-light leading font-chivo flex items-center">
-              <Link href={`/newui/tx/${transfer.to}`}>
+              <Link href={`/newui/address/${transfer.to}`}>
                 {parseAddress(transfer.to)}</Link>
                 <FiCopy
                   className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
