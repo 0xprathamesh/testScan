@@ -11,12 +11,12 @@ import { addressService } from "@/components/newui/utils/apiroutes";
 import { FileText, User } from "lucide-react";
 import Contracts from "@/components/newui/Contracts";
 import { ethers } from "ethers";
-const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL
+const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL;
 const VerifiedContractsPage = () => {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [ethToUsdRate, setEthToUsdRate] = useState<number>(0); 
+  const [ethToUsdRate, setEthToUsdRate] = useState<number>(0);
 
   const fetchData = async () => {
     try {
@@ -31,12 +31,36 @@ const VerifiedContractsPage = () => {
 
   const fetchEthToUsdRate = async () => {
     try {
-    
-      const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd");
+      const response = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+      );
       const data = await response.json();
       setEthToUsdRate(data.ethereum.usd); // Set the ETH to USD rate
     } catch (error) {
       console.log("Error fetching ETH to USD rate:", error);
+    }
+  };
+
+  const getTimeAgo = (verifiedAt: string) => {
+    const verifiedDate = new Date(verifiedAt);
+    const currentDate = new Date();
+
+    const timeDiff = Math.floor(
+      (currentDate.getTime() - verifiedDate.getTime()) / 1000
+    ); // Difference in seconds
+
+    const minutes = Math.floor(timeDiff / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""} ago`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    } else {
+      return `Just now`;
     }
   };
 
@@ -97,7 +121,7 @@ const VerifiedContractsPage = () => {
         </div>
       </div>
       <div className="w-[60%]">
-        <Contracts/>
+        <Contracts />
       </div>
 
       {/* Search Bar */}
@@ -128,7 +152,8 @@ const VerifiedContractsPage = () => {
               <tr key={index} className="border-t">
                 <td className="py-3">
                   <div className="font-bold text-black text-sm flex items-center ">
-                    {contract.name || "Unknown Contract"} <FileText className="h-3 w-3 mt-1 text-gray-400 ml-2"/>
+                    {contract.name || "Unknown Contract"}{" "}
+                    <FileText className="h-3 w-3 mt-1 text-gray-400 ml-2" />
                   </div>
                   <div className="text-sm text-[#06afe8] font-semibold leading-2 flex items-center">
                     <Link href={`/newui/address/${contract.address.hash}`}>
@@ -184,9 +209,12 @@ const VerifiedContractsPage = () => {
                     )}
                   </div>
                 </td>
-                <td>
+                <td className="">
                   <span className="bg-green-500 text-white px-2 py-1 rounded-md text-xs font-light">
                     Success
+                  </span>
+                  <span className="text-xs ml-2">
+                    {getTimeAgo(contract.verified_at)}
                   </span>
                 </td>
               </tr>

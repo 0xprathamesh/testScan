@@ -16,8 +16,7 @@ import { LuCode2 } from "react-icons/lu";
 import { transactionService } from "./utils/apiroutes";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import ReactTooltip from "react-tooltip";
-
+import { Tooltip } from "react-tooltip";
 interface TxData {
   hash: string;
   status: boolean;
@@ -130,7 +129,6 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
           </div>
         </div>
       </div>
-      
     </div>
   );
 };
@@ -350,10 +348,16 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <span className="mr-2 text-sm ">Located in</span>
-              <HelpCircle className="h-4 w-4" />
+              <HelpCircle
+                className="h-4 w-4"
+                data-tooltip-id="my-tooltip"
+                data-tooltip-content="Block Number "
+                data-tooltip-place="top"
+              />
+              <Tooltip id="my-tooltip" />
             </div>
             <Link href={`/newui/block/${txData.blockNumber}`}>
-              <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading" >
+              <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
                 {txData.blockNumber}
               </div>
             </Link>
@@ -362,7 +366,13 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <span className="mr-2 text-sm">From</span>
-              <HelpCircle className="h-4 w-4" />
+              <HelpCircle
+                className="h-4 w-4"
+                data-tooltip-id="sender-tooltip"
+                data-tooltip-content="Sender "
+                data-tooltip-place="bottom"
+              />
+              <Tooltip id="sender-tooltip" />
             </div>
             <Link href={`/newui/address/${txData.from}`}>
               <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border border-gray-400 leading">
@@ -374,7 +384,13 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <span className="mr-2 text-sm">To</span>
-              <HelpCircle className="h-4 w-4" />
+              <HelpCircle
+                className="h-4 w-4"
+                data-tooltip-id="reciever-tooltip"
+                data-tooltip-content="Reciever "
+                data-tooltip-place="bottom"
+              />
+              <Tooltip id="reciever-tooltip" />
             </div>
             <Link href={`/newui/address/${txData.to}`}>
               <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
@@ -414,8 +430,6 @@ const TransactionDetailsCard: React.FC<TransactionDetailsProps> = ({
           </div>
         </div>
       </div>
-
     </div>
-
   );
 };

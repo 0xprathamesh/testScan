@@ -37,6 +37,29 @@ const VerifiedContracts = () => {
     }
   };
 
+  const getTimeAgo = (verifiedAt: string) => {
+    const verifiedDate = new Date(verifiedAt);
+    const currentDate = new Date();
+
+    const timeDiff = Math.floor(
+      (currentDate.getTime() - verifiedDate.getTime()) / 1000
+    ); // Difference in seconds
+
+    const minutes = Math.floor(timeDiff / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""} ago`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    } else {
+      return `Just now`;
+    }
+  };
+
   useEffect(() => {
     fetchData();
     fetchEthPrice();
@@ -49,12 +72,13 @@ const VerifiedContracts = () => {
     return null;
   }
   const formatBalance = (weiBalance: string) => {
-    return ethers.utils.formatEther(weiBalance);
+    const formattedBalance = ethers.utils.formatEther(weiBalance);
+    return Math.floor(Number(formattedBalance)); // Convert to a number and remove decimals
   };
 
   const formatUsdValue = (ethBalance: string) => {
     const usdValue = parseFloat(ethBalance) * ethPrice;
-    return usdValue.toFixed(2);
+    return usdValue.toFixed(1);
   };
 
   return (
@@ -103,7 +127,10 @@ const VerifiedContracts = () => {
                 {formatBalance(contract.coin_balance || "0")} {currency}
                 <br />
                 <span className="text-sm font-light text-gray-500">
-                  ${formatUsdValue(formatBalance(contract.coin_balance || "0"))}
+                  $
+                  {formatUsdValue(
+                    String(formatBalance(contract.coin_balance || "0"))
+                  )}
                 </span>
               </td>
               <td>
@@ -115,12 +142,12 @@ const VerifiedContracts = () => {
               <td className="flex items-center gap-1 mt-6">
                 <div className="flex items-center">
                   {contract.optimization_enabled ? (
-                    <span className="flex items-center text-[#17a34b] bg-[#d8f7e7] px-1 rounded-md text-sm font-chivo">
+                    <span className="flex items-center text-[#17a34b] bg-[#d8f7e7] px-1 rounded-md text-xs font-chivo">
                       <Check className="mr-1" size={16} />
                       Optimization
                     </span>
                   ) : (
-                    <span className="flex items-center text-[#e75f5c] bg-[#fef1f2] px-1 rounded-md text-sm font-chivo">
+                    <span className="flex items-center text-[#e75f5c] bg-[#fef1f2] px-1 rounded-md text-xs font-chivo">
                       <X className="mr-1" size={16} />
                       Optimization
                     </span>
@@ -128,12 +155,12 @@ const VerifiedContracts = () => {
                 </div>
                 <div className="flex items-center">
                   {contract.has_constructor_args ? (
-                    <span className="flex items-center text-green-500 bg-[#d8f7e7] px-1 rounded-md text-sm font-chivo">
+                    <span className="flex items-center text-green-500 bg-[#d8f7e7] px-1 rounded-md text-xs font-chivo">
                       <Check className="mr-1" size={16} />
                       Constructor Arg
                     </span>
                   ) : (
-                    <span className="flex items-center text-[#e75f5c] bg-[#fef1f2] px-1 rounded-md text-sm font-chivo">
+                    <span className="flex items-center text-[#e75f5c] bg-[#fef1f2] px-1 rounded-md text-xs font-chivo">
                       <X className="mr-1" size={16} />
                       Constructor Arg
                     </span>
@@ -143,6 +170,9 @@ const VerifiedContracts = () => {
               <td>
                 <span className="bg-green-500 text-white px-2 py-1 rounded-md text-sm font-light">
                   Verified
+                </span>
+                <span className="text-xs ml-2">
+                  {getTimeAgo(contract.verified_at)}
                 </span>
               </td>
             </tr>
