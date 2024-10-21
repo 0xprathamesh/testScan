@@ -1,11 +1,14 @@
-"use client"
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { SearchCode } from 'lucide-react';
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { IoIosSearch } from "react-icons/io";
 
-const SearchBar: React.FC = () => {
-  const [query, setQuery] = useState('');
+interface SearchBarProps {
+  className?: string; // Optional className prop
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ className = "" }) => {
+  const [query, setQuery] = useState("");
   const router = useRouter();
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -14,7 +17,7 @@ const SearchBar: React.FC = () => {
     if (!query) return;
 
     // Determine the type of query and perform the redirection
-    let path = '';
+    let path = "";
     if (/^0x[a-fA-F0-9]{40}$/.test(query)) {
       // It's an Ethereum address
       path = `/newui/address/${query}`;
@@ -25,17 +28,23 @@ const SearchBar: React.FC = () => {
       // It's a block number
       path = `/newui/block/${query}`;
     } else {
-      alert('Invalid search query. Please enter a valid address, txhash, or block number.');
+      alert(
+        "Invalid search query. Please enter a valid address, txhash, or block number."
+      );
       return;
     }
 
-    // Redirect to the respective page without clearing the input immediately
     await router.push(path);
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex items-center mx-auto w-96">
-      <label htmlFor="simple-search" className="sr-only">Search</label>
+    <form
+      onSubmit={handleSearch}
+      className={`flex items-center mx-auto w-96 ${className}`} // Simple string concatenation for className
+    >
+      <label htmlFor="simple-search" className="sr-only">
+        Search
+      </label>
       <div className="relative w-full">
         <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
           <svg
@@ -66,10 +75,9 @@ const SearchBar: React.FC = () => {
       </div>
       <button
         type="submit"
-        className="p-2 ms-2 font-medium text-black rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 "
+        className="p-2 ms-2 font-medium text-black rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
       >
-
-<IoIosSearch className='w-6 h-6' />
+        <IoIosSearch className="w-6 h-6" />
       </button>
     </form>
   );

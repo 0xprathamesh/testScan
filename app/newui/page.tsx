@@ -12,6 +12,7 @@ import { MdKeyboardArrowRight, MdOutlineArrowOutward } from "react-icons/md";
 import Link from "next/link";
 import { PiCubeThin } from "react-icons/pi";
 import { PiAddressBookThin } from "react-icons/pi";
+import { Tooltip } from "react-tooltip";
 
 import {
   fetchTopAccounts,
@@ -25,6 +26,8 @@ import { FaRegUserCircle } from "react-icons/fa";
 import Contracts from "@/components/newui/Contracts";
 import ChartComponent from "@/components/newui/ChartComponent";
 import Skeleton from "@/components/newui/Skeleton";
+import SearchBar from "@/components/elements/Search";
+
 interface TopAccount {
   hash: string;
   coin_balance: string;
@@ -237,79 +240,54 @@ const SpyDashboard: React.FC = () => {
           </div>
         </div> */}
         <div className="w-full md:w-1/2">
-      <div
-        className={`transition-all duration-300 ease-in-out ${
-          isSticky ? "sticky top-0 pt-4" : ""
-        }`}
-      >
-        <h1 className="text-3xl font-bold mb-6 font-mplus">
-          What are you looking for?
-        </h1>
-        <form>
-          <div className="relative">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <GoSearch className="w-5 h-5 mb-2 text-gray-500" />
+          <div
+            className={`transition-all duration-300 ease-in-out ${
+              isSticky ? "sticky top-0 pt-4" : ""
+            }`}
+          >
+            <h1 className="text-3xl font-bold mb-6 font-mplus">
+              What are you looking for?
+            </h1>
+            <div className="flex items-start w-full">
+              <SearchBar className="w-full" />
             </div>
-            <input
-              type="search"
-              id="default-search"
-              value={input}
-              onChange={handleChange}
-              className="w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-md mb-2 outline-none placeholder:font-chivo"
-              placeholder="Search transactions/blocks/address/tokens"
-              required
-            />
-            {suggestions.length > 0 && (
-              <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded shadow-md font-chivo">
-                {suggestions.map((suggestion, index) => (
-                  <li
-                    key={index}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className="p-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {/* Display shortened hash for addresses and transaction hashes */}
-                    {suggestion.startsWith("0x")
-                      ? shortenHash(suggestion)
-                      : suggestion}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </form>
 
-        <div className="mt-4">
-          <h2 className="text-lg font-normal font-inter mb-2">
-            Recent searches:
-          </h2>
-          <div className="">
-            {recentSearches.length > 0 ? (
-              recentSearches.map((search, index) => (
-                <span
-                  key={index}
-                  className="text-md text-gray-600 bg-purple-100 px-2 py-1 rounded-xl leading flex w-48 text-center items-center mb-2"
-                >
-                  {/* Use shortenHash function for recent searches as well */}
-                  {/* <Copyable text={search} copyText={search} className="">
+            <div className="mt-4">
+              <h2 className="text-lg font-normal font-inter mb-2">
+                Recent searches:
+              </h2>
+              <div className="">
+                {recentSearches.length > 0 ? (
+                  recentSearches.map((search, index) => (
+                    <span
+                      key={index}
+                      className="text-md text-gray-600 bg-purple-100 px-2 py-1 rounded-xl leading flex w-48 text-center items-center mb-2"
+                    >
+                      {/* Use shortenHash function for recent searches as well */}
+                      {/* <Copyable text={search} copyText={search} className="">
                    
                   </Copyable> */}
-                   {search.startsWith("0x") ? shortenHash(search) : search}
-                </span>
-              ))
-            ) : (
-              <p className="text-gray-500">No recent searches</p>
-            )}
+                      {search.startsWith("0x") ? shortenHash(search) : search}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-gray-500">No recent searches</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
         <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-10 md:mt-0 md:ml-8">
           <div className="bg-black text-white p-6 rounded-3xl col-span-1 md:col-span-2 ">
             <h3 className="text-sm text-gray-400 mb-2">
               Single transaction costs just around
             </h3>
-            <p className="text-2xl font-bold">$0.00099 <span className="text-xs font-chivo">:TODO</span></p>
-            <p className="text-gray-400">(0.02 Gwei) <span className="text-xs font-chivo">:TODO</span></p>
+            <p className="text-2xl font-bold">
+              $0.00099 <span className="text-xs font-chivo">:TODO</span>
+            </p>
+            <p className="text-gray-400">
+              (0.02 Gwei) <span className="text-xs font-chivo">:TODO</span>
+            </p>
             <p className="mt-4 flex items-center text-purple-400 text-sm font-chivo font-light">
               <span className=" mr-2 text-xl ">💡</span>
               For a single 💰, you can savor 3030 transactions on XDC, while
@@ -390,7 +368,9 @@ const SpyDashboard: React.FC = () => {
             <p className="text-2xl font-bold text-black">
               {formatNumber(data.totalTransactions)}
             </p>
-            <p className="text-gray-400">(0.02 Gwei) <span className="text-xs font-chivo">:TODO</span></p>
+            <p className="text-gray-400">
+              (0.02 Gwei) <span className="text-xs font-chivo">:TODO</span>
+            </p>
             {/* <div className="h-16 relative mb-2">
               <svg className="w-full h-full">
                 <path
@@ -433,7 +413,8 @@ const SpyDashboard: React.FC = () => {
                   </p>
                   <p className="text-sm text-gray-400">
                     <span className={`text-sm mt-1`}>
-                      $0.01 (0.000000885 Gwei) <span className="text-xs font-chivo">:TODO</span>
+                      $0.01 (0.000000885 Gwei){" "}
+                      <span className="text-xs font-chivo">:TODO</span>
                     </span>
                   </p>
                 </div>
@@ -461,11 +442,13 @@ const SpyDashboard: React.FC = () => {
                 </Link>
                 <div>
                   <p className="text-sm font-chivo  font-extralight flex items-center gap-1">
-                    <PiArrowElbowDownRightFill /> 41 Transactions  <span className="text-xs font-chivo">:TODO</span>
+                    <PiArrowElbowDownRightFill /> 41 Transactions{" "}
+                    <span className="text-xs font-chivo">:TODO</span>
                   </p>
                   <p className="text-sm text-gray-400">
                     <span className={`text-sm mt-1`}>
-                      $0.001 (0.000000885 Gwei)  <span className="text-xs font-chivo">:TODO</span>
+                      $0.001 (0.000000885 Gwei){" "}
+                      <span className="text-xs font-chivo">:TODO</span>
                     </span>
                   </p>
                 </div>
@@ -535,21 +518,20 @@ interface AccountItemProps {
   balance: string;
 }
 const formatCoinBalance = (balance: string): string => {
-  const convertedBalance = BigInt(balance) / BigInt(10 ** 18); // Convert balance to XDC by dividing by 10^18
-  
+  const convertedBalance = BigInt(balance) / BigInt(10 ** 18);
+
   if (convertedBalance >= BigInt(1e12)) {
-    return (Number(convertedBalance) / 1e12).toFixed(2) + " T XDC"; // Trillions
+    return (Number(convertedBalance) / 1e12).toFixed(2) + " T XDC";
   } else if (convertedBalance >= BigInt(1e9)) {
-    return (Number(convertedBalance) / 1e9).toFixed(2) + " B XDC"; // Billions
+    return (Number(convertedBalance) / 1e9).toFixed(2) + " B XDC";
   } else if (convertedBalance >= BigInt(1e6)) {
-    return (Number(convertedBalance) / 1e6).toFixed(2) + " M XDC"; // Millions
+    return (Number(convertedBalance) / 1e6).toFixed(2) + " M XDC";
   } else if (convertedBalance >= BigInt(1e3)) {
-    return (Number(convertedBalance) / 1e3).toFixed(2) + " K XDC"; // Thousands
+    return (Number(convertedBalance) / 1e3).toFixed(2) + " K XDC";
   }
 
-  return convertedBalance.toLocaleString() + " XDC"; // For smaller values, show as is with no decimals
+  return convertedBalance.toLocaleString() + " XDC";
 };
-
 
 const AccountItem: React.FC<AccountItemProps> = ({
   rank,
@@ -561,6 +543,15 @@ const AccountItem: React.FC<AccountItemProps> = ({
     <div className="flex-grow">
       <Link href={`/newui/address/${address}`} className="hover:underline">
         <p className="text-xl font-chivo leading-2 font-semibold text-gray-400 hover:underline">
+          <p
+            className="text-xs"
+            data-tooltip-id="my-tooltip"
+            data-tooltip-content={`${address}`}
+            data-tooltip-place="bottom"
+          >
+            <Tooltip id="my-tooltip" />
+          </p>
+
           {parseAddress(address)}
         </p>
       </Link>
@@ -568,3 +559,36 @@ const AccountItem: React.FC<AccountItemProps> = ({
     </div>
   </div>
 );
+
+// <form>
+// <div className="relative">
+//   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+//     <GoSearch className="w-5 h-5 mb-2 text-gray-500" />
+//   </div>
+//   <input
+//     type="search"
+//     id="default-search"
+//     value={input}
+//     onChange={handleChange}
+//     className="w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-md mb-2 outline-none placeholder:font-chivo"
+//     placeholder="Search transactions/blocks/address/tokens"
+//     required
+//   />
+//   {suggestions.length > 0 && (
+//     <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded shadow-md font-chivo">
+//       {suggestions.map((suggestion, index) => (
+//         <li
+//           key={index}
+//           onClick={() => handleSuggestionClick(suggestion)}
+//           className="p-2 hover:bg-gray-100 cursor-pointer"
+//         >
+//           {/* Display shortened hash for addresses and transaction hashes */}
+//           {suggestion.startsWith("0x")
+//             ? shortenHash(suggestion)
+//             : suggestion}
+//         </li>
+//       ))}
+//     </ul>
+//   )}
+// </div>
+// </form>
