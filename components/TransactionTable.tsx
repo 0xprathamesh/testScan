@@ -16,7 +16,7 @@ interface TransactionTableProps {
   transactions: Transaction[];
   itemsPerPage?: number;
 }
-
+const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL;
 const TransactionTable: React.FC<TransactionTableProps> = ({
   transactions,
   itemsPerPage = 11,
@@ -97,7 +97,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                   {parseFloat(ethers.utils.formatEther(tx.value)).toFixed(1)}{" "}
-                  ETH
+                  {currency}
                 </td>
               </tr>
             ))}
@@ -105,7 +105,6 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         </table>
       </div>
 
-   
       <div className="mt-4 flex justify-around items-center">
         <PaginationComponent
           currentPage={currentPage}
@@ -127,7 +126,6 @@ export default TransactionTable;
 // import { FaLongArrowAltRight } from "react-icons/fa";
 // import PaginationComponent from "./Pagination";
 // import { blockService } from "./newui/utils/apiroutes";
-
 
 // interface Transaction {
 //   hash: string;

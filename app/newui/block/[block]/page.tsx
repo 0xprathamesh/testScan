@@ -1,17 +1,20 @@
-"use client"
-import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
+"use client";
+import React, { useState, useEffect } from "react";
+import { ethers } from "ethers";
 import Layout from "@/components/newui/Layout";
 import { ArrowLeft } from "lucide-react";
-import Link from 'next/link';
-import TransactionTable from '@/components/TransactionTable';
-import { IoCubeOutline } from 'react-icons/io5';
-import { blockService } from '@/components/newui/utils/apiroutes';
+import Link from "next/link";
+import TransactionTable from "@/components/TransactionTable";
+import { IoCubeOutline } from "react-icons/io5";
+import { blockService } from "@/components/newui/utils/apiroutes";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { useRouter } from "next/navigation";
+import { parseAddress } from "@/lib/helpers";
 
 interface PageProps {
   params: {
     block: string;
-  }
+  };
 }
 
 interface BlockData {
@@ -20,8 +23,14 @@ interface BlockData {
   timestamp: string;
   gasUsed: ethers.BigNumber;
   gasLimit: ethers.BigNumber;
-  transactions?: string[];  
+  size: number;
+  difficulty: string;
+  baseFeePerGas?: string;
+  burntFees?: string;
+  priorityFee?: string;
+  miner: string;
   confirmations: number;
+  transactions?: string[];
 }
 
 interface Transaction {
@@ -36,10 +45,12 @@ const Block: React.FC<PageProps> = ({ params }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); // To use for navigation
+
+  const blockNumber = parseInt(params.block, 10);
 
   useEffect(() => {
     if (params.block) {
-      const blockNumber = parseInt(params.block, 10);
       if (isNaN(blockNumber)) {
         setError("Invalid block number");
       } else {
@@ -50,31 +61,41 @@ const Block: React.FC<PageProps> = ({ params }) => {
 
   const fetchBlockData = async (blockNumber: number) => {
     try {
-      const fetchDataAPI = process.env.NEXT_PUBLIC_FETCH_API === 'true';
+      const fetchDataAPI = process.env.NEXT_PUBLIC_FETCH_API === "true";
 
       if (fetchDataAPI) {
-
         const blockResponse = await blockService.getBlock(blockNumber);
-        const transactionResponse = await blockService.getBlockTransaction(blockNumber, '?limit=50&page=1');
-        
+        const transactionResponse = await blockService.getBlockTransaction(
+          blockNumber,
+          "?limit=50&page=1"
+        );
+
         const blockData: BlockData = {
           number: blockResponse.height,
           hash: blockResponse.hash,
           timestamp: blockResponse.timestamp,
           gasUsed: ethers.BigNumber.from(blockResponse.gas_used),
           gasLimit: ethers.BigNumber.from(blockResponse.gas_limit),
+          size: blockResponse.size,
+          difficulty: blockResponse.difficulty,
+          baseFeePerGas: blockResponse.base_fee_per_gas || "N/A",
+          burntFees: blockResponse.burnt_fees,
+          priorityFee: blockResponse.priority_fee || "N/A",
+          miner: blockResponse.miner.hash,
           transactions: blockResponse.transaction_hashes,
-          confirmations: blockResponse.confirmations
+          confirmations: blockResponse.confirmations,
         };
 
         setBlockData(blockData);
 
-        const transactions: Transaction[] = transactionResponse.items.map((tx: any) => ({
-          hash: tx.hash,
-          from: tx.from.hash,
-          to: tx.to?.hash,
-          value: ethers.BigNumber.from(tx.value)
-        }));
+        const transactions: Transaction[] = transactionResponse.items.map(
+          (tx: any) => ({
+            hash: tx.hash,
+            from: tx.from.hash,
+            to: tx.to?.hash,
+            value: ethers.BigNumber.from(tx.value),
+          })
+        );
 
         setTransactions(transactions);
       } else {
@@ -91,13 +112,17 @@ const Block: React.FC<PageProps> = ({ params }) => {
           timestamp: block.timestamp.toString(),
           gasUsed: block.gasUsed,
           gasLimit: block.gasLimit,
-          transactions: block.transactions,
-          confirmations: confirmations
+          size: 10,
+          difficulty: block.difficulty.toString(),
+          miner: block.miner || "N/A",
+          confirmations: confirmations,
         };
 
         setBlockData(blockData);
 
-        const txPromises = block.transactions.map(txHash => provider.getTransaction(txHash));
+        const txPromises = block.transactions.map((txHash) =>
+          provider.getTransaction(txHash)
+        );
         const txs = await Promise.all(txPromises);
         setTransactions(txs);
       }
@@ -110,8 +135,17 @@ const Block: React.FC<PageProps> = ({ params }) => {
     }
   };
 
+  // Function to handle block navigation
+  const handleBlockNavigation = (newBlockNumber: number) => {
+    router.push(`/newui/block/${newBlockNumber}`);
+  };
+
   if (error) {
-    return <Layout><div className="text-red-500">{error}</div></Layout>;
+    return (
+      <Layout>
+        <div className="text-red-500">{error}</div>
+      </Layout>
+    );
   }
 
   if (loading) {
@@ -123,7 +157,12 @@ const Block: React.FC<PageProps> = ({ params }) => {
           </div>
           <div className="flex">
             <Skeleton width="40%" height="600px" variant="rectangular" />
-            <Skeleton width="70%" height="600px" className="ml-4" variant="rectangular" />
+            <Skeleton
+              width="70%"
+              height="600px"
+              className="ml-4"
+              variant="rectangular"
+            />
           </div>
         </div>
       </Layout>
@@ -144,10 +183,16 @@ const Block: React.FC<PageProps> = ({ params }) => {
         </div>
 
         <div className="flex">
-          {blockData ? ( 
-            <BlockDetailsCard blockData={blockData} />
+          {blockData ? (
+            <BlockDetailsCard
+              blockData={blockData}
+              onNext={() => handleBlockNavigation(blockNumber + 1)} // Handle Next Block
+              onPrevious={() =>
+                blockNumber > 0 && handleBlockNavigation(blockNumber - 1)
+              } // Handle Previous Block
+            />
           ) : (
-            <div className="text-red-500">No block data available</div> 
+            <div className="text-red-500">No block data available</div>
           )}
           <div className="w-[70%] ml-4">
             <TransactionTable transactions={transactions} itemsPerPage={50} />
@@ -158,14 +203,18 @@ const Block: React.FC<PageProps> = ({ params }) => {
   );
 };
 
-const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => {
+const BlockDetailsCard: React.FC<{
+  blockData: BlockData;
+  onNext: () => void;
+  onPrevious: () => void;
+}> = ({ blockData, onNext, onPrevious }) => {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
 
   return (
-    <div className="bg-black rounded-3xl text-white w-[40%] h-[600px]">
+    <div className="bg-black rounded-3xl text-white w-[40%] h-[640px]">
       <div className="rounded-t-3xl bg-blue-500 py-2 px-4 mt-4">
         <div className="rounded-full h-20 w-20 border-8 border-[#baf7d0] items-center">
           <IoCubeOutline className="h-16 w-16 font-bold text-[#baf7d0]" />
@@ -176,12 +225,26 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
           <div className="flex items-center">
             <h2 className="text-2xl font-bold">Block {blockData.number}</h2>
           </div>
+          <div className="flex items-center gap-4 ">
+            <div
+              className={`bg-gray-500 p-2 rounded-md ${
+                blockData.number === 0 ? "cursor-not-allowed opacity-50" : ""
+              }`}
+              onClick={blockData.number > 0 ? onPrevious : undefined} // Prevent going below block 0
+            >
+              <MdKeyboardArrowLeft />
+            </div>
+            <div className="bg-gray-500 p-2 rounded-md" onClick={onNext}>
+              <MdKeyboardArrowRight />
+            </div>
+          </div>
         </div>
 
         <div className="mb-6 text-sm bg-black font-light">
-          <span className="mr-2 text-gray-300">{blockData.timestamp}</span>•
+          {/* <span className="mr-2 text-gray-300">{formatDate(blockData.timestamp)}</span>• */}
           <span className="ml-2 text-gray-500 font-light leading-10">
-            {blockData.confirmations} confirmation{blockData.confirmations !== 1 ? 's' : ''}
+            {blockData.confirmations} confirmation
+            {blockData.confirmations !== 1 ? "s" : ""}
           </span>
         </div>
 
@@ -191,7 +254,25 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
               <span className="mr-2 text-sm font-inter">Block Hash</span>
             </div>
             <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
-              {blockData.hash.slice(0, 10)}...{blockData.hash.slice(-4)}
+             {parseAddress(blockData.hash)}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <span className="mr-2 text-sm font-inter">Miner</span>
+            </div>
+            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
+              {parseAddress(blockData.miner)}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <span className="mr-2 text-sm font-inter">Difficulty</span>
+            </div>
+            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
+              {blockData.difficulty}
             </div>
           </div>
 
@@ -199,21 +280,56 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
             <div className="flex items-center">
               <span className="mr-2 text-sm font-inter">Gas Used</span>
             </div>
-            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border ">
-              {blockData.gasUsed.toString()}
+            {/* <div className="relative w-full bg-white bg-opacity-20 h-6 rounded-md">
+              <div
+                className="absolute left-0 top-0 bg-[#baf7d0] h-full rounded-md"
+                style={{
+                  width: `${(
+                    (blockData.gasUsed.toNumber() / blockData.gasLimit.toNumber()) *
+                    100
+                  ).toFixed(2)}%`,
+                }}
+              />
+              <div className="absolute inset-0 flex items-center justify-center text-sm">
+                {blockData.gasUsed.toNumber()} / {blockData.gasLimit.toNumber()}
+              </div>
+            </div> */}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <span className="mr-2 text-sm font-inter">Size</span>
+            </div>
+            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
+              {blockData.size} bytes
             </div>
           </div>
-        </div>
 
-        <div className="mt-6">
-          <span className="text-sm mb-2">Tags</span>
-          <div className="flex flex-wrap gap-2 mt-2">
-            <span className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
-              Transactions: {blockData.transactions?.length || null}
-            </span>
-            <span className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
-              Gas Limit: {blockData.gasLimit.toString()}
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <span className="mr-2 text-sm font-inter">Base Fee Per Gas</span>
+            </div>
+            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
+              {blockData.baseFeePerGas || "N/A"}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <span className="mr-2 text-sm font-inter">Burnt Fees</span>
+            </div>
+            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
+              {blockData.burntFees || "N/A"}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <span className="mr-2 text-sm font-inter">Priority Fee</span>
+            </div>
+            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
+              {blockData.priorityFee || "N/A"}
+            </div>
           </div>
         </div>
       </div>
@@ -223,21 +339,23 @@ const BlockDetailsCard: React.FC<{ blockData: BlockData }> = ({ blockData }) => 
 
 export default Block;
 
+
+
 const Skeleton: React.FC<{
   width?: string;
   height?: string;
   className?: string;
-  variant?: 'rectangular' | 'circular' | 'text';
-}> = ({ width, height, className, variant = 'rectangular' }) => {
+  variant?: "rectangular" | "circular" | "text";
+}> = ({ width, height, className, variant = "rectangular" }) => {
   const baseClasses = "animate-pulse bg-gray-200";
   const variantClasses = {
     rectangular: "rounded",
     circular: "rounded-full",
-    text: "rounded w-full h-4"
+    text: "rounded w-full h-4",
   };
 
   return (
-    <div 
+    <div
       className={`${baseClasses} ${variantClasses[variant]} ${className}`}
       style={{ width, height }}
     />

@@ -21,7 +21,7 @@ import {
 import { PiArrowElbowDownRightFill } from "react-icons/pi";
 import { IoCubeOutline } from "react-icons/io5";
 import { fetchdata } from "@/components/newui/utils/xdcrpc";
-import { formatNumber } from "@/lib/helpers";
+import { formatNumber, formatUSDValue } from "@/lib/helpers";
 import { FaRegUserCircle } from "react-icons/fa";
 import Contracts from "@/components/newui/Contracts";
 import ChartComponent from "@/components/newui/ChartComponent";
@@ -31,7 +31,9 @@ import SearchBar from "@/components/elements/Search";
 interface TopAccount {
   hash: string;
   coin_balance: string;
+
 }
+const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL
 const parseAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
@@ -179,66 +181,7 @@ const SpyDashboard: React.FC = () => {
   return (
     <Layout>
       <div className="flex flex-col md:flex-row md:w-full p-6 justify-between w-full mb-40">
-        {/* <div className="w-full md:w-1/2" >
-          <div
-            className={`transition-all duration-300 ease-in-out ${
-              isSticky ? "sticky top-0 pt-4" : ""
-            }`}
-          >
-            <h1 className="text-3xl font-bold mb-6 font-mplus">
-              What are you looking for?
-            </h1>
-            <form>
-              <div className="relative">
-                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                  <GoSearch className="w-5 h-5 mb-2 text-gray-500" />
-                </div>
-                <input
-                  type="search"
-                  id="default-search"
-                  value={input}
-                  onChange={handleChange}
-                  className="w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-md mb-2 outline-none placeholder:font-chivo"
-                  placeholder="Search transactions/blocks/address/tokens"
-                  required
-                />
-                {suggestions.length > 0 && (
-                  <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded shadow-md font-chivo">
-                    {suggestions.map((suggestion, index) => (
-                      <li
-                        key={index}
-                        onClick={() => handleSuggestionClick(suggestion)}
-                        className="p-2 hover:bg-gray-100 cursor-pointer"
-                      >
-                        {suggestion}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </form>
-
-            <div className="mt-4">
-              <h2 className="text-lg font-normal font-inter mb-2">
-                Recent searches:
-              </h2>
-              <div className="">
-                {recentSearches.length > 0 ? (
-                  recentSearches.map((search, index) => (
-                    <span
-                      key={index}
-                      className="text-md text-gray-600 bg-purple-100 px-2 py-1 rounded-xl leading flex w-48 text-center items-center mb-2"
-                    >
-                      <Copyable text={search} copyText={search} className="" />
-                    </span>
-                  ))
-                ) : (
-                  <p className="text-gray-500">No recent searches</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div> */}
+        
         <div className="w-full md:w-1/2">
           <div
             className={`transition-all duration-300 ease-in-out ${
@@ -499,6 +442,7 @@ const SpyDashboard: React.FC = () => {
                       rank={index + 1}
                       address={account.hash}
                       balance={account.coin_balance}
+                      usd_value={tokenPrice}
                     />
                   ))}
                 </p>
@@ -516,49 +460,63 @@ interface AccountItemProps {
   rank: number;
   address: string;
   balance: string;
+  usd_value: number;
 }
-const formatCoinBalance = (balance: string): string => {
+const formatCoinBalance = (balance: string): { formatted: string; numeric: number } => {
   const convertedBalance = BigInt(balance) / BigInt(10 ** 18);
+  const numericBalance = Number(convertedBalance);
+
+  let formattedBalance: string;
 
   if (convertedBalance >= BigInt(1e12)) {
-    return (Number(convertedBalance) / 1e12).toFixed(2) + " T XDC";
+      formattedBalance = (numericBalance / 1e12).toFixed(2) + "T";
   } else if (convertedBalance >= BigInt(1e9)) {
-    return (Number(convertedBalance) / 1e9).toFixed(2) + " B XDC";
+      formattedBalance = (numericBalance / 1e9).toFixed(2) + "B";
   } else if (convertedBalance >= BigInt(1e6)) {
-    return (Number(convertedBalance) / 1e6).toFixed(2) + " M XDC";
+      formattedBalance = (numericBalance / 1e6).toFixed(2) + "M";
   } else if (convertedBalance >= BigInt(1e3)) {
-    return (Number(convertedBalance) / 1e3).toFixed(2) + " K XDC";
+      formattedBalance = (numericBalance / 1e3).toFixed(2) + "K";
+  } else {
+      formattedBalance = convertedBalance.toLocaleString();
   }
 
-  return convertedBalance.toLocaleString() + " XDC";
+  return { formatted: formattedBalance, numeric: numericBalance }; // Return both formatted and numeric balances
 };
 
 const AccountItem: React.FC<AccountItemProps> = ({
   rank,
   address,
   balance,
-}) => (
-  <div className="flex items-center py-2">
-    <span className="text-gray-400 mr-2">#{rank}</span>
-    <div className="flex-grow">
-      <Link href={`/newui/address/${address}`} className="hover:underline">
-        <p className="text-xl font-chivo leading-2 font-semibold text-gray-400 hover:underline">
-          <p
-            className="text-xs"
-            data-tooltip-id="my-tooltip"
-            data-tooltip-content={`${address}`}
-            data-tooltip-place="bottom"
-          >
-            <Tooltip id="my-tooltip" />
-          </p>
+  usd_value
+}) => {
+  const { formatted, numeric } = formatCoinBalance(balance);
 
-          {parseAddress(address)}
+
+  return (
+    <div className="flex items-center py-2">
+      <span className="text-gray-400 mr-2">#{rank}</span>
+      <div className="flex-grow">
+        <Link href={`/newui/address/${address}`} className="hover:underline">
+          <p className="text-xl font-chivo leading-2 font-semibold text-gray-400 hover:underline">
+            <p
+              className="text-xs"
+              data-tooltip-id="my-tooltip"
+              data-tooltip-content={`${address}`}
+              data-tooltip-place="bottom"
+            >
+              <Tooltip id="my-tooltip" />
+            </p>
+            {parseAddress(address)}
+          </p>
+        </Link>
+        <p className="text-xs font-inter ">
+          {formatted} {currency} {usd_value * numeric}
         </p>
-      </Link>
-      <p className="text-xs font-inter ">{formatCoinBalance(balance)}</p>
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
 
 // <form>
 // <div className="relative">

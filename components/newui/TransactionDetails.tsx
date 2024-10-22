@@ -17,6 +17,8 @@ import { transactionService } from "./utils/apiroutes";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { Tooltip } from "react-tooltip";
+import { getCoinData } from "./utils/coingeko";
+
 interface TxData {
   hash: string;
   status: boolean;
@@ -54,6 +56,7 @@ const parseAddress = (address: string) => {
 const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
   const [activeTab, setActiveTab] = useState("Overview");
   const [showTabs, setShowTabs] = useState(false);
+
   const router = useRouter();
   const tabs = ["Overview", "Internal Transactions", "JSON", "State"];
 
@@ -136,6 +139,27 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
 export default TransactionDetails;
 
 const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
+  const [coinData, setCoinData] = useState<any>(null);
+  useEffect(() => {
+    const data = async () => {
+      try {
+        const data = await getCoinData();
+        setCoinData(data);
+      } catch (err) {
+        console.log(err);
+        return null;
+      }
+    };
+    data();
+  }, []);
+  const tokenPrice = coinData?.market_data?.current_price?.usd
+    ? parseFloat(coinData.market_data.current_price.usd.toFixed(6))
+    : 0;
+
+  const value = parseFloat(ethers.utils.formatEther(txData?.value));
+  const gasFeetoUSD = parseFloat(ethers.utils.formatEther(txData?.gasUsed))
+  const usdHelpergas = (gasFeetoUSD * tokenPrice).toFixed(2);
+  const usdHelper = (value * tokenPrice).toFixed(2);
   if (!txData) return null;
 
   const formatGasFee = (gasUsed: any, gasPrice: any) => {
@@ -158,7 +182,7 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
         <h3 className="text-lg font-inter mb-2">Transaction Value</h3>
         <div className="flex items-center bg-gray-100 p-3 rounded">
           <span className="font-semibold text-lg font-chivo">
-            {ethers.utils.formatEther(txData.value)} XDC
+            {ethers.utils.formatEther(txData.value)} XDC (${usdHelper})
           </span>
         </div>
       </div>
@@ -207,7 +231,7 @@ const OverviewTab: React.FC<TransactionDetailsProps> = ({ txData }) => {
         <h3 className="text-lg font-inter mb-2">Transaction Fee</h3>
         <div className="flex justify-between items-center">
           <span className="text-lg font-chivo font-semibold">
-            {formatGasFee(txData.gasUsed, txData.effectiveGasPrice)} XDC
+            {formatGasFee(txData.gasUsed, txData.effectiveGasPrice)} XDC (${usdHelpergas})
           </span>
           <span className="text-gray-500">
             {txData.gasUsed.toString()} Gas Used

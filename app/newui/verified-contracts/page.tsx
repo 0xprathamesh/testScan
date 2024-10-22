@@ -1,6 +1,5 @@
 "use client";
 import Layout from "@/components/newui/Layout";
-import VerifiedContracts from "@/components/newui/VerifiedContracts";
 import { ArrowLeft } from "lucide-react";
 import { ArrowRight, Check, X } from "lucide-react";
 import Link from "next/link";
@@ -10,7 +9,10 @@ import { parseAddress } from "@/lib/helpers";
 import { addressService } from "@/components/newui/utils/apiroutes";
 import { FileText, User } from "lucide-react";
 import Contracts from "@/components/newui/Contracts";
-import { ethers } from "ethers";
+import { IoFlash } from "react-icons/io5";
+import { BsWrench } from "react-icons/bs";
+import { LuAlertTriangle } from "react-icons/lu";
+import { Tooltip } from "react-tooltip";
 const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL;
 const VerifiedContractsPage = () => {
   const [contracts, setContracts] = useState<any[]>([]);
@@ -144,7 +146,7 @@ const VerifiedContractsPage = () => {
               <th className="font-light">Compiler</th>
               <th className="font-light">Version</th>
               <th className="font-light">Settings</th>
-              <th className="font-light">Status</th>
+              <th className="font-light">Verified</th>
             </tr>
           </thead>
           <tbody>
@@ -176,43 +178,66 @@ const VerifiedContractsPage = () => {
                 </td>
                 <td>
                   <span className="bg-gray-200 px-2 py-1 rounded-md text-xs font-light text-gray-600 ">
-                    {contract.compiler_version}
+                    Solidity
                   </span>
                 </td>
-                <td className="text-sm ">{contract.compiler_version}</td>
-                <td className="flex items-center gap-1 mt-6">
+                <td className="text-sm ">
                   <div className="flex items-center">
+                    {contract.vulnerability > 0 ? (
+                      <div>
+                        <LuAlertTriangle className="text-yellow-300 h-4 w-4" />
+                      </div>
+                    ) : (
+                      <div>
+                        <LuAlertTriangle className="text-yellow-300 h-4 w-4 opacity-0" />
+                      </div>
+                    )}
+                    {/* Display only the text before the '+' */}
+                    {contract.compiler_version.split("+")[0]}
+                  </div>
+                </td>
+                <td className="flex items-center gap-1 mt-6">
+                  <div
+                    className="flex items-center "
+                    data-tooltip-id="optimization"
+                    data-tooltip-content="Optimization "
+                    data-tooltip-place="top"
+                  >
                     {contract.optimization_enabled ? (
-                      <span className="flex items-center text-[#17a34b] bg-[#d8f7e7] px-1 rounded-md text-sm font-chivo">
-                        <Check className="mr-1" size={16} />
-                        Optimization
+                      <span className="text-[#17a34b] bg-[#d8f7e7] p-2 rounded-full">
+                        <IoFlash className="h-4 w-4  rounded-full" />
                       </span>
                     ) : (
-                      <span className="flex items-center text-[#e75f5c] bg-[#fef1f2]  px-1 rounded-md text-sm font-chivo">
-                        <X className="mr-1" size={16} />
-                        Optimization
+                      <span className="text-[#e75f5c] bg-[#fef1f2]  p-2 rounded-full">
+                        <IoFlash className="h-4 w-4  rounded-full" />
                       </span>
                     )}
+                    <Tooltip id="optimization" />
                   </div>
-
                   <div className="flex items-center">
                     {contract.has_constructor_args ? (
-                      <span className="flex items-center text-green-500 bg-[#d8f7e7] px-1 rounded-md text-sm font-chivo">
-                        <Check className="mr-1" size={16} />
-                        Constructor Arg
+                      <span
+                        className="text-[#17a34b] bg-[#d8f7e7] p-2 rounded-full"
+                        data-tooltip-id="constructor"
+                        data-tooltip-content="Constructor "
+                        data-tooltip-place="top"
+                      >
+                        <BsWrench className="h-4 w-4  rounded-full" />
                       </span>
                     ) : (
-                      <span className="flex items-center text-[#e75f5c] bg-[#fef1f2] px-1 rounded-md text-sm font-chivo">
-                        <X className="mr-1" size={16} />
-                        Constructor Arg
+                      <span
+                        className="text-[#e75f5c] bg-[#fef1f2]  p-2 rounded-full"
+                        data-tooltip-id="constructor"
+                        data-tooltip-content="Constructor "
+                        data-tooltip-place="top"
+                      >
+                        <BsWrench className="h-4 w-4  rounded-full" />
                       </span>
                     )}
+                    <Tooltip id="constructor" />
                   </div>
                 </td>
                 <td className="">
-                  <span className="bg-green-500 text-white px-2 py-1 rounded-md text-xs font-light">
-                    Success
-                  </span>
                   <span className="text-xs ml-2">
                     {getTimeAgo(contract.verified_at)}
                   </span>
