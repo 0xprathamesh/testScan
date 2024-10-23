@@ -8,11 +8,11 @@ const Dapps = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTrack, setSelectedTrack] = useState("All");
 
-  const handleSearch = (e) => {
+  const handleSearch = (e:any) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleFilter = (e) => {
+  const handleFilter = (e:any) => {
     setSelectedTrack(e.target.value);
   };
 
