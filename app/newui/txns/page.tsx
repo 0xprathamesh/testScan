@@ -7,7 +7,7 @@ import Layout from "@/components/newui/Layout";
 import Loading from "@/components/elements/Loading";
 import Link from "next/link";
 import { Copy } from "lucide-react";
-
+import { getTimeAgo } from "@/lib/helpers";
 import {
   addressService,
   transactionService,
@@ -25,6 +25,7 @@ interface Transaction {
   gasPrice?: string;
   gasLimit?: string;
   gasFee?: number;
+  timestamp: string;
 }
 const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL;
 
@@ -73,6 +74,7 @@ const TransactionTable = () => {
           gasFee: item.fee?.value
             ? (item.fee?.value / 10 ** 18).toFixed(3)
             : null,
+          timestamp:item.timestamp
         }));
       } else {
         const rpcUrl = "https://erpc.xinfin.network/";
@@ -90,6 +92,7 @@ const TransactionTable = () => {
           value: ethers.utils.formatEther(tx.value || "0"),
           gasPrice: tx.gasPrice?.toString(),
           gasLimit: tx.gasLimit.toString(),
+          timestamp:tx.timestamp?.toString() || "",
         }));
       }
 
@@ -186,6 +189,9 @@ const TransactionTable = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Txn Fee {currency}
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+               Age
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -270,6 +276,9 @@ const TransactionTable = () => {
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {/* {typeof gasFeeInEther === "string" ? gasFeeInEther : parseFloat(gasFeeInEther).toFixed(6)} */}
                       {tx.gasFee} {currency}
+                    </td>
+                    <td className="px-6 py-4 text-xs text-gray-500">
+                      {getTimeAgo(tx.timestamp)}
                     </td>
                   </tr>
                 );

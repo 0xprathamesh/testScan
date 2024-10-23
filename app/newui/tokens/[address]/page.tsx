@@ -9,7 +9,8 @@ import Transfers from "@/components/newui/Transfers";
 import TokenHolders from "@/components/newui/TokenHolders";
 import ContractDetails from "@/components/newui/ContractDetails";
 import { tokenService } from "@/components/newui/utils/apiroutes";
-
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 interface PageProps {
   params: {
     address: string;
@@ -20,6 +21,7 @@ const Token: React.FC<PageProps> = ({ params }) => {
   const [activeTab, setActiveTab] = useState<string>("transfers");
   const [tokenData, setTokenData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [topHolders, setTopHolders] = useState<any[]>([]); // State for top holders
 
   useEffect(() => {
     const fetchTokenData = async () => {
@@ -33,7 +35,20 @@ const Token: React.FC<PageProps> = ({ params }) => {
       }
     };
 
+    const fetchTopHolders = async () => {
+      try {
+        const response = await tokenService.getTokenHolders(
+          params.address,
+          "?limit=3&page=1"
+        ); // Fetch top 3 holders
+        setTopHolders(response.items); // Assuming response.items contains the holders
+      } catch (error) {
+        console.error("Error fetching top holders:", error);
+      }
+    };
+
     fetchTokenData();
+    fetchTopHolders();
   }, [params.address]);
 
   const renderTabContent = () => {
@@ -110,9 +125,7 @@ const Token: React.FC<PageProps> = ({ params }) => {
                 </div>
                 <div className="bg-[#382927] pt-4 pl-4 rounded-3xl">
                   <p className="text-sm">Max Supply</p>
-                  <p className="font-bold">
-                    {tokenData.max_supply || "N/A"}
-                  </p>
+                  <p className="font-bold">{tokenData.max_supply || "N/A"}</p>
                 </div>
                 <div className="bg-[#382927] pt-4 pl-4 rounded-3xl">
                   <p className="text-sm">Exchange Rate (USD)</p>
@@ -122,11 +135,52 @@ const Token: React.FC<PageProps> = ({ params }) => {
                 </div>
                 <div className="bg-[#382927] pt-4 pl-4 rounded-3xl">
                   <p className="text-sm">24h Volume</p>
-                  <p className="font-bold">
-                    {tokenData.volume_24h || "N/A"}
-                  </p>
+                  <p className="font-bold">{tokenData.volume_24h || "N/A"}</p>
                 </div>
               </div>
+            </div>
+
+            {/* Top Holders */}
+            <div className="bg-white rounded-3xl p-4 shadow-md">
+              <h2 className="text-lg font-semibold mb-2">Top Holders</h2>
+              {topHolders.length > 0 ? (
+                <ul className="space-y-2">
+                    {topHolders.map((holder, index)=> {
+                      const percentage = parseFloat(holder.value) / parseFloat(tokenData?.total_supply);
+                      const result = percentage * 100;
+                 
+                      return (
+                        <li key={index} className="flex justify-between">
+                          <span className="text-sm">
+                            {holder.address?.name ||
+                              parseAddress(holder.address.hash)}
+                          </span>
+                          <span className="text-sm flex items-center">
+                            {(
+                              (parseFloat(holder.value) /
+                                parseFloat(tokenData?.total_supply)) *
+                              100
+                            ).toFixed(2)}
+                            %
+                            <div className="w-6 h-6 ml-2">
+                              <CircularProgressbar
+                                value={result}
+                                styles={buildStyles({
+                                  textSize: "32px",
+                                  pathColor: `#4caf50`, // Progress bar color
+                                  textColor: "#fff", // Text color
+                                  trailColor: "#d6d6d6", // Background of the progress bar
+                                })}
+                              />
+                            </div>
+                          </span>
+                        </li>
+                      )
+                    })}
+                </ul>
+              ) : (
+                <p>No holders found.</p>
+              )}
             </div>
           </div>
 
