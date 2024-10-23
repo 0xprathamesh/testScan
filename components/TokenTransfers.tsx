@@ -5,6 +5,8 @@ import { ChevronUp } from "lucide-react";
 import { FiCopy, FiArrowRight } from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
+import { IoCubeOutline } from "react-icons/io5";
+import { getTimeAgo } from "@/lib/helpers";
 
 interface TokenTransfer {
   token: {
@@ -16,6 +18,10 @@ interface TokenTransfer {
   to: string;
   value: string;
   hash: string;
+  type: string;
+  method: string;
+  blockNumber: number;
+  timestamp: string;
 }
 
 interface TokenTransfersProps {
@@ -40,12 +46,21 @@ const TokenTransfers: React.FC<TokenTransfersProps> = ({ address }) => {
           token: {
             symbol: item.token?.symbol || "Unknown",
             name: item.token?.name || "Unknown Token",
-            icon_url: item.token?.symbol ? `https://cdn.blocksscan.io/tokens/img/${item.token.symbol}.png` : "", 
+            icon_url: item.token?.symbol
+              ? `https://cdn.blocksscan.io/tokens/img/${item.token.symbol}.png`
+              : "",
           },
           from: item.from?.hash || "Unknown",
           to: item.to?.hash || "Unknown",
-          value: (parseInt(item.total.value) / 10 ** item.token.decimals).toFixed(4),
+          value:
+            (parseInt(item.total.value) / 10 ** item.token.decimals).toFixed(
+              4
+            ) || 0,
           hash: item.tx_hash || "N/A",
+          type: item.type,
+          method: item.method_name,
+          blockNumber: item.block_number,
+          timestamp: item.timestamp,
         }));
 
         setTransfers(tokenTransferData);
@@ -63,7 +78,6 @@ const TokenTransfers: React.FC<TokenTransfersProps> = ({ address }) => {
   const parseAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
-
 
   const renderSkeleton = () => (
     <div className="flex justify-between items-center py-2 border-b border-gray-200 animate-pulse">
@@ -106,59 +120,92 @@ const TokenTransfers: React.FC<TokenTransfersProps> = ({ address }) => {
         <ChevronUp className="w-5 h-5" />
       </div>
       <div className="space-y-4">
-        {transfers.map((transfer, index) => (
-          <div
-            key={index}
-            className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0"
-          >
-            <div className="flex items-center">
-              <div className="rounded-full">
-                <Image
-                  src={transfer.token.icon_url}
-                  width={32}
-                  height={32}
-                  alt={transfer.token.symbol}
-                  className="w-8 h-8"
-                />
-              </div>
-              <div className="ml-1">
-                <p className="font-medium">{transfer.token.name} Transfer</p>
-                <p className="text-sm font-semibold text-[#06afe8] flex items-center">
-                  <Link href={`/newui/tx/${transfer.hash}`}>
-                  #{parseAddress(transfer.hash)}{" "}</Link>
-                  <FiCopy
-                    className="ml-2 text-gray-400 cursor-pointer"
-                    onClick={() => navigator.clipboard.writeText(transfer.hash)}
+        {transfers.map((transfer, index) => {
+          const direction =
+            transfer.to.toLowerCase() === address.toLowerCase() ? "IN" : "OUT";
+          return (
+            <div
+              key={index}
+              className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0"
+            >
+              <div className="flex items-center">
+                <div className="rounded-full">
+                  <Image
+                    src={transfer.token.icon_url}
+                    width={32}
+                    height={32}
+                    alt={transfer.token.symbol}
+                    className="w-8 h-8"
                   />
+                </div>
+                <div className="ml-1">
+                  <p className="font-medium flex items-center">
+                    {transfer.token.name}{" "}
+                  </p>
+                  <p className="text-sm font-semibold text-[#06afe8] flex items-center">
+                    <Link href={`/newui/tx/${transfer.hash}`}>
+                      #{parseAddress(transfer.hash)}{" "}
+                    </Link>
+                    <FiCopy
+                      className="ml-2 text-gray-400 cursor-pointer"
+                      onClick={() =>
+                        navigator.clipboard.writeText(transfer.hash)
+                      }
+                    />
+                  </p>
+                </div>
+              </div>
+              {/* <div className="px-4 py-2">
+                <p className="inline-flex items-center text-center border px-2 text-sm py-1 rounded-full">
+                  <span className="inline-block rounded-full bg-green-500 h-2 w-2 mr-2"></span>
+                  <span className="text-center font-chivo capitalize ">
+                    {transfer.method}
+                  </span>
+                </p>
+              </div> */}
+
+              {/* <div className="px-6 py-4 text-sm">
+                <div className="bg-black px-1 text-center rounded-md text-white flex items-center justify-around ">
+                  <IoCubeOutline />
+                  <Link href={`/newui/block/${transfer.blockNumber}`}>
+                    {transfer.blockNumber}
+                  </Link>
+                </div>
+              </div> */}
+
+              <div className="flex items-center justify-between gap-x-4">
+                <div className="text-blue text-sm font-light leading font-chivo flex items-center">
+                  <Link href={`/newui/address/${transfer.from}`}>
+                    {parseAddress(transfer.from)}
+                  </Link>
+                  <FiCopy
+                    className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+                    onClick={() => navigator.clipboard.writeText(transfer.from)}
+                  />
+                </div>
+                <FiArrowRight className="h-4 w-4" />
+                <div className="text-blue text-sm font-light leading font-chivo flex items-center">
+                  <Link href={`/newui/address/${transfer.to}`}>
+                    {parseAddress(transfer.to)}
+                  </Link>
+                  <FiCopy
+                    className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
+                    onClick={() => navigator.clipboard.writeText(transfer.to)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">
+                  {transfer.value} {transfer.token.symbol}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {getTimeAgo(transfer.timestamp)}
                 </p>
               </div>
             </div>
-
-            <div className="flex items-center justify-between gap-x-4">
-              <div className="text-blue text-sm font-light leading font-chivo flex items-center">
-              <Link href={`/newui/address/${transfer.from}`}>
-                {parseAddress(transfer.from)}</Link>
-                <FiCopy
-                  className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
-                  onClick={() => navigator.clipboard.writeText(transfer.from)}
-                />
-              </div>
-              <FiArrowRight className="h-4 w-4" />
-              <div className="text-blue text-sm font-light leading font-chivo flex items-center">
-              <Link href={`/newui/address/${transfer.to}`}>
-                {parseAddress(transfer.to)}</Link>
-                <FiCopy
-                  className="w-3 h-3 ml-2 cursor-pointer text-[#8a98ad]"
-                  onClick={() => navigator.clipboard.writeText(transfer.to)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500">{transfer.value} {transfer.token.symbol}</p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

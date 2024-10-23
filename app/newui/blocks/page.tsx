@@ -10,6 +10,8 @@ import {
   dashboardService,
 } from "@/components/newui/utils/apiroutes";
 import Link from "next/link";
+import { IoCubeOutline } from "react-icons/io5";
+import { getTimeAgo } from "@/lib/helpers";
 
 const BlocksPage: React.FC = () => {
   const [latestBlocks, setLatestBlocks] = useState<any[]>([]);
@@ -45,6 +47,7 @@ const BlocksPage: React.FC = () => {
           gasUsed: ethers.BigNumber.from(item.gas_used),
           gasLimit: ethers.BigNumber.from(item.gas_limit),
           transactions: item.tx_count || 0,
+          timestamp:item.timestamp
         }));
       } else {
         const latestBlockNumber = await provider.getBlockNumber();
@@ -77,9 +80,9 @@ const BlocksPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto font-chivo">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold">Blocks</h1>
+          <h1 className="text-2xl font-semibold font-chivo">Blocks</h1>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
@@ -135,20 +138,26 @@ const BlocksPage: React.FC = () => {
                 <th className="px-6 py-3 text-gray-500 font-medium">
                   Gas Limit
                 </th>
+                <th className="px-6 py-3 text-gray-500 font-medium">
+            Age
+                </th>
               </tr>
             </thead>
             <tbody>
               {latestBlocks.map((block, index) => (
                 <tr key={block.number} className="border-t">
-                  <td className="px-6 py-4">
-                    <Link href={`/newui/block/${block.number}`}>
-                      {block.number}
-                    </Link>
-                  </td>
+                    <td className="px-6 py-4 text-sm">
+                      <div className="bg-black px-1 text-center rounded-md text-white flex items-center w-24 ">
+                        <IoCubeOutline className="" />
+                        <Link href={`/newui/block/${block.number}`} className="ml-2">
+                          {block.number}
+                        </Link>
+                      </div>
+                    </td>
                   <td className="px-6 py-4">{block.size}</td>
                   <td className="px-6 py-4">{block.transactions}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center text-blue">
                       <Link href={`/newui/address/${block.miner}`}>
                         {parseAddress(block.miner)}
                       </Link>
@@ -161,7 +170,10 @@ const BlocksPage: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4">{block.gasUsed.toString()}</td>
-                  <td className="px-6 py-4">{block.gasLimit.toString()}</td>
+                  <td className="px-6 py-4 text-gray-400">{block.gasLimit.toString()}</td>
+                  <td className="px-6 py-4 text-xs text-gray-500">
+                    {getTimeAgo(block.timestamp)}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -6,12 +6,13 @@ import Layout from "@/components/newui/Layout";
 import TransactionDetails from "@/components/newui/TransactionDetails";
 import Loading from "@/components/elements/Loading";
 import { transactionService } from "@/components/newui/utils/apiroutes";
-import { parseAddress } from "@/lib/helpers";
+import { getTimeAgo, parseAddress } from "@/lib/helpers";
 import TokenTransfers from "@/components/TokenTransfers";
 import Link from "next/link";
 import { FiArrowRight, FiCopy } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { getCoinData } from "@/components/newui/utils/coingeko";
+
 interface PageProps {
   params: {
     hash: string;
@@ -28,6 +29,7 @@ interface TokenTransfer {
   token: string;
   icon?: string;
   usd_value?: number;
+  timestamp: string;
 }
 
 interface TxData {
@@ -237,6 +239,7 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
         to: ethers.utils.getAddress("0x" + log.topics[2].slice(26)),
         amount: ethers.BigNumber.from(log.data).toString(),
         token: log.address,
+        timestamp:log.timestamp,
       }));
   };
 
@@ -519,6 +522,7 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
         usd_value: item.token?.exchange_rate
           ? (item.total?.value / 10 ** 18) * item.token?.exchange_rate
           : undefined,
+        timestamp: item.timestamp
       }));
 
       setTokenTransfers(data);
@@ -615,6 +619,9 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
                       navigator.clipboard.writeText(transfer.token)
                     }
                   />
+                </div>
+                <div>
+                  {getTimeAgo(transfer.timestamp)}
                 </div>
               </div>
             ))}

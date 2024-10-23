@@ -12,8 +12,7 @@ import { MdKeyboardArrowRight, MdOutlineArrowOutward } from "react-icons/md";
 import Link from "next/link";
 import { PiCubeThin } from "react-icons/pi";
 import { PiAddressBookThin } from "react-icons/pi";
-import { Tooltip } from "react-tooltip";
-
+import { Tooltip } from "react-tooltip"
 import {
   fetchTopAccounts,
   getBlockchainData,
@@ -27,6 +26,7 @@ import Contracts from "@/components/newui/Contracts";
 import ChartComponent from "@/components/newui/ChartComponent";
 import Skeleton from "@/components/newui/Skeleton";
 import SearchBar from "@/components/elements/Search";
+import { dashboardService } from "@/components/newui/utils/apiroutes";
 
 interface TopAccount {
   hash: string;
@@ -56,6 +56,7 @@ const SpyDashboard: React.FC = () => {
     totalBlocks: "",
     totalTransactions: "",
   });
+  const [stats, setStats] = useState<any>(null);
   const token_symbol = process.env.NEXT_PUBLIC_TOKEN_SYMBOL;
   const stickyRef = useRef(null);
   const router = useRouter();
@@ -82,13 +83,25 @@ const SpyDashboard: React.FC = () => {
         totalTransactions: result.total_transactions,
       });
     }
-    const response = await fetchTopAccounts(); // Fetch the top 3 accounts
+    
+    const response = await fetchTopAccounts(); 
     if (result) {
-      setAccounts(response); // Store the result in state
+      setAccounts(response); 
     }
   };
+  const getStats = async () => {
+    try {
+      const response = await dashboardService.stats();
+      setStats(response);
+      console.log(response);
+    } catch (err) {
+      console.log(err)
+      return null;
+    }
+  }
 
   useEffect(() => {
+    getStats();
     fetchData();
     fetchStats();
   }, []);
@@ -169,6 +182,13 @@ const SpyDashboard: React.FC = () => {
 
   const tokenPrice =
     coinData?.market_data?.current_price?.usd.toFixed(5) ?? "Loading...";
+    const weiToUsd = (weiValue: number, tokenPrice: number) => {
+      // Convert Wei to Ether (1 Ether = 10^18 Wei)
+      const etherValue = weiValue / 10 ** 18;
+    
+      // Multiply the Ether value by the token price in USD
+      return  "$" + (etherValue * tokenPrice).toFixed(10) ;
+    };
   const tokenBTCPrice = coinData?.market_data?.current_price?.btc
     ? coinData.market_data.current_price.btc.toFixed(8) // Adjust the decimal places
     : "Loading...";
@@ -177,7 +197,8 @@ const SpyDashboard: React.FC = () => {
   const { latestTransaction, latestBlockNumber } = blockchainData;
 
   const parsedTransactionhash = parseAddress(latestTransaction.toString());
-
+  const weiValue = stats?.gas_prices?.average?.wei;
+  const usdValue = weiToUsd(weiValue, parseFloat(tokenPrice));
   return (
     <Layout>
       <div className="flex flex-col md:flex-row md:w-full p-6 justify-between w-full mb-40">
@@ -226,10 +247,10 @@ const SpyDashboard: React.FC = () => {
               Single transaction costs just around
             </h3>
             <p className="text-2xl font-bold">
-              $0.00099 <span className="text-xs font-chivo">:TODO</span>
+{usdValue}
             </p>
             <p className="text-gray-400">
-              (0.02 Gwei) <span className="text-xs font-chivo">:TODO</span>
+             {stats?.gas_prices?.average.price} <span>Gwei</span>
             </p>
             <p className="mt-4 flex items-center text-purple-400 text-sm font-chivo font-light">
               <span className=" mr-2 text-xl ">💡</span>
@@ -356,8 +377,8 @@ const SpyDashboard: React.FC = () => {
                   </p>
                   <p className="text-sm text-gray-400">
                     <span className={`text-sm mt-1`}>
-                      $0.01 (0.000000885 Gwei){" "}
-                      <span className="text-xs font-chivo">:TODO</span>
+                    {stats?.gas_prices?.average.price}  <span>Gwei</span>
+                     
                     </span>
                   </p>
                 </div>
@@ -390,8 +411,8 @@ const SpyDashboard: React.FC = () => {
                   </p>
                   <p className="text-sm text-gray-400">
                     <span className={`text-sm mt-1`}>
-                      $0.001 (0.000000885 Gwei){" "}
-                      <span className="text-xs font-chivo">:TODO</span>
+                    {stats?.gas_prices?.average.price} <span>Gwei</span>
+                  
                     </span>
                   </p>
                 </div>

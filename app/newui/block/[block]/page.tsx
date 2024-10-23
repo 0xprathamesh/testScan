@@ -9,7 +9,8 @@ import { IoCubeOutline } from "react-icons/io5";
 import { blockService } from "@/components/newui/utils/apiroutes";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { parseAddress } from "@/lib/helpers";
+import { getTimeAgo, parseAddress } from "@/lib/helpers";
+
 
 interface PageProps {
   params: {
@@ -31,6 +32,8 @@ interface BlockData {
   miner: string;
   confirmations: number;
   transactions?: string[];
+  gasPercentage?: number;
+  
 }
 
 interface Transaction {
@@ -78,12 +81,13 @@ const Block: React.FC<PageProps> = ({ params }) => {
           gasLimit: ethers.BigNumber.from(blockResponse.gas_limit),
           size: blockResponse.size,
           difficulty: blockResponse.difficulty,
-          baseFeePerGas: blockResponse.base_fee_per_gas || "N/A",
+          baseFeePerGas: blockResponse.base_fee_per_gas,
           burntFees: blockResponse.burnt_fees,
-          priorityFee: blockResponse.priority_fee || "N/A",
+          priorityFee: blockResponse.priority_fee ,
           miner: blockResponse.miner.hash,
           transactions: blockResponse.transaction_hashes,
-          confirmations: blockResponse.confirmations,
+          confirmations: blockResponse.tx_count,
+          gasPercentage: blockResponse.gas_used_percentage,
         };
 
         setBlockData(blockData);
@@ -212,7 +216,10 @@ const BlockDetailsCard: React.FC<{
     const date = new Date(timestamp * 1000);
     return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
-
+  const percentage = blockData?.gasPercentage;
+  const roundedPercentage =
+    percentage !== undefined ? parseFloat(percentage.toFixed(2)) : 0.0;
+  console.log(roundedPercentage); // Outputs the rounded value or 0.00 if percentage is undefined
   return (
     <div className="bg-black rounded-3xl text-white w-[40%] h-[640px]">
       <div className="rounded-t-3xl bg-blue-500 py-2 px-4 mt-4">
@@ -254,7 +261,7 @@ const BlockDetailsCard: React.FC<{
               <span className="mr-2 text-sm font-inter">Block Hash</span>
             </div>
             <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
-             {parseAddress(blockData.hash)}
+              {parseAddress(blockData.hash)}
             </div>
           </div>
 
@@ -279,6 +286,14 @@ const BlockDetailsCard: React.FC<{
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <span className="mr-2 text-sm font-inter">Gas Used</span>
+            </div>
+            <div className="w-60 bg-gray-200 rounded-full dark:bg-gray-700">
+              <div
+                className={`bg-blue text-xs font-medium text-black text-center p-0.5 leading-none rounded-full`}
+                style={{ width: `${roundedPercentage}%` }} 
+              >
+                {roundedPercentage}%
+              </div>
             </div>
             {/* <div className="relative w-full bg-white bg-opacity-20 h-6 rounded-md">
               <div
@@ -338,8 +353,6 @@ const BlockDetailsCard: React.FC<{
 };
 
 export default Block;
-
-
 
 const Skeleton: React.FC<{
   width?: string;

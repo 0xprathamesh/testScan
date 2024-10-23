@@ -92,7 +92,7 @@ const SkeletonTransactionMovement = () => (
 const DashboardPage = () => {
   const [blockchainData, setBlockchainData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
+  const [stats, setStats] = useState<any>(null);
   // useEffect(() => {
 
   //   const fetchData = async () => {
@@ -126,7 +126,18 @@ const DashboardPage = () => {
     };
 
     fetchData();
+    getStats();
   }, []);
+  const getStats = async () => {
+    try {
+      const response = await dashboardService.stats();
+      setStats(response);
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  };
 
   const fetchRPCData = async () => {
     try {
@@ -171,7 +182,16 @@ const DashboardPage = () => {
     }
 
     const { totalTransactions, latestBlockNumber } = blockchainData;
-    const percentage = 5.52;
+    let roundedPercentage;
+
+    if (stats && stats.network_utilization_percentage !== null) {
+      const percentage = stats.network_utilization_percentage;
+      const percentageNumber = percentage.toFixed(3);
+      roundedPercentage = parseFloat(percentageNumber);
+    } else {
+      roundedPercentage = 0;
+    }
+
     return (
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
         <div className="bg-black text-white rounded-3xl p-4">
@@ -218,7 +238,7 @@ const DashboardPage = () => {
               <div className="ml-2 flex items-center">
                 <div className="w-12 h-12 mr-2">
                   <CircularProgressbar
-                    value={percentage}
+                    value={roundedPercentage}
                     styles={buildStyles({
                       textSize: "32px",
                       pathColor: `#4caf50`, // Progress bar color
@@ -228,7 +248,10 @@ const DashboardPage = () => {
                   />
                 </div>
                 <div>
-                  <p className="text-lg font-bold">5.72%  <span className="text-xs font-chivo">:TODO</span></p>
+                  <p className="text-lg font-bold">
+                    {roundedPercentage}%
+           
+                  </p>
                   <p className="text-xs text-gray-400">
                     Network utilization in last 50 blocks
                   </p>
