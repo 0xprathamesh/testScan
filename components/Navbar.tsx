@@ -25,22 +25,22 @@ const Navbar = () => {
   console.log(account);
 
   const networkSwitcher = useNetworkSwitcherModal();
-  // const handleClick = () => {
-  //   networkSwitcher.open({
-  //     client,
-  //     theme: "light",
-  //     sections: [{ chains: [xdcApothemNetwork], label: "Supported Networks" }],
-  //   });
-  // };
   const handleClick = () => {
-    if (networkConfig) {
-      networkSwitcher.open({
-        client,
-        theme: "light",
-        sections: [{ chains: [networkConfig], label: "Supported Networks" }],
-      });
-    }
+    networkSwitcher.open({
+      client,
+      theme: "light",
+      sections: [{ chains: [xdcApothemNetwork], label: "Supported Networks" }],
+    });
   };
+  // const handleClick = () => {
+  //   if (networkConfig) {
+  //     networkSwitcher.open({
+  //       client,
+  //       theme: "light",
+  //       sections: [{ chains: [networkConfig], label: "Supported Networks" }],
+  //     });
+  //   }
+  // };
   useEffect(() => {
     if (dynamicNetworkConfig) {
       setNetworkConfig(dynamicNetworkConfig);
