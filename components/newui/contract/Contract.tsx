@@ -9,12 +9,11 @@ import WriteContract from "./WriteContract";
 import ReadProxy from "./ReadProxy";
 import WriteProxy from "./WriteProxy";
 import FileStructure from "./FileStructure";
-
+import Link from "next/link";
 
 interface AddressProps {
   address: string;
 }
-
 
 interface ContractData {
   isVerified: boolean;
@@ -33,12 +32,10 @@ interface ContractData {
   }[];
 }
 
-
 const CodeTab: React.FC<{ contract: ContractData | null }> = ({ contract }) => {
   if (!contract) {
     return <p>Loading contract details...</p>;
   }
-
 
   const InfoRow: React.FC<{
     label: string;
@@ -81,84 +78,98 @@ const CodeTab: React.FC<{ contract: ContractData | null }> = ({ contract }) => {
               contract.isVerified ? "text-green-500" : "text-red-500"
             }`}
           />
-          Contract Source Code Verified
+     <Link href={`/`}></Link>
+          {contract.isVerified
+            ? "Contract Source Code Verified"
+            : "Contract Source Code Not Verified"}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <InfoRow label="Contract Name:" value={contract.name} />
-          <InfoRow label="Compiler Version:" value={contract.compiler_version} />
-          <InfoRow label="Optimization Runs:" value={contract.optimization_runs} />
-          <InfoRow label="Contract Source Code (solidity):" value={contract.language} />
-        </div>
-        <div>
-          <InfoRow
-            label="Optimization Enabled:"
-            value={contract.optimization_enabled ? "Yes" : "No"}
-            suffix={
-              contract.optimization_enabled
-                ? `with ${contract.optimization_runs} runs`
-                : undefined
-            }
-            suffixClass="text-blue font-chivo tracking-wider"
-          />
-          <InfoRow
-            label="Other Settings:"
-            value={contract.evmVersion}
-            additionalInfo={[
-              { text: " Evm Version, " },
-              {
-                text: contract.license_type + " ",
-                fontWeight: "font-semibold",
-              },
-              { text: "license", className: "text-blue-500" },
-            ]}
-          />
-        </div>
-      </div>
+      {contract.isVerified ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <InfoRow label="Contract Name:" value={contract.name} />
+              <InfoRow
+                label="Compiler Version:"
+                value={contract.compiler_version}
+              />
+              <InfoRow
+                label="Optimization Runs:"
+                value={contract.optimization_runs}
+              />
+              <InfoRow
+                label="Contract Source Code (solidity):"
+                value={contract.language}
+              />
+            </div>
+            <div>
+              <InfoRow
+                label="Optimization Enabled:"
+                value={contract.optimization_enabled ? "Yes" : "No"}
+                suffix={
+                  contract.optimization_enabled
+                    ? `with ${contract.optimization_runs} runs`
+                    : undefined
+                }
+                suffixClass="text-blue font-chivo tracking-wider"
+              />
+              <InfoRow
+                label="Other Settings:"
+                value={contract.evmVersion}
+                additionalInfo={[
+                  { text: " Evm Version, " },
+                  {
+                    text: contract.license_type + " ",
+                    fontWeight: "font-semibold",
+                  },
+                  { text: "license", className: "text-blue-500" },
+                ]}
+              />
+            </div>
+          </div>
+          {/* Source Code Display */}
+          <div className="h-[400px] overflow-auto scrollbar-default rounded-md w-full">
+            <SyntaxHighlighter
+              language="json"
+              style={vscDarkPlus}
+              customStyle={{
+                margin: 0,
+                padding: "1rem",
+                fontSize: "0.875rem",
+                textWrap: "wrap",
+              }}
+            >
+              {Array.isArray(contract.source_code)
+                ? contract.source_code.join("\n")
+                : contract.source_code || ""}
+            </SyntaxHighlighter>
+          </div>
+          {/* ABI Display */}
+          <div>
+            <InfoRow label="Contract ABI:" />
+          </div>
+          <div className="h-[400px] overflow-auto scrollbar-default rounded-md w-full">
+            <SyntaxHighlighter
+              language="json"
+              style={vscDarkPlus}
+              customStyle={{
+                margin: 0,
+                padding: "1rem",
+                fontSize: "0.875rem",
+                textWrap: "wrap",
+              }}
+            >
+              {JSON.stringify(contract.abi, null, 2)}
+            </SyntaxHighlighter>
+          </div>
 
-      {/* Source Code Display */}
-      <div className="h-[400px] overflow-auto scrollbar-default rounded-md w-full">
-        <SyntaxHighlighter
-          language="json"
-          style={vscDarkPlus}
-          customStyle={{
-            margin: 0,
-            padding: "1rem",
-            fontSize: "0.875rem",
-            textWrap: "wrap",
-          }}
-        >
-          {Array.isArray(contract.source_code)
-            ? contract.source_code.join("\n")
-            : contract.source_code || ""}
-        </SyntaxHighlighter>
-      </div>
-
-      {/* ABI Display */}
-      <div>
-        <InfoRow label="Contract ABI:" />
-      </div>
-      <div className="h-[400px] overflow-auto scrollbar-default rounded-md w-full">
-        <SyntaxHighlighter
-          language="json"
-          style={vscDarkPlus}
-          customStyle={{
-            margin: 0,
-            padding: "1rem",
-            fontSize: "0.875rem",
-            textWrap: "wrap",
-          }}
-        >
-          {JSON.stringify(contract.abi, null, 2)}
-        </SyntaxHighlighter>
-      </div>
-
-      {/* File Structure Display */}
-      {contract.additionalResource && (
-        <FileStructure files={contract.additionalResource} />
-      )}
+          {/* File Structure Display */}
+          {contract.additionalResource && (
+            <FileStructure files={contract.additionalResource} />
+          )}
+        </>
+      ) : null}
     </div>
   );
 };
@@ -186,10 +197,13 @@ const Contract: React.FC<AddressProps> = ({ address }) => {
           license_type: response.license_type,
           source_code: response.source_code,
           abi: response.abi,
-          additionalResource: response.additional_sources?.map((source: { file_path: string; source_code: string }) => ({
-            filePath: source.file_path,
-            code: source.source_code, // Ensure this matches FileNode
-          })) || [],
+          additionalResource:
+            response.additional_sources?.map(
+              (source: { file_path: string; source_code: string }) => ({
+                filePath: source.file_path,
+                code: source.source_code, // Ensure this matches FileNode
+              })
+            ) || [],
         };
         setContract(data);
         setLoading(false);
@@ -209,7 +223,13 @@ const Contract: React.FC<AddressProps> = ({ address }) => {
     <div className="bg-white rounded-3xl">
       {/* Tab Header */}
       <div className="flex space-x-4 p-4">
-        {["Code", "Read Contract", "Read Proxy", "Write Contract", "Write Proxy"].map((tab) => (
+        {[
+          "Code",
+          "Read Contract",
+          "Read Proxy",
+          "Write Contract",
+          "Write Proxy",
+        ].map((tab) => (
           <span
             key={tab}
             onClick={() => setActiveTab(tab)}

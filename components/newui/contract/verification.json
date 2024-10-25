@@ -1,0 +1,88 @@
+
+{
+    "is_rust_verifier_microservice_enabled": true,
+    "license_types": {
+      "none": 1,
+      "unlicense": 2,
+      "mit": 3,
+      "gnu_gpl_v2": 4,
+      "gnu_gpl_v3": 5,
+      "gnu_lgpl_v2_1": 6,
+      "gnu_lgpl_v3": 7,
+      "bsd_2_clause": 8,
+      "bsd_3_clause": 9,
+      "mpl_2_0": 10,
+      "osl_3_0": 11,
+      "apache_2_0": 12,
+      "gnu_agpl_v3": 13,
+      "bsl_1_1": 14
+    },
+    "solidity_compiler_versions": [
+      "v0.8.29-nightly.2024.10.23+commit.66a1edb0",
+      "v0.8.29-nightly.2024.10.22+commit.b16d8119",
+      "v0.8.29-nightly.2024.10.21+commit.abc46f30",
+      "v0.8.29-nightly.2024.10.17+commit.cb576b1a",
+      "v0.8.29-nightly.2024.10.16+commit.39943862",
+      "v0.8.29-nightly.2024.10.15+commit.7264b475",
+      "v0.8.29-nightly.2024.10.14+commit.1c0695f6",
+      "v0.8.29-nightly.2024.10.13+commit.56902580",
+      "v0.8.29-nightly.2024.10.12+commit.589f8b1e",
+      "v0.8.29-nightly.2024.10.11+commit.73b7dcd6",
+      "v0.8.29-nightly.2024.10.9+commit.d6fa8491",
+      "v0.8.28+commit.7893614a",
+      "v0.8.28-nightly.2024.10.7+commit.0e02c469",
+      "v0.8.28-nightly.2024.10.2+commit.256e9528",
+      "v0.8.28-nightly.2024.10.1+commit.4ab3e361"
+    ],
+    "solidity_evm_versions": [
+      "homestead",
+      "tangerineWhistle",
+      "spuriousDragon",
+      "byzantium",
+      "constantinople",
+      "petersburg",
+      "istanbul",
+      "berlin",
+      "london",
+      "paris",
+      "shanghai",
+      "cancun",
+      "default"
+    ],
+    "verification_options": [
+      "multi-part",
+      "vyper-multi-part",
+      "vyper-standard-input",
+      "flattened-code",
+      "standard-input",
+      "vyper-code"
+    ],
+    "vyper_compiler_versions": [
+      "v0.4.1-b1+commit.039d3692",
+      "v0.4.0+commit.e9db8d9f",
+      "v0.4.0-rc6+commit.33719560",
+      "v0.4.0-rc5+commit.98370f50",
+      "v0.4.0-rc4+commit.41a3e084",
+      "v0.4.0-rc3+commit.f2136550",
+      "v0.4.0-rc2+commit.6f09e296",
+      "v0.4.0-rc1+commit.44a593a0",
+      "v0.4.0-b6+commit.7485ceab",
+      "v0.4.0-b5+commit.a9ee6414",
+      "v0.4.0-b4+commit.541b2e75",
+      "v0.4.0-b1+commit.6fb750af",
+      "v0.3.10+commit.91361694",
+      "v0.3.10-rc5+commit.42817806",
+      "v0.3.10-rc4+commit.2bdbd846"
+    ],
+    "vyper_evm_versions": [
+      "byzantium",
+      "constantinople",
+      "petersburg",
+      "istanbul",
+      "berlin",
+      "paris",
+      "shanghai",
+      "cancun",
+      "default"
+    ]
+  }
