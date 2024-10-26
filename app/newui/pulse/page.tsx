@@ -7,6 +7,7 @@ import { MdArrowForwardIos } from "react-icons/md";
 import { GrCubes } from "react-icons/gr";
 import { FaEthereum } from "react-icons/fa";
 import NetworkPulse from "@/components/newui/NetworkPulse";
+
 import {
   blockService,
   dashboardService,
@@ -16,6 +17,7 @@ import ChartComponent from "@/components/newui/ChartComponent";
 import { formatNumber } from "@/lib/helpers";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+
 interface BlockData {
   number: string;
   timestamp: string;
@@ -301,6 +303,7 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
+        
       </div>
     );
   };
