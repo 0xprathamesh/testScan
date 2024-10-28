@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "@/components/newui/Layout";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 import { FileText, User } from "lucide-react";
 import { tokenService } from "@/components/newui/utils/apiroutes";
 import ERC721Tokens from "@/components/newui/ERC721Tokens"; 
@@ -35,7 +35,7 @@ const Tokens = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [tokenType, setTokenType] = useState<string>("ERC20");
-
+const router = useRouter()
   const formatTokenSupply = (supply: any): string => {
     const supplyBigInt = BigInt(supply);
     const scaledSupply = supplyBigInt / BigInt(1e18);
@@ -86,12 +86,15 @@ const Tokens = () => {
   if (error) {
     return <div>{error}</div>;
   }
+  const handleGoBack = () => {
+    router.back();
+  };
 
   return (
     <Layout>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <Link href="/newui" className="mr-4">
+          <Link href="" className="mr-4" onClick={handleGoBack}>
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <div>

@@ -21,6 +21,8 @@ const ContractDetailsCard: React.FC<PageProps> = ({ address }) => {
   const [contract, setContract] = useState<Contract | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  
+
   const formatBalance = (weiBalance: string) => {
     // Convert from wei to Ether
     return ethers.utils.formatEther(weiBalance);

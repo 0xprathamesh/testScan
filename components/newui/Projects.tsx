@@ -2,11 +2,11 @@
 import React, { useState } from "react";
 import { projects } from "./utils/data";
 import Image from "next/image";
+import Link from "next/link";
 
 const Projects = () => {
   const [activeTab, setActiveTab] = useState("RWA");
 
- 
   const filteredProjects =
     activeTab === "All"
       ? projects
@@ -16,6 +16,9 @@ const Projects = () => {
     <div className="bg-white rounded-3xl border border-gray-200 p-6 mb-10">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl font-semibold">Projects</h2>
+        <Link href={`/newui/explore/dapps`}>
+          <p className="font-chivo">View All</p>
+        </Link>
       </div>
 
       <div className="flex space-x-2 p-4">
@@ -93,19 +96,29 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   <div className="flex items-start space-x-4 mb-8 hover:shadow-lg p-4 rounded-md">
     <div className="flex-shrink-0">
       {typeof icon === "string" ? (
-        <img src={icon} alt={`${name} icon`} className="w-12 h-12 rounded-full" />
+        <img
+          src={icon}
+          alt={`${name} icon`}
+          className="w-12 h-12 rounded-full"
+        />
       ) : (
-        <Image width={12} height={12} alt="img" src={icon} className="w-12 h-12 rounded-full" />
+        <Image
+          width={12}
+          height={12}
+          alt="img"
+          src={icon}
+          className="w-12 h-12 rounded-full"
+        />
       )}
     </div>
     <div className="flex-1">
       <div className="flex items-center justify-between mb-1">
         <h3 className="font-semibold text-lg">{name}</h3>
-        <span className="px-3 py-1 bg-gray-200 text-xs rounded-md">{track}</span>
+        <span className="px-3 py-1 bg-gray-200 text-xs rounded-md">
+          {track}
+        </span>
       </div>
       <p className="text-gray-600 text-sm line-clamp-2">{description}</p>
     </div>
   </div>
 );
-
-  

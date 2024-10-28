@@ -13,6 +13,7 @@ import { FiArrowRight, FiCopy } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { getCoinData } from "@/components/newui/utils/coingeko";
 
+
 interface PageProps {
   params: {
     hash: string;

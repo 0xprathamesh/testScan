@@ -10,7 +10,9 @@ import TokenHolders from "@/components/newui/TokenHolders";
 import ContractDetails from "@/components/newui/ContractDetails";
 import { tokenService } from "@/components/newui/utils/apiroutes";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { useRouter } from "next/navigation";
 import "react-circular-progressbar/dist/styles.css";
+import { User } from 'lucide-react';
 interface PageProps {
   params: {
     address: string;
@@ -22,7 +24,10 @@ const Token: React.FC<PageProps> = ({ params }) => {
   const [tokenData, setTokenData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [topHolders, setTopHolders] = useState<any[]>([]); // State for top holders
-
+  const router = useRouter();
+  const handleGoBack = () => {
+    router.back();
+  };
   useEffect(() => {
     const fetchTokenData = async () => {
       try {
@@ -67,16 +72,29 @@ const Token: React.FC<PageProps> = ({ params }) => {
   const parseAddress = (address: string): string => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
-
+  const generateGradient = (hash: string) => {
+    const colors = [
+      ["#FF6B6B", "#4ECDC4"],
+      ["#A8E6CF", "#FFD3B6"],
+      ["#FFAAA5", "#FF8B94"],
+      ["#DBE2EF", "#3F72AF"],
+      ["#95E1D3", "#EAFFD0"],
+    ];
+    // Use last characters of hash to select a gradient
+    const index = parseInt(hash.slice(-1), 16) % colors.length;
+    return `linear-gradient(135deg, ${colors[index][0]}, ${colors[index][1]})`;
+  };
   return (
     <Layout>
       {loading ? (
-        <Loading />
+        <>
+          <div className="items-center text-blue"><Loading/></div>
+          </>
       ) : (
         <>
           <div className="mb-4">
             <div className="flex items-center">
-              <Link href="/newui">
+              <Link href="" onClick={handleGoBack}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
               </Link>
               <span className="text-md font-semibold">Token Details</span>
@@ -140,46 +158,80 @@ const Token: React.FC<PageProps> = ({ params }) => {
               </div>
             </div>
 
-            {/* Top Holders */}
-            <div className="bg-white rounded-3xl p-4 shadow-md">
-              <h2 className="text-lg font-semibold mb-2">Top Holders</h2>
+            <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">
+                Top Holders
+              </h2>
+
               {topHolders.length > 0 ? (
-                <ul className="space-y-2">
-                    {topHolders.map((holder, index)=> {
-                      const percentage = parseFloat(holder.value) / parseFloat(tokenData?.total_supply);
-                      const result = percentage * 100;
-                 
-                      return (
-                        <li key={index} className="flex justify-between">
-                          <span className="text-sm">
-                            {holder.address?.name ||
-                              parseAddress(holder.address.hash)}
-                          </span>
-                          <span className="text-sm flex items-center">
-                            {(
-                              (parseFloat(holder.value) /
-                                parseFloat(tokenData?.total_supply)) *
-                              100
-                            ).toFixed(2)}
-                            %
-                            <div className="w-6 h-6 ml-2">
-                              <CircularProgressbar
-                                value={result}
-                                styles={buildStyles({
-                                  textSize: "32px",
-                                  pathColor: `#4caf50`, // Progress bar color
-                                  textColor: "#fff", // Text color
-                                  trailColor: "#d6d6d6", // Background of the progress bar
-                                })}
-                              />
+                <ul className="space-y-4">
+                  {topHolders.map((holder, index) => {
+                    const percentage =
+                      parseFloat(holder.value) /
+                      parseFloat(tokenData?.total_supply);
+                    const result = percentage * 100;
+
+                    return (
+                      <li
+                        key={index}
+                        className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors duration-200"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className="relative w-10 h-10 flex-shrink-0">
+                            <div
+                              className="absolute inset-0 rounded-full overflow-hidden"
+                              style={{
+                                background: generateGradient(
+                                  holder.address.hash
+                                ),
+                              }}
+                            >
+                              <div className="absolute inset-0 flex items-center justify-center text-white">
+                                <User className="w-5 h-5 opacity-50" />
+                              </div>
                             </div>
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium text-gray-700">
+                              {holder.address?.name ||
+                                parseAddress(holder.address.hash)}
+                            </span>
+                            {holder.address?.name && (
+                              <span className="text-xs text-gray-500">
+                                {parseAddress(holder.address.hash)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-3">
+                          <span className="text-sm font-semibold text-gray-600">
+                            {result.toFixed(2)}%
                           </span>
-                        </li>
-                      )
-                    })}
+                          <div className="w-8 h-8 relative">
+                            <div
+                              className="absolute inset-0 rounded-full bg-gray-100"
+                              style={{
+                                background: `conic-gradient(#4caf50 ${result}%, #f3f4f6 0)`,
+                              }}
+                            />
+                            <div className="absolute inset-1 rounded-full bg-white" />
+                            <div
+                              className="absolute inset-2 rounded-full"
+                              style={{
+                                background: `conic-gradient(#4caf50 ${result}%, transparent 0)`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               ) : (
-                <p>No holders found.</p>
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No holders found</p>
+                </div>
               )}
             </div>
           </div>

@@ -17,7 +17,40 @@ import ChartComponent from "@/components/newui/ChartComponent";
 import { formatNumber } from "@/lib/helpers";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-
+const stages = [
+  {
+    icon: IoReceiptOutline,
+    title: "Transactions",
+    time: "~ 0.8 sec",
+    color: "from-green-400/20 to-green-500/20",
+    iconColor: "text-green-400",
+    pulseDelay: "animate-delay-[0ms]"
+  },
+  {
+    icon: IoCubeOutline,
+    title: "Blocks",
+    time: "~ 10 sec",
+    color: "from-green-500/20 to-green-600/20",
+    iconColor: "text-green-500",
+    pulseDelay: "animate-delay-[300ms]"
+  },
+  {
+    icon: GrCubes,
+    title: "Batch",
+    time: "~ 1 hour",
+    color: "from-green-600/20 to-green-700/20",
+    iconColor: "text-green-600",
+    pulseDelay: "animate-delay-[600ms]"
+  },
+  {
+    icon: FaEthereum,
+    title: "L1 Chain",
+    time: "~ 1 sec",
+    color: "from-green-700/20 to-green-800/20",
+    iconColor: "text-green-700",
+    pulseDelay: "animate-delay-[900ms]"
+  }
+];
 interface BlockData {
   number: string;
   timestamp: string;
@@ -263,7 +296,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="bg-black text-white rounded-3xl p-4 lg:col-span-2">
+        {/* <div className="bg-black text-white rounded-3xl p-4 lg:col-span-2">
           <h3 className="text-sm font-normal mb-4">
             Transaction movement on chain
           </h3>
@@ -302,7 +335,49 @@ const DashboardPage = () => {
               <p className="text-xs text-gray-400">~ 1 sec</p>
             </div>
           </div>
+        </div> */}
+         <div className="bg-black text-white rounded-3xl p-6 lg:col-span-2 font-chivo">
+      <h3 className="text-sm font-medium mb-8 flex items-center space-x-2">
+        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        <span>Transaction Movement on Chain</span>
+      </h3>
+
+      <div className="relative">
+       
+        <div className="mt-2 absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-green-400 via-green-600 to-green-800 transform -translate-y-1/2" />
+        
+        <div className="relative flex justify-between items-center">
+          {stages.map((stage, index) => (
+            <div key={index} className="relative group">
+              
+              {index < stages.length - 1 && (
+                <div className="absolute top-1/2 -right-8 transform -translate-y-1/2">
+                
+                </div>
+              )}
+              
+              <div className="text-center relative">
+                <div className={`relative w-16 h-16 mb-4 mx-auto ${stage.pulseDelay}`}>
+          
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${stage.color} animate-pulse`} />
+                  
+         
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <stage.icon className={`w-8 h-8 ${stage.iconColor} transform group-hover:scale-110 transition-transform duration-300`} />
+                  </div>
+                </div>
+                
+         
+                <div className="transform group-hover:-translate-y-1 transition-transform duration-300">
+                  <p className="text-sm font-medium mb-1">{stage.title}</p>
+                  <p className="text-xs text-gray-400">{stage.time}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
+      </div>
+    </div>
         
       </div>
     );

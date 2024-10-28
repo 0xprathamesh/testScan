@@ -12,8 +12,8 @@ interface HoldersProps {
 }
 
 interface Holder {
-  name?: string; // Optional holder name
-  hash: string; // Address hash
+  name?: string;
+  hash: string;
   quantity: string;
   percentage: number;
 }
@@ -33,9 +33,9 @@ const TokenHolders: React.FC<HoldersProps> = ({ address }) => {
         console.log("Token Holders ==========> ", response.items);
         const holdersData = response.items.map((item: any) => {
           const decimals = parseInt(item.token.decimals, 10);
-          const balance = parseFloat(item.value) / Math.pow(10, decimals); 
+          const balance = parseFloat(item.value) / Math.pow(10, decimals);
           const totalSupply =
-            parseFloat(item.token.total_supply) / Math.pow(10, decimals); 
+            parseFloat(item.token.total_supply) / Math.pow(10, decimals);
           // Calculate percentage holding
           const percentage = (balance / totalSupply) * 100;
 
@@ -115,10 +115,25 @@ const TokenHolders: React.FC<HoldersProps> = ({ address }) => {
               </div>
 
               {/* Percentage Holding */}
-              <div className="flex-shrink-0" style={{ width: "80px" }}>
-                <p className="text-sm text-gray-700 font-light text-right">
+              <div className="flex-shrink-0 w-20 flex items-center justify-end space-x-2">
+                <p className="text-sm text-gray-700 font-light ">
                   {holder.percentage.toFixed(2)}%
                 </p>
+                <div className="w-6 h-6 relative pl-1">
+                  <div
+                    className="absolute inset-0 rounded-full bg-gray-100"
+                    style={{
+                      background: `conic-gradient(#4caf50 ${holder.percentage}%, #f3f4f6 0)`,
+                    }}
+                  />
+                  <div className="absolute inset-0.5 rounded-full bg-white" />
+                  <div
+                    className="absolute inset-1 rounded-full"
+                    style={{
+                      background: `conic-gradient(#4caf50 ${holder.percentage}%, transparent 0)`,
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>

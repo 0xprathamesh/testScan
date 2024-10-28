@@ -59,14 +59,16 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ txData }) => {
 
   const router = useRouter();
   const tabs = ["Overview", "Internal Transactions", "JSON", "State"];
-
+  const handleGoBack = () => {
+    router.back();
+  };
   return (
     <div className="font-inter">
       {/* Header */}
       <div className="flex items-center mb-6">
         <div>
           <div className="flex items-center">
-            <Link href="/newui">
+            <Link href="" onClick={handleGoBack}>
               <ArrowLeft className="w-4 h-4 mr-2" />
             </Link>
             <span className="text-md font-semibold">User Details •</span>

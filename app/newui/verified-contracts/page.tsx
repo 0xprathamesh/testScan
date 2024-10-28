@@ -12,14 +12,19 @@ import Contracts from "@/components/newui/Contracts";
 import { IoFlash } from "react-icons/io5";
 import { BsWrench } from "react-icons/bs";
 import { LuAlertTriangle } from "react-icons/lu";
+
 import { Tooltip } from "react-tooltip";
+import { useRouter } from "next/navigation";
 const currency = process.env.NEXT_PUBLIC_VALUE_SYMBOL;
 const VerifiedContractsPage = () => {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [ethToUsdRate, setEthToUsdRate] = useState<number>(0);
-
+  const router = useRouter()
+  const handleGoBack = () => {
+    router.back();
+  };
   const fetchData = async () => {
     try {
       const response = await addressService.getContract(`?limit=250&page=1`);
@@ -114,7 +119,7 @@ const VerifiedContractsPage = () => {
   return (
     <Layout>
       <div className="flex items-center mb-6">
-        <Link href="/newui" className="mr-4">
+        <Link href="" className="mr-4" onClick={handleGoBack}>
           <ArrowLeft className="h-6 w-6" />
         </Link>
         <div>

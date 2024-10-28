@@ -24,7 +24,7 @@ const articleInstance = axios.create({
     "api-key": `${process.env.REACT_APP_ARTICLE_KEY}`,
   },
 });
-const envAPI = process.env.NEXT_PUBLIC_TESTNET_API_URL;
+const envAPI = process.env.NEXT_PUBLIC_MAINNET_API_URL;
 // api.defaults.baseURL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_SOCKET_URL : 'https://api.xdcscan.io';
 api.defaults.baseURL = envAPI;
 contractApi.defaults.baseURL = envAPI;
