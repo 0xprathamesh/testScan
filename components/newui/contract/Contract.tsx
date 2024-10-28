@@ -32,7 +32,11 @@ interface ContractData {
   }[];
 }
 
-const CodeTab: React.FC<{ contract: ContractData | null }> = ({ contract }) => {
+interface CodeTabProps {
+  contract: ContractData | null;
+  address: string;
+}
+const CodeTab: React.FC<CodeTabProps> = ({ contract, address }) => {
   if (!contract) {
     return <p>Loading contract details...</p>;
   }
@@ -78,10 +82,15 @@ const CodeTab: React.FC<{ contract: ContractData | null }> = ({ contract }) => {
               contract.isVerified ? "text-green-500" : "text-red-500"
             }`}
           />
-     <Link href={`/`}></Link>
-          {contract.isVerified
-            ? "Contract Source Code Verified"
-            : "Contract Source Code Not Verified"}
+
+          {contract.isVerified ? (
+            "Contract Source Code Verified"
+          ) : (
+            <div>
+              Contract Source Code Not Verified.{" "}
+              <Link href={`/newui/contract/${address}`} className="text-red-500">Verify Now</Link>
+            </div>
+          )}
         </p>
       </div>
 
@@ -244,7 +253,9 @@ const Contract: React.FC<AddressProps> = ({ address }) => {
 
       {/* Tab Content */}
       <div className="p-4">
-        {activeTab === "Code" && <CodeTab contract={contract} />}
+        {activeTab === "Code" && (
+          <CodeTab contract={contract} address={address} />
+        )}
         {activeTab === "Read Contract" && <ReadContracts address={address} />}
         {activeTab === "Read Proxy" && <ReadProxy address={address} />}
         {activeTab === "Write Contract" && <WriteContract address={address} />}
