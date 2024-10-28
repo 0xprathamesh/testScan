@@ -14,6 +14,7 @@ import Wallet from "@/components/newui/Wallet";
 import TokenTransfers from "@/components/TokenTransfers";
 import InternalTx from "@/components/InternalTx";
 import ContractAddress from "@/components/newui/ContractAddress";
+import { useRouter } from "next/navigation";
 
 
 interface PageProps {
@@ -47,7 +48,10 @@ const Address: React.FC<PageProps> = ({ params }) => {
   const [activeTab, setActiveTab] = useState<string>("wallet");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
+  const router = useRouter();
+  const handleGoBack = () => {
+    router.back();
+  };
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -149,7 +153,7 @@ const Address: React.FC<PageProps> = ({ params }) => {
       {/* Header */}
       <div className="mb-4">
         <div className="flex items-center">
-          <Link href="/newui">
+          <Link href="" onClick={handleGoBack}>
             <ArrowLeft className="w-4 h-4 mr-2" />
           </Link>
           <span className="text-md font-semibold">User Details •</span>

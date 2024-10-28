@@ -12,7 +12,7 @@ import Link from "next/link";
 import { FiArrowRight, FiCopy } from "react-icons/fi";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { getCoinData } from "@/components/newui/utils/coingeko";
-
+import { useRouter } from "next/navigation";
 interface PageProps {
   params: {
     hash: string;
@@ -29,7 +29,7 @@ interface TokenTransfer {
   token: string;
   icon?: string;
   usd_value?: number;
-  timestamp: string;
+  timestamp?: string;
 }
 
 interface TxData {
@@ -239,7 +239,7 @@ const Transaction: React.FC<PageProps> = ({ params }) => {
         to: ethers.utils.getAddress("0x" + log.topics[2].slice(26)),
         amount: ethers.BigNumber.from(log.data).toString(),
         token: log.address,
-        timestamp:log.timestamp,
+      
       }));
   };
 
@@ -621,7 +621,8 @@ const TokenTransfer = ({ hash }: TransactionProps) => {
                   />
                 </div>
                 <div>
-                  {getTimeAgo(transfer.timestamp)}
+                {transfer.timestamp ? getTimeAgo(transfer.timestamp) : ""}
+
                 </div>
               </div>
             ))}

@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { FiCopy } from "react-icons/fi";
-
+import { useRouter } from "next/navigation";
 interface Account {
   hash: string;
   coin_balance: string;
@@ -31,7 +31,7 @@ const parseAddress = (address: string) => {
 const Accounts = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
+  const router = useRouter();
   const fetchData = async () => {
     try {
       const response = await addressService.addresses(`?limit=50&page=1`);
@@ -44,7 +44,9 @@ const Accounts = () => {
       setLoading(false);
     }
   };
-
+  const handleGoBack = () => {
+    router.back();
+  };
   useEffect(() => {
     fetchData();
   }, []);
@@ -60,7 +62,7 @@ const Accounts = () => {
   return (
     <Layout>
       <div className="flex items-center mb-6">
-        <Link href="/newui" className="mr-4">
+        <Link href="" className="mr-4" onClick={handleGoBack}>
           <ArrowLeft className="h-6 w-6" />
         </Link>
         <div>

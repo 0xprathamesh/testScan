@@ -8,6 +8,7 @@ import InternalTx from "@/components/InternalTx";
 import ContractTransactions from "./ContractTransactions";
 import ContractDetailsCard from "./ContractDetailsCard";
 import Contract from "./contract/Contract";
+import { useRouter } from "next/navigation";
 
 interface PageProps {
   params: {
@@ -30,7 +31,10 @@ const parseAddress = (address: string): string => {
 };
 const ContractAddress: React.FC<PageProps> = ({ params }) => {
   const [activeTab, setActiveTab] = useState<string>("transactions");
-
+  const router = useRouter()
+  const handleGoBack = () => {
+    router.back();
+  };
   useEffect(() => {});
   const renderTabContent = () => {
     switch (activeTab) {
@@ -50,7 +54,7 @@ const ContractAddress: React.FC<PageProps> = ({ params }) => {
     <div>
       <div className="mb-4">
         <div className="flex items-center">
-          <Link href="/newui">
+          <Link href="" onClick={handleGoBack}>
             <ArrowLeft className="w-4 h-4 mr-2" />
           </Link>
           <span className="text-md font-semibold">Contract Details •</span>

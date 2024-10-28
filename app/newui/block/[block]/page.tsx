@@ -11,7 +11,6 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { getTimeAgo, parseAddress } from "@/lib/helpers";
 
-
 interface PageProps {
   params: {
     block: string;
@@ -33,7 +32,6 @@ interface BlockData {
   confirmations: number;
   transactions?: string[];
   gasPercentage?: number;
-  
 }
 
 interface Transaction {
@@ -51,7 +49,9 @@ const Block: React.FC<PageProps> = ({ params }) => {
   const router = useRouter(); // To use for navigation
 
   const blockNumber = parseInt(params.block, 10);
-
+  const handleGoBack = () => {
+    router.back();
+  };
   useEffect(() => {
     if (params.block) {
       if (isNaN(blockNumber)) {
@@ -83,7 +83,7 @@ const Block: React.FC<PageProps> = ({ params }) => {
           difficulty: blockResponse.difficulty,
           baseFeePerGas: blockResponse.base_fee_per_gas,
           burntFees: blockResponse.burnt_fees,
-          priorityFee: blockResponse.priority_fee ,
+          priorityFee: blockResponse.priority_fee,
           miner: blockResponse.miner.hash,
           transactions: blockResponse.transaction_hashes,
           confirmations: blockResponse.tx_count,
@@ -177,7 +177,7 @@ const Block: React.FC<PageProps> = ({ params }) => {
     <Layout>
       <div className="p-6 font-sans">
         <div className="flex items-center mb-6">
-          <Link href="/newui" className="mr-4">
+          <Link href="" className="mr-4" onClick={handleGoBack}>
             <ArrowLeft className="h-6 w-6" />
           </Link>
           <div>
@@ -237,7 +237,7 @@ const BlockDetailsCard: React.FC<{
               className={`bg-gray-500 p-2 rounded-md ${
                 blockData.number === 0 ? "cursor-not-allowed opacity-50" : ""
               }`}
-              onClick={blockData.number > 0 ? onPrevious : undefined} // Prevent going below block 0
+              onClick={blockData.number > 0 ? onPrevious : undefined}
             >
               <MdKeyboardArrowLeft />
             </div>
@@ -260,18 +260,22 @@ const BlockDetailsCard: React.FC<{
             <div className="flex items-center">
               <span className="mr-2 text-sm font-inter">Block Hash</span>
             </div>
-            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
-              {parseAddress(blockData.hash)}
-            </div>
+            <Link href={`/newui/tx/${blockData.hash}`}>
+              <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
+                {parseAddress(blockData.hash)}
+              </div>
+            </Link>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <span className="mr-2 text-sm font-inter">Miner</span>
             </div>
-            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
-              {parseAddress(blockData.miner)}
-            </div>
+            <Link href={`/newui/block/${blockData.miner}`}>
+              <div className="bg-white bg-opacity-20 px-3 py-1 rounded-md text-sm border-gray-400 border leading">
+                {parseAddress(blockData.miner)}
+              </div>
+            </Link>
           </div>
 
           <div className="flex items-center justify-between">
@@ -290,7 +294,7 @@ const BlockDetailsCard: React.FC<{
             <div className="w-60 bg-gray-200 rounded-full dark:bg-gray-700">
               <div
                 className={`bg-blue text-xs font-medium text-black text-center p-0.5 leading-none rounded-full`}
-                style={{ width: `${roundedPercentage}%` }} 
+                style={{ width: `${roundedPercentage}%` }}
               >
                 {roundedPercentage}%
               </div>

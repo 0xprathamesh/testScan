@@ -68,7 +68,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="en">
-      <body>
+      <body className="font-chivo">
         <ThirdwebProvider>
           {/* {isFirstVisit && <SetRPCModal onClose={handleModalClose} />} */}
           {showVerifyModal && (
