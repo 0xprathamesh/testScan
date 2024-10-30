@@ -7,6 +7,7 @@ interface ContractConfig {
   solidity_compiler_versions: string[];
   vyper_compiler_versions: string[];
   solidity_evm_versions: string[];
+  vyper_evm_versions: string[];
   license_types: Record<string, number>;
 }
 
@@ -15,11 +16,12 @@ interface PageProps {
   licenseType: string;
 }
 
-const VyperSourcify: React.FC<PageProps> = ({ address, licenseType }) => {
+const VyperMultiParts: React.FC<PageProps> = ({ address, licenseType }) => {
   const [config, setConfig] = useState<ContractConfig | null>(null);
   const [payload, setPayload] = useState({
     files: [] as File[],
-    chosen_contract_index: "none",
+    compiler_version: "",
+    evm_version: "",
     license_type: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,6 +58,18 @@ const VyperSourcify: React.FC<PageProps> = ({ address, licenseType }) => {
     }));
   };
 
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type } = e.target;
+    const isCheckbox = type === "checkbox";
+    setPayload((prev) => ({
+      ...prev,
+      [name]: isCheckbox ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -64,13 +78,20 @@ const VyperSourcify: React.FC<PageProps> = ({ address, licenseType }) => {
 
     const formData = new FormData();
     formData.append("license_type", licenseType);
+    formData.append("compiler_version", payload.compiler_version);
+    formData.append("evm_version", payload.evm_version);
     payload.files.forEach((file, index) => {
       formData.append(`files[${index}]`, file);
     });
 
     try {
-      await addressService.verifyContract(address, "sourcify", formData);
+      const response = await addressService.verifyContract(
+        address,
+        "vyper-multi-part",
+        formData
+      );
       setSuccess("Contract verification submitted successfully.");
+      console.log(response)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Verification failed");
     } finally {
@@ -80,6 +101,45 @@ const VyperSourcify: React.FC<PageProps> = ({ address, licenseType }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-chivo">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Compiler Version
+          </label>
+          <select
+            name="compiler_version"
+            value={payload.compiler_version}
+            onChange={handleInputChange}
+            className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+          >
+            <option value="" disabled>
+              Select Compiler Version
+            </option>
+            {config?.vyper_compiler_versions.map((version) => (
+              <option key={version} value={version}>
+                {version}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            EVM Version
+          </label>
+          <select
+            name="evmVersion"
+            value={payload.evm_version}
+            onChange={handleInputChange}
+            className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+          >
+            {config?.vyper_evm_versions.map((version) => (
+              <option key={version} value={version}>
+                {version}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
       <div>
         <label className="block text-sm font-medium text-gray-700">
           Standard JSON Input
@@ -127,4 +187,4 @@ const VyperSourcify: React.FC<PageProps> = ({ address, licenseType }) => {
   );
 };
 
-export default VyperSourcify;
+export default VyperMultiParts;
