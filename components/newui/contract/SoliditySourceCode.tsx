@@ -66,7 +66,11 @@ const SoliditySourceCode: React.FC<PageProps> = ({ address, licenseType }) => {
     setIsSubmitting(true);
     setError(null);
     setSuccess(null);
-
+    if (!payload.compiler_version) {
+      setError("Compiler version is required.");
+      setIsSubmitting(false);
+      return;
+    }
     const formData = new FormData();
     formData.append("license_type", licenseType);
     formData.append("compiler_version", payload.compiler_version);
@@ -101,6 +105,9 @@ const SoliditySourceCode: React.FC<PageProps> = ({ address, licenseType }) => {
             onChange={handleInputChange}
             className="mt-1 block w-full rounded-md border border-gray-300 p-2"
           >
+            <option value="" disabled>
+              Select Compiler Version
+            </option>
             {config?.solidity_compiler_versions.map((version) => (
               <option key={version} value={version}>
                 {version}

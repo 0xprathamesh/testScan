@@ -15,12 +15,16 @@ interface PageProps {
   licenseType: string;
 }
 
-const SoliditySourcify: React.FC<PageProps> = ({ address, licenseType }) => {
+const SolidityMultiPart: React.FC<PageProps> = ({ address, licenseType }) => {
   const [config, setConfig] = useState<ContractConfig | null>(null);
   const [payload, setPayload] = useState({
     files: [] as File[],
-    chosen_contract_index: "none",
+
     license_type: "",
+    compiler_version: "",
+    evm_version: "",
+    is_optimization_enabled: false,
+    libraries: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +42,18 @@ const SoliditySourcify: React.FC<PageProps> = ({ address, licenseType }) => {
   useEffect(() => {
     fetchConfig();
   }, []);
-
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type } = e.target;
+    const isCheckbox = type === "checkbox";
+    setPayload((prev) => ({
+      ...prev,
+      [name]: isCheckbox ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -64,12 +79,24 @@ const SoliditySourcify: React.FC<PageProps> = ({ address, licenseType }) => {
 
     const formData = new FormData();
     formData.append("license_type", licenseType);
+    formData.append("evm_version", payload.evm_version);
+
+    try {
+      
+      const librariesJson = JSON.parse(payload.libraries);
+      formData.append("libraries", JSON.stringify(librariesJson));
+    } catch (err) {
+      setError("Libraries must be a valid JSON map.");
+      setIsSubmitting(false);
+      return;
+    }
+
     payload.files.forEach((file, index) => {
       formData.append(`files[${index}]`, file);
     });
 
     try {
-      await addressService.verifyContract(address, "sourcify", formData);
+      await addressService.verifyContract(address, "multi-part", formData);
       setSuccess("Contract verification submitted successfully.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Verification failed");
@@ -82,11 +109,41 @@ const SoliditySourcify: React.FC<PageProps> = ({ address, licenseType }) => {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">
+          EVM Version
+        </label>
+        <select
+          name="evm_version"
+          value={payload.evm_version}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+        >
+          {config?.solidity_evm_versions.map((version) => (
+            <option key={version} value={version}>
+              {version}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Contract Library
+        </label>
+        <input
+          type="text"
+          name="libraries"
+          value={payload.libraries}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+          placeholder='{"libraryName": "0xLibraryAddress"}'
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
           Standard JSON Input
         </label>
         <input
           type="file"
-          name="standardInput"
+          name="files"
           onChange={handleFileChange}
           accept=".json"
           multiple
@@ -127,4 +184,4 @@ const SoliditySourcify: React.FC<PageProps> = ({ address, licenseType }) => {
   );
 };
 
-export default SoliditySourcify;
+export default SolidityMultiPart;

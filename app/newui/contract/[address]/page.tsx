@@ -6,7 +6,12 @@ import React, { useEffect, useState } from "react";
 import SolidityStandard from "@/components/newui/contract/SolidityStandard";
 import SoliditySourcify from "@/components/newui/contract/SoliditySourcify";
 import SoliditySourceCode from "@/components/newui/contract/SoliditySourceCode";
-import VyperSourcify from "@/components/newui/contract/VyperSourcify";
+import VyperMultiParts from "@/components/newui/contract/VyperMultiParts";
+import SolidityMultiPart from "@/components/newui/contract/SolidityMultiPart";
+import VyperCode from "@/components/newui/contract/VyperCode";
+import VyperStandard from "@/components/newui/contract/VyperStandard";
+import SolidityFoundry from "@/components/newui/contract/SolidityFoundry";
+import SolidityHardhat from "@/components/newui/contract/SolidityHardhat";
 
 interface PageProps {
   params: {
@@ -55,22 +60,57 @@ const VerifyContract: React.FC<PageProps> = ({ params }) => {
     switch (selectedMethod) {
       case "Solidity (Standard JSON Input)":
         return (
-          <SolidityStandard address={params.address} licenseType={selectedLicenseType} />
+          <SolidityStandard
+            address={params.address}
+            licenseType={selectedLicenseType}
+          />
         );
-        case "Solidity (Sourcify)":
-          return (
-            <SoliditySourcify address={params.address} licenseType={selectedLicenseType} />
-          );
-          case "Solidity (Flattened Source Code)":
-            return (
-              <SoliditySourceCode address={params.address} licenseType={selectedLicenseType} />
-            );
-            case "Vyper (Multi Parts File)":
-              return (
-                <VyperSourcify address={params.address} licenseType={selectedLicenseType} />
-              );
-          
-      
+      case "Solidity (Sourcify)":
+        return (
+          <SoliditySourcify
+            address={params.address}
+            licenseType={selectedLicenseType}
+          />
+        );
+      case "Solidity (Flattened Source Code)":
+        return (
+          <SoliditySourceCode
+            address={params.address}
+            licenseType={selectedLicenseType}
+          />
+        );
+      case "Vyper (Multi Parts File)":
+        return (
+          <VyperMultiParts
+            address={params.address}
+            licenseType={selectedLicenseType}
+          />
+        );
+      case "Solidity (Multi Parts File)":
+        return (
+          <SolidityMultiPart
+            address={params.address}
+            licenseType={selectedLicenseType}
+          />
+        );
+      case "Vyper (Contract)":
+        return (
+          <VyperCode
+            address={params.address}
+            licenseType={selectedLicenseType}
+          />
+        );
+      case "Vyper (Standard JSON Input)":
+        return (
+          <VyperStandard
+            address={params.address}
+            licenseType={selectedLicenseType}
+          />
+        );
+      case "Solidity (Foundry)":
+        return <SolidityFoundry />;
+      case "Solidity (Hardhat)":
+        return <SolidityHardhat />;
       default:
         return null;
     }
@@ -130,9 +170,7 @@ const VerifyContract: React.FC<PageProps> = ({ params }) => {
                 </select>
               </div>
             </div>
-            <div className="mt-6">
-              {renderDynamicComponent()}
-            </div>
+            <div className="mt-6">{renderDynamicComponent()}</div>
           </div>
         </div>
       </div>

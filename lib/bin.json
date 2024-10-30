@@ -541,7 +541,7 @@ const ContractVerification = ({ params }: { params: { address: string } }) => {
         );
       case "hardhat":
         return (
-          <>
+         <>
             <div>
               <div className="space-y-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -559,7 +559,7 @@ const ContractVerification = ({ params }: { params: { address: string } }) => {
             XDC: {
                 apiKey: {
                     'Mainnet': 'empty'
-                },
+                }, 
             },
             customChains: [
                 {
